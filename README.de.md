@@ -1,7 +1,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 ![webtrees major version](https://img.shields.io/badge/webtrees-v2.1-green)
-![Latest Release](https://img.shields.io/github/v/release/huhwt/huhwt-wttam)
+![Latest Release](https://img.shields.io/github/v/release/huhwt/huhwt-wtlin)
 
 Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-Link-Diagramm, das genealogische Beziehungen visualisiert. Lineage wurde ursprünglich von [Ben Garvey](https://github.com/bengarvey/lineage) entwickelt, ich habe es seinerzeit in einer angepassten Version auf der Homepage von [Horst Stern](https://knoten.familie-stern.de/) entdeckt.
 
