@@ -7,7 +7,7 @@ This [webtrees](https://www.webtrees.net/) module hosts Lineage, a node-link dia
 
 The version presented here combines the concepts of the originals with elements from TAM and own extensions.
 
-Currently, the module is still under development, not all actions lead to the desired results yet.  However, the primary function is already sufficiently stable that I consider it reasonable to publish it as a pre-release.
+Currently, the module is still under development, not all actions lead to the desired results yet.  However, the primary function is already sufficiently stable that I consider it reasonable to publish it as a **pre-release**.
 
 ## Contents
 This readme contains the following main sections

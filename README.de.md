@@ -7,7 +7,7 @@ Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-
 
 Die hier vorgestellte Version kombiniert die Konzepte der Originale mit Elementen aus TAM und eigenen Erweiterungen.
 
-Derzeit ist das Modul noch in laufender Entwicklung, noch nicht alle Aktionen führen zu den gewünschten Ergebnissen.  Die primäre Funktion ist jedoch bereits genügend stabil, dass ich es für vertretbar halte, es als Pre-Release zu veröffentlichen.
+Derzeit ist das Modul noch in laufender Entwicklung, noch nicht alle Aktionen führen zu den gewünschten Ergebnissen.  Die primäre Funktion ist jedoch bereits genügend stabil, dass ich es für vertretbar halte, es als **Pre-Release** zu veröffentlichen.
 
 ## Contents
 Dieses Readme enthält die folgenden Hauptabschnitte

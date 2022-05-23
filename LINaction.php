@@ -102,7 +102,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '1.0.0';
+        return '2.1.0.9.0';
     }
 
     /**
