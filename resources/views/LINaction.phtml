@@ -1,0 +1,63 @@
+<?php
+
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\View;
+use Fisharebest\Webtrees\Tree;
+
+/**
+ * @var string              $module_cce
+ * @var string              $title
+ * @var string              $actKey
+ * @var string              $label
+ * @var Tree                $tree
+ * @var string              $LINpath
+ * @var array<>             $urlAJAX
+ * @var array<string>       $jsimp
+ */
+
+    $textCompleted = I18N::translate('Transfer completed');
+    $start_path    = '#';
+    $start_text    = I18N::translate('Please wait - transfer in progress');
+    $next_text     = view('icons/save') . I18N::translate('Start LINEAGE in new tab');
+?>
+
+<h2 class="wt-page-title"><?= $title ?></h2>
+
+<div class="row form-group">
+    <div class="col-sm-3 col-form-label wt-page-options-label">
+        <span id="done_gedcom"><?= $label ?></span>
+    </div>
+    <div class="col-sm-9 wt-page-options-value">
+        <?= $actKey ?>
+    </div>
+</div>
+
+<div class="row form-group">
+    <div class="col-sm-3 wt-page-options-label"></div>
+    <div class="col-sm-9 wt-page-options-value" id="get_gedcom" data-url-gedcom="<?= e(route('module', $urlAJAX )) ?>">
+        <a id="btn_LINstart" href="<?= $start_path ?>" target="#" class="btn btn-primary cce_disabled_not">
+            <?= /* I18N: A button label. */ $start_text ?>
+        </a>
+        <a href="<?= e(route('module', ['module' => $module_cce, 'action' => 'Show', 'tree' => $tree->name()])) ?>" class="btn btn-secondary">
+            <?= view('icons/cancel') ?>
+            <?= I18N::translate('back to ClippingsCart-Show') ?>
+        </a>
+    </div>
+</div>
+
+<?php if (count($jsimp) > 0) {  ?>
+    <?php for ( $i = 0, $iE = count($jsimp); $i < $iE; ++$i) : ?>
+        <?php $jsi = $jsimp[$i] ?>
+        <?php View::push('javascript') ?>
+        <script src="<?= $jsi ?>"></script>
+        <?php View::endpush() ?>
+    <?php endfor ?>
+<?php } ?>
+
+<?= View::push('javascript'); ?>
+<script>
+  testDBstore("wtLIN", ["TREEdata", "TIMEdata", "NAMEdata", "Gedcom"]);
+  testDBstore("wtLINparm", ["CLUSTERs", "FILTERs"]);
+  doAJAX('<?= $actKey ?>', 'btn_LINstart', 'get_gedcom','done_gedcom','<?= $LINpath ?>','<?= $textCompleted ?>','<?= $next_text ?>');
+</script>
+<?= View::endpush(); ?>

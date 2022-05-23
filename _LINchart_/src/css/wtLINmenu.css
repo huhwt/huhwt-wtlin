@@ -1,0 +1,208 @@
+.mcontainer {
+    display: flex;
+    flex-direction: column; 
+    align-content: space-around;
+    border: 1px solid #cccccc;
+    background-color: #f6f6f6;
+}
+    .mcontainer > div {
+        width: 85%;
+        margin: 5px;
+        padding: 2px 2px 2px 5px;
+        text-align: center;
+        line-height: 18px;
+        border: 2px solid rgb(138, 138, 138);
+        background-color: #f6f6f6;
+    }
+    .mcontainer > p {
+        width: 86%;
+        margin: 5px;
+        padding: 0px 1px 0px 5px;
+        text-align: left;
+        line-height: 16px;
+        background-color: #f6f6f6;
+    }
+
+    .mbutton {
+        background: transparent;
+        border-radius: 0.25em;
+        min-width: 60px;
+        border: 2px solid #cccccc;
+        box-sizing: border-box;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 360;
+        padding: 4px 4px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        outline: none;
+        background: #cacaca;
+        color: rgb(128, 124, 124);
+        box-shadow: 0 0.5px 0 #0c8d72;
+        text-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.5);
+        transition: all 0.1s ease-in-out 0s;
+    }
+    .mbutton:hover {
+        background: #13d7ae;
+        color: white;
+    }
+
+    .mbutton:active, .mbutton:focus {
+        background: #0fae8d;
+    }
+
+
+#menubar {
+    position: absolute;
+    width: 340px;
+    height: 96%;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    background-color: rgba(250,250,250,0.75);
+}
+
+.dialbar {
+    display: inline-block;
+    padding: 0px 5px 5px 5px;
+    border: 1px solid #cccccc;
+    background-color: #f6f6f6;
+    font-size: 9pt;
+    box-shadow: 2px 0px 4px gray;
+    line-height: 1em;
+}
+
+    .dialbar button {
+        background: transparent;
+        border-radius: 15em;
+        border: 2px solid #cccccc;
+        box-sizing: border-box;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.4em;
+        padding: 10px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        outline: none;
+        background: #10bc98;
+        color: #fff;
+        box-shadow: 0 3px 0 #0c8d72;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+        -webkit-transition: all 0.1s ease-in-out 0s;
+        -moz-transition: all 0.1s ease-in-out 0s;
+        -ms-transition: all 0.1s ease-in-out 0s;
+        transition: all 0.1s ease-in-out 0s;
+    }
+
+        .dialbar button:hover {
+            background: #13d7ae;
+        }
+
+        .dialbar button:active, .dialbar button:focus {
+            background: #0fae8d;
+        }
+
+    .dialbar .switch {
+        position: relative;
+        display: inline-block;
+        width: 34px;
+        height: 20px;
+    }
+
+        .dialbar .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .dialbar .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .1s;
+        transition: .1s;
+        border-radius: 20px;
+    }
+
+        .dialbar .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .1s;
+            transition: .1s;
+            border-radius: 50%;
+        }
+
+    .dialbar input:checked + .slider {
+        background-color: #4fc46f; /*#34c759*/
+    }
+
+    .dialbar input:focus + .slider {
+        box-shadow: 0 0 1px #4fc46f; /*#34c759*/
+    }
+
+    .dialbar input:checked + .slider:before {
+        -webkit-transform: translateX(14px);
+        -ms-transform: translateX(14px);
+        transform: translateX(14px);
+    }
+
+    .dialbar fieldset {
+        margin: 5px 5px 10px 5px;
+        padding: 7px;
+        background: white;
+        border: 1px solid rgb(200,200,200);
+        /*box-shadow: 2px 2px 2px gray;*/
+    }
+
+        .dialbar fieldset legend label {
+            font-size: 8pt;
+            padding: 2px 5px 2px 5px;
+            background: white;
+            border: 1px solid transparent;
+        }
+
+            .dialbar fieldset legend label.toggler {
+                cursor: pointer;
+            }
+
+                .dialbar fieldset legend label.toggler:hover {
+                    border: 1px solid #bbb;
+                    background: #f6f6f6;
+                }
+
+        .dialbar fieldset table {
+            font-size: 9pt;
+        }
+
+        .dialbar fieldset .btn {
+            margin: 15px 0px 5px 0px;
+            text-align: center;
+        }
+
+.menu_toggler + .menu {
+    display: none;
+}
+
+.menu_toggler:checked + .menu {
+    display: inline-table;
+}
+
+.toggler {
+    font-size: 0.66em;
+}
+.toggler:hover {
+    background: #13d7ae;
+    color: white;
+}

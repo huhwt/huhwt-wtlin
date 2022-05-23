@@ -1,0 +1,105 @@
+﻿<!--///////////////////////////////////////////////////////////////////////////////
+//
+// Topographic Attribute Maps Demo
+// Copyright 2020 Reinhold Preiner, Johanna Schmidt, Gabriel Mistelbauer
+//
+// This code is licensed under an MIT License.
+// See the accompanying LICENSE file for details.
+//
+///////////////////////////////////////////////////////////////////////////////-->
+
+
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<title>Topographic Attribute Map</title>
+
+	<!-- <script src="https://d3js.org/d3.v6.min.js"></script> -->
+	<script src="src/js/d3_v6_min.js"></script>
+	<script src="src/js/i18n.js"></script>
+	<script type="module" src="src/js/parms.js"></script>
+	<script type="module" src="src/js/translations.js"></script>
+	<script type="module" src="src/js/gedcom.js"></script>
+	<script type="module" src="src/js/scalarfield.js"></script>
+	<script type="module" src="src/js/interaction.js"></script>
+	<script type="module" src="src/js/TAMrenderer.js"></script>
+	<script type="module" src="src/js/TFMrenderer.js"></script>
+    <script type="module" src="src/js/dbman.js"></script>
+	<script type="module" src="src/js/utils.js"></script>
+	<script type="module" src="src/js/export.js"></script>
+	<script type="module" src="src/js/interfaces.js"></script>
+	<script type="module" src="src/js/guiparts.js"></script>
+    <script type="module" src="src/js/main.js"></script>
+	<link rel="stylesheet" type="text/css" href="src/css/tamv6.css">
+</head>
+
+<body>
+	<div id="menubar" class="dialbar">
+	</div>
+	<!-------------------------------------------------------------------------------------->
+	<div id="canvas">
+		<svg id="sTAM" xmlns="http://www.w3.org/2000/svg" viewBox="-5000 -3000 6000 6000" preserveAspectRatio="xMinYMin meet" display="none">
+			<defs>
+				<marker id="arrowTAM" viewBox="0 0 8 8" refX="6" refY="4"
+					markerWidth="6" markerHeight="6"
+					orient="auto-start-reverse"
+					fill="black"
+					fill-opacity="1">
+				  <path d="M 0 0 L 8 4 L 0 8 z" />
+				</marker>
+				<filter id="dropshadowTAM" x="-60%" y="-60%" height="300%" width="300%">
+					<feOffset result="offOut" in="SourceAlpha" dx="4" dy="4" />
+					<feGaussianBlur result="blurOut" in="offOut" stdDeviation="5" />
+					<feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+				</filter>
+			</defs>
+		</svg>
+		<svg id="sTFM" xmlns="http://www.w3.org/2000/svg" viewBox="-5000 -3000 6000 6000" preserveAspectRatio="xMinYMin meet" display="none">
+			<defs>
+				<marker id="arrowTFM" viewBox="0 0 8 8" refX="6" refY="4"
+					markerWidth="6" markerHeight="6"
+					orient="auto-start-reverse"
+					fill="black"
+					fill-opacity="1">
+				  <path d="M 0 0 L 8 4 L 0 8 z" />
+				</marker>
+				<filter id="dropshadowTFM" x="-60%" y="-60%" height="300%" width="300%">
+					<feOffset result="offOut" in="SourceAlpha" dx="4" dy="4" />
+					<feGaussianBlur result="blurOut" in="offOut" stdDeviation="5" />
+					<feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+				</filter>
+			</defs>
+		</svg>
+		<svg id="bullsEye"></svg>
+	</div>
+
+	<div id="overlay" style="display: none;">
+	</div>
+	<!-------------------------------------------------------------------------------------->
+	<div id="tickcountInfo"  class="dialbar" style="display: none;">
+	</div>
+    <div id="sliderTimeline" class="row" style="display: none;">
+    </div>
+<!-------------------------------------------------------------------------------------->
+
+<script type="module">
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  DATA LOADING
+import { mainDB } from "./src/js/main.js";
+import * as parms from "./src/js/parms.js";
+import { testDBstore } from "./src/js/dbman.js";
+
+// const DBOpenRequest = window.indexedDB.open("wtTAM");
+// oSET("db_wtTAM", DBOpenRequest);
+
+parms.SET("DEVMODE", true);
+testDBstore("wtTAM", ["H-Tree", "TFMdata", "Gedcom"]);
+
+mainDB("Gedcom");
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+</script>
+
+</body>
+</html>

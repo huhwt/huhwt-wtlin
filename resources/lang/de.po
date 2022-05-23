@@ -1,0 +1,17 @@
+msgid "back to ClippingsCart-Show"
+msgstr "Zurück zur Sammelbehälter-Übersicht"
+
+msgid "Please wait - transfer in progress"
+msgstr "Bitte warten - Datenübertragung läuft"
+
+msgid "Start LINEAGE in new tab"
+msgstr "LINEAGE in neuem Tab starten"
+
+msgid "Transfer completed"
+msgstr "Datenübertragung abgeschlossen"
+
+msgid "LINEAGE Launch"
+msgstr "LINEAGE Aufruf durchführen"
+
+msgid "Key to retrieve data"
+msgstr "Schlüssel für Datenübertragung"
