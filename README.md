@@ -1,7 +1,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 ![webtrees major version](https://img.shields.io/badge/webtrees-v2.1-green)
-![Latest Release](https://img.shields.io/github/v/release/huhwt/huhwt-wttam)
+![Latest Release](https://img.shields.io/github/v/release/huhwt/huhwt-wtlin)
 
 This [webtrees](https://www.webtrees.net/) module hosts Lineage, a node-link diagram that visualizes genealogical relationships. Lineage was originally developed by Ben Garvey, I came across it at the time in an adapted version on Horst Stern's homepage.
 
