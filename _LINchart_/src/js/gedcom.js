@@ -84,7 +84,7 @@ export function loadTREE(TFM_data, callback)
     };
     let lines = TFM_data.split("\n");
 
-    gedcom = build_gedcam(lines);
+    gedcom = build_gedcom(lines);
         
     // ("Loaded " + gedcom.persons.size + " persons in " + gedcom.families.size + " families");
     console.log(i18n("L_Xp_Xf", { nP: gedcom.persons.size, nF: gedcom.families.size } ));
@@ -407,12 +407,19 @@ export function estimateMissingDates(gedcom, procreationAge)
         });
     }
 
+    // convert to timestap in ms
+    let datestr = "1 jan 1500";
+    let datems = Date.parse(datestr);
+    let defdate = new Date(datems);
+
     // check who's left
     gedcom.persons.forEach( function(p){
         if (p.bdate == null)    // missing date of birth
         {
             // ("Still missing birth date of " + p.getFullName());
             console.log(i18n("S_mbd_o", { pFN: p.getFullName() } ));
+
+            p.bdate = defdate;
         }
     });
 }

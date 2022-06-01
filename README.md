@@ -5,6 +5,8 @@
 
 This [webtrees](https://www.webtrees.net/) module hosts Lineage, a node-link diagram that visualizes genealogical relationships. Lineage was originally developed by Ben Garvey, I came across it at the time in an adapted version on Horst Stern's homepage.
 
+* Copyright (C) 2022 huhwt - EW.H
+
 The version presented here combines the concepts of the originals with elements from TAM and own extensions.
 
 Currently, the module is still under development, not all actions lead to the desired results yet.  However, the primary function is already sufficiently stable that I consider it reasonable to publish it as a **pre-release**.

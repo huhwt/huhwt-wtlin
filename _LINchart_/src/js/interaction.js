@@ -439,9 +439,18 @@ export function toggleSLIDERtl(_doShow=null)
 
 
 /////////////////////////////////////////////////////////////////////////////
-// This does *not* trigger any updates of the TAM,
+// This does *not* trigger any updates of the Vizualisation,
 // only the parameter menu is updated.
-export function setDefaultParameters()
+export function set_linDefaultParameters()
+{
+    parms.lSET("doShow_cA", false);
+    parms.lSET("doShow_nl", false);
+    parms.lSET("fAind", 0);
+    parms.lSET("cbfilterAny", false);
+    parms.lSET("cbfilterSpouse", false);
+}
+//---------------------------------------------------------------------------
+export function set_tamDefaultParameters()
 {
     const SIMmode = parms.GET("SIMmode");
 

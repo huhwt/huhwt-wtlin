@@ -106,14 +106,14 @@ export function dumpGRAPH(_GRAPH)
 
 // Input: object with key/value pairs, e.g.
 // { "PARAM_1" : true, "Param_2" : 42, ...}
-export function setParameters(params)
+export function load_tamParameters(params)
 {
     for (const [key, value] of Object.entries(params))
     {
 
         let _key = key;
         if (_key.startsWith('PARAM_', 0)) {
-            _key = _key.slice(5);
+            _key = _key.slice(6);
         }
         if (parms.TEST(_key)) {
             switch (_key)

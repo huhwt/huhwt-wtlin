@@ -39,6 +39,8 @@ export class DATAman
     constructor()
     {
         // Data and Variables
+        this.GRAPH_DATA = null;
+
         this.ONODES = parms.oGET("Onodes");
         this.OLINKS = parms.oGET("Olinks");
         this.originalData = {

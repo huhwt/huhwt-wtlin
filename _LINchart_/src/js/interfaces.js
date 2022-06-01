@@ -9,13 +9,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-import { setParameters } from "./export.js";
+import { load_tamParameters } from "./export.js";
 import { DATAman } from "./DATAman.js";
 import { LINEAGErenderer } from "./LIN_MAIN.js";
 import { loadGedcom, estimateMissingDates, processGedcom, processGedcomN } from "./gedcom.js";
 // import { default as i18n } from "./i18n.js";
 import * as parms from "./parms.js";
-import { toggleSVG, setDefaultParameters } from "./interaction.js";
+import { toggleSVG, set_tamDefaultParameters, set_linDefaultParameters } from "./interaction.js";
 import { putDB, getDB, readFromDB } from "./dbman.js";
 import { getBaseURL, getBaseREF, logOBJ, rebuildOBJ } from "./utils.js";
 import { initIDX, getColor} from "./indexman.js";
@@ -102,6 +102,10 @@ function readSingleFile(e)
     }
 
     let folder = parms.GET("SOURCE_FOLDER");
+    if (folder == null) {
+        folder = "data";
+        parms.SET("SOURCE_FOLDER", folder);
+    }
     reader.onload = function (e, reader) {
         var url = e.target.result;
         parms.SET("FILENAME", file.name);
@@ -145,7 +149,8 @@ function readSingleFile(e)
                 toggleSVG(renderer);
                 resetTREE(linObj);
             }
-            setDefaultParameters();
+            set_linDefaultParameters();
+            set_tamDefaultParameters();
             parms.SET("SOURCE_FILE", file.name);
 
             loadGedcom(folder + "/" + file.name,
@@ -157,7 +162,7 @@ function readSingleFile(e)
                     renderer.tickCounterCycles = 5;
                 });
         }
-        else if (file.name.endsWith(".tfm")) {
+        else if (file.name.endsWith(".tlin")) {
 
             if (_rendertype !== RENDERtype.LINEAGE) {
                 renderer = new LINEAGErenderer();
@@ -173,7 +178,7 @@ function readSingleFile(e)
             d3.json(folder + "/" + file.name)
                 .then(
                     function (json) { 
-                        processTREE(json, folder); 
+                        processTLIN(json); 
                     });
             renderer.tickCounterTotal = 0;
             renderer.tickCounterCycles = 5;
@@ -183,6 +188,32 @@ function readSingleFile(e)
     };
     reader.readAsDataURL(file);
 }
+
+function processTLIN(json)
+{
+    set_linDefaultParameters();
+    // first try to load parameters from .tlin
+    if ("parameters" in json) {
+        console.log(i18n("L_pf_f"));                   // Loading parameters from file.
+        load_tamParameters(json.parameters);
+    }
+    else {
+        console.log(i18n("F_dnc_p"));                   // File does not contain parameters
+        set_tamDefaultParameters();
+    }
+
+    let ds_text = json.nodeData;
+    let ds_names = json.names;
+    processGedcomN(ds_text, ds_names, function(gedcom) {
+        estimateMissingDates(gedcom, parms.GET("PROCREATION_AGE"));
+        prepareODATA(gedcom, json.nodePositions);
+    });
+
+    initLINEAGE();
+    renderAction("TREE");
+
+}
+
 
 // Reset LINEAGErenderer
 function resetTREE(linObj) {
@@ -254,7 +285,8 @@ export function loadFileFromDisk(folder)
             parms.oSET("RENDERER", renderer);
         }
 
-        setDefaultParameters();
+        set_linDefaultParameters();
+        set_tamDefaultParameters();
         loadGedcom(folder + "/" + _fileName,
             function(gedcom, text) {
                 let _states = parms.GETall();
@@ -266,7 +298,7 @@ export function loadFileFromDisk(folder)
             }
         );
     }
-    else if (_fileName.endsWith(".tfm"))
+    else if (_fileName.endsWith(".tlin"))
     {
         d3.json(folder + "/" + _fileName)
             .then(
@@ -392,23 +424,24 @@ function processIDBfilter(filterdata)
 
 function processIDBgedcom(dataset)
 {
+    set_linDefaultParameters();
     if ("parameters" in dataset) {
         console.log(i18n("L_pf_f"));                   // Loading parameters from source.
-        setParameters(dataset.parameters);
+        load_tamParameters(dataset.parameters);
     }
     else {
         console.log(i18n("F_dnc_p"));                   // Source does not contain parameters
-        setDefaultParameters();
+        set_tamDefaultParameters();
     }
-    let gedcom = dataset.nodeData;
-    let names = dataset.nameData;
-    processGedcomN(gedcom, names, function(gedcom) {
+    let ds_text = dataset.nodeData;
+    let ds_names = dataset.nameData;
+    processGedcomN(ds_text, ds_names, function(gedcom) {
         estimateMissingDates(gedcom, parms.GET("PROCREATION_AGE"));
         prepareODATA(gedcom);
     });
 }
 
-function prepareODATA(graph, nodePositions = null)
+function prepareODATA(gedcom, nodePositions = null)
 {
     let CurrentYear = new Date().getFullYear();
 
@@ -421,7 +454,7 @@ function prepareODATA(graph, nodePositions = null)
     var nodeMap = new Map();
 
     let _noderadius = parms.GET("NODE_RADIUS");
-    graph.persons.forEach(p =>
+    gedcom.persons.forEach(p =>
     {
         // set person data
         p.type = "PERSON";
@@ -462,7 +495,7 @@ function prepareODATA(graph, nodePositions = null)
     // list dependencies
     //--------------------------------------------------------------------
     let _linkDistance = parms.GET("LINK_DISTANCE");
-    graph.families.forEach(f =>
+    gedcom.families.forEach(f =>
     {
         let _swife = f.wife;
         let _shusband = f.husband;

@@ -121,33 +121,48 @@ export class LINEAGErenderer
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    makeNodePositions()
+    {
+        // store person/family node positions with their id
+        let nodePositions = {};
+        this.yNODES.forEach(n => { nodePositions[n.id] = {"x": n.x, "y": n.y, "fixed": n.fx != null}; });
+
+        return nodePositions;
+
+    }
     saveDataF()
     {
-        let nodePositions = [];
-        this.yNODES.forEach(node => {
-            nodePositions.push({
-                "id": node.id,
-                "name": node.name,
-                "value": node.Yvalue,
-                "x": node.x,
-                "y": node.y,
-                "fixed": node.fx != null
-            });
-        });
 
+        let nodePositions = this.makeNodePositions();
+
+        // temporarily store actual year
+        let _TL = this.TIMEline;
+        let actYear = _TL.Year;
+        parms.SET("actYear", actYear);
+
+        let ds_nodes = parms.oGET("Otext");
+        let ds_namesJ = parms.oGET("OnamesJ");
+        let ds_names = JSON.stringify(ds_namesJ);
         let content = [JSON.stringify(
             {
                 "metadata": getMetadata(),
                 "parameters": getParameters(),
-                "nodes": nodePositions,
-                "links": this.yLINKS
+                "nodePositions": nodePositions,
+                "nodeData": ds_nodes,
+                "names": ds_names,
             },
             removeInternalValuesFromJSON, 2)];
         let blob = new Blob(content, { type: "text/json" });
         let _fileName = parms.GET("FILENAME");
+        if (_fileName == "") {
+            let _fPerson = this.RENDERhelper.xNODES[0];
+            _fileName = _fPerson.id;
+        }
         let filenameWithoutSuffix = _fileName.slice(0, _fileName.lastIndexOf('.'));
 
-        createDownloadFromBlob(blob, filenameWithoutSuffix + ".tam");
+        createDownloadFromBlob(blob, filenameWithoutSuffix + ".tlin");
+        // remove temporarily stored actual year
+        parms.delPARMS("PARMS", "actYEAR");
     }
 
     saveData()
