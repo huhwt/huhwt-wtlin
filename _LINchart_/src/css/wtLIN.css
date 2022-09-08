@@ -33,6 +33,11 @@ h3 {
     font-size: 0.8em;
 }
 
+label {
+    font-size: 0.6em;
+    margin-bottom: 0.25rem;
+}
+
 canvas {
     position: absolute;
     top: 0px;
@@ -71,7 +76,12 @@ canvas {
   display: inline-block;
   font-size: 32px;
 }
-
+.toggle__button:hover {
+    color: #74818d;
+    background: #13d7ae;
+    text-decoration: none;
+    color: white;
+}
 #lockSearch {
   height: 20px;
   width: 20px;
@@ -103,7 +113,7 @@ canvas {
     top: 0;
     left: 0;
     opacity: 0.5;
-    z-index: 2;
+    z-index: -2;
 }
 
 #memberDetails {
@@ -238,23 +248,42 @@ rect {
   padding: 2px 0 0 0;
 }
 
-.button__90 {
-  display: block;
-  height: 36px;
-  width: 90%;
-  margin: 3px;
+.button__99 {
+    display: block;
+    height: 36px;
+    width: 99%;
+    margin: 3px;
 }
-.button__40 {
+.button__90 {
+    display: block;
+    height: 36px;
+    width: 90%;
+    margin: 3px;
+}
+.button__60 {
+    display: block;
+    height: 36px;
+    width: 53%;
+    margin: 3px;
+}
+.button__50 {
     display: block;
     height: 36px;
     width: 43%;
     margin: 3px;
 }
+.button__40 {
+    display: block;
+    height: 36px;
+    width: 24%;
+    margin: 3px;
+}
 .button__30 {
     display: block;
     height: 36px;
-    width: 30%;
+    width: 18%;
     margin: 3px;
+    font-size: 0.8rem !important;
 }
   
 .view__button {
@@ -285,8 +314,106 @@ rect {
     margin: 10px 0 10px 0;
     text-align: center;
     display: flex;
+    justify-content: space-between;
 }
-  
+.views__B {
+    display: block;
+    height: 100%;
+    width: 43%;
+    margin: 3px;
+}
+.views__D {
+    display: flex;
+    justify-content: space-between;
+    height: 36px;
+    width: 63%;
+    margin: 0px;
+}
+.views__DB {
+    display: block;
+    height: 36px;
+    width: 66%;
+    margin: 3px;
+}
+.views__DO {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 33px;
+    width: 34%;
+    margin: 2px;
+}
+
+#viewportDim {
+    width: 50%;
+    height: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 20px;
+}
+.vbutton {
+    display: block;
+    height: 22px;
+    border-radius: 6%;
+}
+.vbutton:hover {
+    background: #13d7ae;
+}
+
+.vb_active {
+    background: #1374c4;
+}
+
+.vbutton__1 {
+    width: 24px;
+}
+.vbutton__2 {
+    width: 20px;
+}
+.vbutton__3 {
+    width: 16px;
+}
+.vbutton__4 {
+    width: 12px;
+}
+.vbutton__5 {
+    width: 8px;
+}
+
+.persinfo {
+    position: absolute;
+    top: 80px;
+    left: 400px;
+    width: auto;
+    width: 1400px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    z-index: -1;
+}
+.persinfo-item {
+    display: block;
+    max-width: 340px;
+    font-size: 11pt;
+    background-color: rgb(245, 234, 186);
+    color: rgb(1, 1, 39);
+    padding: 0.4em 0.4em;
+    margin: 2px;
+    white-space: pre-line;
+}
+
+.fvisible.off {
+    visibility: hidden;
+}
+.fvisible > label:hover {
+    background: #13d7ae;
+    color: white;
+}
+
 .namesFilter {
     display: block;
     position: relative;
@@ -327,31 +454,6 @@ bullsEye {
     z-index: -1;
 }
 
-#yearScale {
-    position: absolute;
-    top: 96%;
-    height: 15%;
-    left: 0;
-    display: none;
-    z-index: -3;
-}
-#yearScaleS {
-    position: inherit;
-    top: 0;
-    fill: black;
-    stroke-width: 0.5;
-    stroke: black;
-    text-anchor: middle;
-    font-size: 0.75em;
-}
-.YCline .YCcrosshair{
-    fill: none;
-    stroke-width: 1px;
-}
-.YCline #YCcrosshairX {
-    stroke: blue;
-}
-
 .ticks {
     font-size: 10px;
 }
@@ -380,6 +482,12 @@ bullsEye {
     stroke: #000;
     stroke-opacity: 0.5;
     stroke-width: 1.25px;
+}
+.handle:hover {
+    fill: #13d7ae;
+    stroke: white;
+    stroke-opacity: 1;
+    stroke-width: 1.5px;
 }
 
 #mousePos {
@@ -419,10 +527,13 @@ bullsEye {
 
     .btn:hover { 
         color: #74818d;
-        text-decoration: none
+        background: #13d7ae;
+        text-decoration: none;
+        color: white;
     }
     .btnx.focus,
-    .btnx:focus { 
+    .btnx:focus,
+    .btn.active { 
         outline: 0;
         box-shadow: 0 0 0 .2rem rgba(0,123,255,.25)
     }
@@ -451,6 +562,11 @@ bullsEye {
     margin-top: 10px;
 }
 
+.d3-zoom-controls .btn-circle:hover {
+    width: 33px;
+    height: 33px;
+    background: #13d7ae;
+}
 #progress {
     position: fixed;
     top: 0;
@@ -491,6 +607,8 @@ bullsEye {
     font-size: 0.6em;
 }
 .controls {
+    display: flex;
+    flex-direction: column;
     flex-basis: 180px;
     padding: 0 5px;
 }
@@ -508,5 +626,7 @@ bullsEye {
 .controls .alpha p { margin-bottom: .25em; }
 .controls .alpha .alpha_bar { height: .5em; border: 1px #777 solid; border-radius: 2px; padding: 1px; display: flex; }
 .controls .alpha .alpha_bar #alpha_value { background-color: #555; border-radius: 1px; flex-basis: 100% }
-.controls .alpha .alpha_bar:hover { border-width: 2px; margin:-1px; }
+#alpha_value:hover { font-size: 1.25em;  }
 .controls .alpha .alpha_bar:active #alpha_value { background-color: #222 }
+.controls .alpha .alpha_bar #zoom_value { background-color: #555; border-radius: 1px; flex-basis: 100% }
+.controls-btn { margin-left: 140px;}

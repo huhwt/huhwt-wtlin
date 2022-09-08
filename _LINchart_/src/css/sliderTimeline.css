@@ -2,7 +2,7 @@
     font-family: helvetica, arial;
     position: absolute;
     top: 0;
-    z-index: 1;
+    z-index: -1;
 }
 
 .yearsRx {
@@ -14,11 +14,11 @@
     opacity: 0.5;
 }
 
-.yearSlider {
+#yearSlider {
     z-index: 10;
 }
 
-.yearRange {
+#yearRange {
     z-index: 9;
 }
   
@@ -37,13 +37,53 @@
 }
 
 .sliderTimelineB {
-    width: 86px;
+    width: 100px;
     justify-content: space-between;
 }
 #sliderTimeline .row {
     margin-left: 0px;
     margin-right: 0px;
 }
+
+#slideSpeed {
+    width: 52px;
+    height: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.sbutton {
+    display: block;
+    margin-top: 9px;
+    height: 14px;
+    border-radius: 80%;
+}
+.sbutton:hover {
+    background: #13d7ae;
+}
+
+.sb_active {
+    background: #1374c4;
+}
+
+.sbutton__1 {
+    width: 12px;
+}
+.sbutton__2 {
+    width: 10px;
+}
+.sbutton__3 {
+    width: 8px;
+}
+.sbutton__4 {
+    width: 6px;
+}
+.sbutton__5 {
+    width: 5px;
+}
+
+
 .slideButton {
     position: relative;
     top: 0px;
@@ -61,10 +101,21 @@
 .right {
     text-align: right;
 }
+.slideButton-L {
+    margin-left: 6px;
+}
+.slideButton-R {
+    margin-right: 6px;
+}
+.slideButton-2 {
+    margin-top: 4px;
+}
 .slideButton-lg {
     position: relative;
     top: 0px;
-    width: 36px;
+    width: 40px;
+    margin-left: 4px;
+    margin-right: 4px;
     height: 36px;
     padding: 0;
     font-size: 1.5em;
@@ -79,9 +130,8 @@
     font-weight: 900;
 }
 
-
 .slideButton-sm:hover,
 .slideButton-lg:hover,
 .slideButton:hover {
-    background-color: #1374c4;
+    background-color: #13d7ae;
 }

@@ -22,7 +22,7 @@ var idxNames0 = new Map();
 var s_lName = "";
 var m_fChar = new Map();
 var l_colorDim = 0;
-const color = d3.scaleSequential(d3.interpolateSinebow);
+const color = d3.scaleSequential(d3.interpolateWarm); // Sinebow);
 
 
 export function initIDX(NODES)
@@ -34,11 +34,24 @@ export function initIDX(NODES)
     idxStdName.clear();
     idxNames.clear();
     idxNames0.clear();
+
     m_fChar = fChar();
+
     NODES.forEach(buildColorDim);
-    NODES.forEach(buildNames);
+    // set the colors for single first letters
+    let alpha = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
+    alpha.forEach(function(_ch) {
+        if (idxColorDim.indexOf(_ch) < 0) {
+            idxColorDim.push(_ch);
+        }
+    });
     idxColorDim.sort();
     l_colorDim = idxColorDim.length;
+
+    NODES.forEach(buildNames);
+
+    parms.oSET("idxNameDm", idxNameDm);
+    parms.oSET("idxNameStd", idxNameStd);
     parms.oSET("idxDmName", idxDmName);
     parms.oSET("idxStdName", idxStdName);
     parms.oSET("idxNames", idxNames);
@@ -47,10 +60,54 @@ export function initIDX(NODES)
     // console.log("idxColorDim", idxColorDim);
 }
 
+export function initIDXy(yNODES)
+{
+    idxNameDm.clear();
+    idxNameStd.clear();
+    idxDmName.clear();
+    idxStdName.clear();
+    idxNames.clear();
+    idxNames0.clear();
+    yNODES.forEach(buildNames);
+    parms.oSET("idyNameDm", idxNameDm);
+    parms.oSET("idyNameStd", idxNameStd);
+    parms.oSET("idyDmName", idxDmName);
+    parms.oSET("idyStdName", idxStdName);
+    parms.oSET("idyNames", idxNames);
+    parms.oSET("idyNames0", idxNames0);
+}
+
+export function swapIDX(_NLx)
+{
+    let renderer = parms.oGET("RENDERER");
+    let linObj = renderer.instance;
+    switch (_NLx) {
+        case "NLy":
+            let ynodes = linObj.yNODES;
+            initIDXy(ynodes);
+            break;
+        default:
+            idxNameDm.clear();
+            idxNameStd.clear();
+            idxDmName.clear();
+            idxStdName.clear();
+            idxNames.clear();
+            idxNames0.clear();
+            idxNameDm = parms.oGETmap("idxNameDm");
+            idxNameStd = parms.oGETmap("idxNameStd");
+            idxDmName = parms.oGETmap("idxDmName");
+            idxStdName = parms.oGETmap("idxStdName");
+            idxNames = parms.oGETmap("idxNames");
+            idxNames0 = parms.oGETmap("idxNames0");
+            break;
+    }
+}
+
+
 function buildColorDim(n) {
-    if (n.sn_scDM != 0) {
-        if (idxColorDim.indexOf(n.sn_scDM) < 0) {
-            idxColorDim.push(n.sn_scDM);
+    if (n.sortname != 0) {
+        if (idxColorDim.indexOf(n.sortname) < 0) {
+            idxColorDim.push(n.sortname);
         }
     }
 }
@@ -59,41 +116,41 @@ function buildNames(n) {
     if (n.sn_scDM != 0) {
         if ( !idxNameDm.has(n.surname) ) {
             idxNameDm.set(n.surname, n.sn_scDM);
-            if (idxDmName.has(n.sn_scDM)) {
-                let _names = idxDmName.get(n.sn_scDM);
-                if (_names != null) {
-                    if (_names.indexOf(n.surname) < 0) {
-                        _names += n.surname + ' ';
-                        idxDmName.set(n.sn_scDM, _names);
-                    }
-                } else {
-                    _names = n.surname + ' ';
+        }
+        if (idxDmName.has(n.sn_scDM)) {
+            let _names = idxDmName.get(n.sn_scDM);
+            if (_names != null) {
+                if (_names.indexOf(n.surname) < 0) {
+                    _names += n.surname + ' ';
                     idxDmName.set(n.sn_scDM, _names);
                 }
             } else {
-                idxDmName.set(n.sn_scDM, n.surname);
+                _names = n.surname + ' ';
+                idxDmName.set(n.sn_scDM, _names);
             }
+        } else {
+            idxDmName.set(n.sn_scDM, n.surname);
         }
-    }
+}
     if (n.sn_scR != 0) {
         if ( !idxNameStd.has(n.surname) ) {
             idxNameStd.set(n.surname, n.sn_scR);
-            if (idxStdName.has(n.sn_scR)) {
-                let _names = idxStdName.get(n.sn_scR);
-                if (_names != null) {
-                    if (_names.indexOf(n.surname) < 0) {
-                        _names += n.surname + ' ';
-                        idxStdName.set(n.sn_scR, _names);
-                    }
-                } else {
-                    _names = n.surname + ' ';
+        }
+        if (idxStdName.has(n.sn_scR)) {
+            let _names = idxStdName.get(n.sn_scR);
+            if (_names != null) {
+                if (_names.indexOf(n.surname) < 0) {
+                    _names += n.surname + ' ';
                     idxStdName.set(n.sn_scR, _names);
                 }
             } else {
-                idxStdName.set(n.sn_scR, n.surname);
+                _names = n.surname + ' ';
+                idxStdName.set(n.sn_scR, _names);
             }
+        } else {
+            idxStdName.set(n.sn_scR, n.surname);
         }
-    }
+}
     if (idxNames.has(n.surname)) {
         let _ncnt = idxNames.get(n.surname) + 1;
         idxNames.set(n.surname, _ncnt);
@@ -119,29 +176,15 @@ function buildNames(n) {
     }
 }
 
-export function getColor(sn_scDM) {
-    // input:   soundex-DaitchMotokoff
+export function getColor(_cname) {
+    // input:   a kind-of-name
     // output:  corresponding color
-    let i_colorDim = idxColorDim.indexOf(sn_scDM);
+    let i_colorDim = idxColorDim.indexOf(_cname);
     if (i_colorDim < 0) { 
         i_colorDim = 0; 
     } else { i_colorDim = i_colorDim / l_colorDim; }
     let t_color = color(i_colorDim);
     return t_color;
-}
-
-export function setArrow(link) {
-    // input:   link
-    // output:  arrow type corresponding to relation type | "none"
-    if (link.directed) {
-        if (link.relation == "mother") {
-            return "url(#arrowTREE2)";
-        } else {
-            return "url(#arrowTREE1)";
-        }
-    } else {
-        return "none";
-    }
 }
 
 export function getNameDm(surname) {

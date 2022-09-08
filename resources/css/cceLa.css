@@ -1,0 +1,14 @@
+/**
+* Icon converted via: https://base64.guru/converter/encode/image
+* Zusätzliche Steuerelemente Clippings Cart Enhanced
+*/
+
+.cce_disabled {
+    pointer-events: none;
+    cursor: default;
+    background-color: #efefef52 !important;
+}
+
+.row + .row {
+    margin-top: 2rem !important;
+}

@@ -138,7 +138,6 @@
     width: 30%;
     background-color: #eee;
 }
-
 form {
     display: flex;
     flex-direction: column;
@@ -155,7 +154,7 @@ form {
     width: 100%;
 }
 .form-h h1{
-    margin: 3% 10% 2em;
+    margin: 3% 6% 1.5em;
     width: 80%;
     font-weight: bold;
     color: rgb(14, 5, 100);
@@ -214,12 +213,31 @@ form ul {
     min-width: 90%;
     text-align: left;
 }
+    .nlheadR > label {
+        font-size: 1em;
+    }
+    .nlheadR > label:hover {
+        background: #13d7ae;
+        color: white;
+    }
+input[type=radio]:not(:disabled):hover {
+    background: #13d7ae;
+    color: white;
+}
 .nlheadB {
+    margin-left: 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     max-width: 80%;
     text-align: left;
+}
+.nlheadB > input[type=button] {
+    width: 18px;
+}
+.nlheadB > input[type=button]:not(:disabled) {
+    background-color: #fff;
+    font-weight: 600!important;
 }
 
 .nlulli {
@@ -259,6 +277,11 @@ form ul {
         margin-left: 0.5rem;
         width: 320px;
     }
+
+.title > span {
+    font-size: 0.6em;
+}
+    
 
 #modal-file-upload {
     display: none;

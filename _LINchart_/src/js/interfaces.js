@@ -62,6 +62,8 @@ export function setRange(nodes, CurrentYear)
     });
     
     // Range-Hack: avoid too dark shades of blue
+    let _yearS = _rangeMin;
+    _yearS -= (_yearS % 10);
     if (_rangeMin > 1500)
         _rangeMin = 1500;
     let range = _rangeMax - _rangeMin;
@@ -73,7 +75,15 @@ export function setRange(nodes, CurrentYear)
     parms.SET("RANGE_MAX", _rangeMax);
     parms.SET("RANGE_MIN", _rangeMin);
     d3.select("#settings_range_min").property("value", parms.GET("RANGE_MIN"));    
-    d3.select("#settings_range_max").property("value", parms.GET("RANGE_MAX"));    
+    d3.select("#settings_range_max").property("value", parms.GET("RANGE_MAX"));
+    parms.SET("YEARs", _yearS);
+    parms.SET("YEARe", _rangeMax);
+    let _aYear = parms.GET("actYear");
+    if ( _aYear == 0 ) { 
+        parms.SET("YEAR", _rangeMax);
+    } else {
+        parms.SET("YEAR", parms.GET("actYear"));
+    }
 }
 
 function readSingleFile(e)
@@ -89,10 +99,18 @@ function readSingleFile(e)
     let _rendertype = renderer.RENDERtype;
     let isTREErenderer = (_rendertype == RENDERtype.LINEAGE);
     let renderer_new = false;
+    let linObj = renderer.instance;
     if (renderer) {
-        let linObj = renderer.instance;
-        if ( linObj.SVG_DRAGABLE_ELEMENTS ) {
-            linObj.SVG_DRAGABLE_ELEMENTS
+        if ( linObj.SVG_DRAGABLE_NODES ) {
+            linObj.SVG_DRAGABLE_NODES
+                .on("mouseover", null)
+                .on("mouseenter", null)
+                .on("mousemove", null)
+                .on("mouseout", null)
+                ;
+        }
+        if ( linObj.SVG_DRAGABLE_OTHERS ) {
+            linObj.SVG_DRAGABLE_OTHERS
                 .on("mouseover", null)
                 .on("mouseenter", null)
                 .on("mousemove", null)
@@ -110,11 +128,14 @@ function readSingleFile(e)
         var url = e.target.result;
         parms.SET("FILENAME", file.name);
         parms.SET("FILE_FOLDER", folder);
-
+        let _tfilename = document.getElementById("filename");
+        if (_tfilename) { _tfilename.value = file.name; }
+    
         if (renderer) {
-            renderer.FORCE_SIMULATION.stop();
+            linObj.FORCE_SIMULATION.stop();
             toggleSVG(renderer);
-            renderer.DATAman.resetSVGLayers(renderer);
+            linObj.DATAman.resetSVGLayers(renderer);
+            // linObj.sliderTL = linObj.DATAman.resetTslider();
         }
 
         if (file.name.endsWith(".json") || file.name.endsWith(".tam")) {
@@ -202,6 +223,12 @@ function processTLIN(json)
         set_tamDefaultParameters();
     }
 
+    let fOBJ = json.fOBJ;
+    parms.oSET("names_list", fOBJ.names_list);
+    parms.oSET("names_lidx", fOBJ.names_lidx);
+    parms.oSET("names_sSTD", fOBJ.names_sSTD);
+    parms.oSET("names_sDM", fOBJ.names_sDM);
+    parms.oSET("names_filterA", fOBJ.names_filterA);
     let ds_text = json.nodeData;
     let ds_names = json.names;
     processGedcomN(ds_text, ds_names, function(gedcom) {
@@ -221,7 +248,9 @@ function resetTREE(linObj) {
     if (linObj.SVG_NODE_CIRCLES)  linObj.SVG_NODE_CIRCLES.remove();
     if (linObj.SVG_LINKS)  linObj.SVG_LINKS.remove();
     if (linObj.SVG_NODE_LABELS)  linObj.SVG_NODE_LABELS.remove();
-    if (linObj.SVG_DRAGABLE_ELEMENTS)  linObj.SVG_DRAGABLE_ELEMENTS.remove();
+    if (linObj.SVG_GROUP_LABELS)  linObj.SVG_GROUP_LABELS.remove();
+    if (linObj.SVG_DRAGABLE_NODES)  linObj.SVG_DRAGABLE_NODES.remove();
+    if (linObj.SVG_DRAGABLE_OTHERS)  linObj.SVG_DRAGABLE_OTHERS.remove();
     linObj.NODES = [];
     linObj.LINKS = [];
     linObj.PNODES = [];
@@ -255,12 +284,20 @@ export function loadFileFromDisk(folder)
     if (renderer) {
         toggleSVG(renderer);
         let linObj = renderer.instance;
-        linObj.SVG_DRAGABLE_ELEMENTS
+        linObj.SVG_DRAGABLE_NODES
             .on("mouseover", null)
             .on("mouseenter", null)
             .on("mousemove", null)
             .on("mouseout", null)
             ;
+        if ( linObj.SVG_DRAGABLE_OTHERS ) {
+            linObj.SVG_DRAGABLE_OTHERS
+                .on("mouseover", null)
+                .on("mouseenter", null)
+                .on("mousemove", null)
+                .on("mouseout", null)
+                ;
+        }
     }
     let _rendertype = renderer.RENDERtype;
     let isTREErenderer = renderer instanceof LINEAGErenderer;
@@ -303,7 +340,7 @@ export function loadFileFromDisk(folder)
         d3.json(folder + "/" + _fileName)
             .then(
                 function(json) {
-                    processTREE(json, folder);
+                    processTLIN(json, folder);
                 }
             );
     }
@@ -318,12 +355,20 @@ export function loadDataFromIDB(storeName, key) {
     if (renderer) {
         toggleSVG(renderer);
         let linObj = renderer.instance;
-        linObj.SVG_DRAGABLE_ELEMENTS
+        linObj.SVG_DRAGABLE_NODES
             .on("mouseover", null)
             .on("mouseenter", null)
             .on("mousemove", null)
             .on("mouseout", null)
             ;
+        if ( linObj.SVG_DRAGABLE_OTHERS ) {
+            linObj.SVG_DRAGABLE_OTHERS
+                .on("mouseover", null)
+                .on("mouseenter", null)
+                .on("mousemove", null)
+                .on("mouseout", null)
+                ;
+        }
     }
 
     if ( storeName == "TREEdata")
@@ -435,11 +480,21 @@ function processIDBgedcom(dataset)
     }
     let ds_text = dataset.nodeData;
     let ds_names = dataset.nameData;
+    let dsname = processFILENAME(dataset.dsname);
     processGedcomN(ds_text, ds_names, function(gedcom) {
         estimateMissingDates(gedcom, parms.GET("PROCREATION_AGE"));
         prepareODATA(gedcom);
     });
 }
+
+function processFILENAME(_dsname) {
+    let dsname = _dsname.replace('wtLIN-','');
+    parms.SET("FILENAME", dsname);
+    let _tfilename = document.getElementById("filename");
+    if (_tfilename) { _tfilename.value = dsname; }
+    return dsname;
+}
+
 
 function prepareODATA(gedcom, nodePositions = null)
 {
@@ -454,6 +509,12 @@ function prepareODATA(gedcom, nodePositions = null)
     var nodeMap = new Map();
 
     let _noderadius = parms.GET("NODE_RADIUS");
+    // convert to timestap in ms
+    let datestr = "1 jan 1500";
+    let datems = Date.parse(datestr);
+    let defdate = new Date(datems);
+    let defYear = defdate.getFullYear();
+
     gedcom.persons.forEach(p =>
     {
         // set person data
@@ -462,7 +523,7 @@ function prepareODATA(gedcom, nodePositions = null)
         p.r0 = _noderadius;
         p.r = p.r0 * p.sr;
         p.cr = p.sex == parms.Sex.FEMALE ? p.r0 : 0;
-        p.Yvalue = p.bdate ? p.bdate.getFullYear() : null;
+        p.Yvalue = p.bdate ? p.bdate.getFullYear() : defYear;
         if ( p.Yvalue && p.Yvalue > CurrentYear) {
             p.Yvalue = CurrentYear;
         }
@@ -546,13 +607,22 @@ function renderAction(renderMode) {
     if (renderer) {
         toggleSVG(renderer);
         let linObj = renderer.instance;
-        linObj.SVG_DRAGABLE_ELEMENTS
+        linObj.interval.stop();
+        linObj.SVG_DRAGABLE_NODES
             .on("mouseover", null)
             .on("mouseenter", null)
             .on("mousemove", null)
             .on("mouseout", null)
             ;
-    }
+        if ( linObj.SVG_DRAGABLE_OTHERS ) {
+            linObj.SVG_DRAGABLE_OTHERS
+                .on("mouseover", null)
+                .on("mouseenter", null)
+                .on("mousemove", null)
+                .on("mouseout", null)
+                ;
+        }
+        }
 
     switch (renderMode)
     {
@@ -566,6 +636,14 @@ function renderAction(renderMode) {
             renderer.tickCounterCycles = 5;
             renderer.createForceGraph("TREE");
             break;
+    }
+
+    let _aYear = parms.GET("actYear");
+    if ( _aYear != 0 ) { 
+        let _Year = renderer.DATAman.sliderTL.sSYear.value();
+        if ( _aYear != _Year )
+            renderer.DATAman.sliderTL.updateSlider_rel(_aYear);
+        parms.SET("actYear", 0);
     }
 
 }

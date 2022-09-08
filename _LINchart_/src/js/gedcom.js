@@ -27,6 +27,7 @@ class Person
         this.ddate = null;
         this.sn_scR = 0;     // surname -> soundex code - Russell
         this.sn_scDM = 0;    // surname -> soundex code - daitchMokotoff
+        this.sortname = 0;   // surname -> for sorting -> spread names in alphabetical order in colorspace
         
         this.families = [];     // list of families this person belongs to
     }
@@ -146,8 +147,12 @@ export function processGedcomN(text, names, callback)
             let surname = nvars[0];
             let sn_scR = nvars[1];
             let sn_scDM = nvars[2];
-            person.sn_scR = sn_scR;     // surname -> soundex code - Russell
-            person.sn_scDM = sn_scDM;    // surname -> soundex code - daitchMokotoff
+            if (!surname) surname = "UNBEKANNT";
+            if (!sn_scR) sn_scR = "U000";
+            if (!sn_scDM) sn_scDM = "000000";
+            person.sn_scR = sn_scR;         // surname -> soundex code - Russell
+            person.sn_scDM = sn_scDM;       // surname -> soundex code - daitchMokotoff
+            person.sortname = surname[0].toUpperCase() + '-' + sn_scDM;
         }
     }
 
@@ -157,6 +162,7 @@ export function processGedcomN(text, names, callback)
 
     parms.oSET("Otext", text);
     parms.oSET("OnamesJ", namesJ);
+
     callback(gedcom);
 }
 
@@ -407,11 +413,6 @@ export function estimateMissingDates(gedcom, procreationAge)
         });
     }
 
-    // convert to timestap in ms
-    let datestr = "1 jan 1500";
-    let datems = Date.parse(datestr);
-    let defdate = new Date(datems);
-
     // check who's left
     gedcom.persons.forEach( function(p){
         if (p.bdate == null)    // missing date of birth
@@ -419,7 +420,6 @@ export function estimateMissingDates(gedcom, procreationAge)
             // ("Still missing birth date of " + p.getFullName());
             console.log(i18n("S_mbd_o", { pFN: p.getFullName() } ));
 
-            p.bdate = defdate;
         }
     });
 }

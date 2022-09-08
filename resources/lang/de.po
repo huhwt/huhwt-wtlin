@@ -15,3 +15,15 @@ msgstr "LINEAGE Aufruf durchführen"
 
 msgid "Key to retrieve data"
 msgstr "Schlüssel für Datenübertragung"
+
+msgid "IDB key"
+msgstr "IDB Kennung"
+
+msgid "Clippings identifier"
+msgstr "Sammelkorb Kennung"
+
+msgid "(Own identifier)"
+msgstr "(Eigene Kennung)"
+
+msgid "Optional: Set own identifier"
+msgstr "Wahlweise: Eigene Kennung vergeben"

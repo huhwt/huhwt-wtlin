@@ -4,6 +4,8 @@ use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\View;
 use Fisharebest\Webtrees\Tree;
 
+use function Sabre\Uri\split;
+
 /**
  * @var string              $module_cce
  * @var string              $title
@@ -11,6 +13,7 @@ use Fisharebest\Webtrees\Tree;
  * @var string              $label
  * @var Tree                $tree
  * @var string              $LINpath
+ * @var string              $LINdname
  * @var array<>             $urlAJAX
  * @var array<string>       $jsimp
  */
@@ -24,19 +27,39 @@ use Fisharebest\Webtrees\Tree;
 <h2 class="wt-page-title"><?= $title ?></h2>
 
 <div class="row form-group">
-    <div class="col-sm-3 col-form-label wt-page-options-label">
+    <div class="col-sm-2 col-form-label wt-page-options-label">
         <span id="done_gedcom"><?= $label ?></span>
     </div>
-    <div class="col-sm-9 wt-page-options-value">
+    <div class="col-sm-1 wt-page-options-value" title="<?= I18N::translate('IDB key') ?>" >
         <?= $actKey ?>
+    </div>
+    <div class="col-sm-2 wt-page-options-value" title="<?= I18N::translate('Clippings identifier') ?>">
+        <span id="LINdname"><?= $LINdname ?></span>
+    </div>
+</div>
+
+<div class="row form-group">
+    <div class="col-sm-3 wt-page-options-label">
+        <span><?= I18N::translate('Optional: Set own identifier'); ?></span>
+    </div>
+    <div class="col-sm-3 wt-page-options-value">
+        <label>
+            <span class="visually-hidden">
+                <?= I18N::translate('Filename') ?>
+            </span>
+            <input type="text" class="form-control" name="title" id="vizDSname" value="" placeholder="<?= I18N::translate('(Own identifier)') ?>">
+        </label>
+    </div>
+    <div class="col-sm-4 wt-page-options-value">
+        <input class="mbutton" type="button" style="border:1px solid gray" value="<?= I18N::translate('Accept'); ?>" id="btn_DSname" />
     </div>
 </div>
 
 <div class="row form-group">
     <div class="col-sm-3 wt-page-options-label"></div>
     <div class="col-sm-9 wt-page-options-value" id="get_gedcom" data-url-gedcom="<?= e(route('module', $urlAJAX )) ?>">
-        <a id="btn_LINstart" href="<?= $start_path ?>" target="#" class="btn btn-primary cce_disabled_not">
-            <?= /* I18N: A button label. */ $start_text ?>
+        <a id="btn_LINstart" href="<?= $start_path ?>" target="#" class="btn btn-primary cce_disabled">
+            <?= $start_text ?>
         </a>
         <a href="<?= e(route('module', ['module' => $module_cce, 'action' => 'Show', 'tree' => $tree->name()])) ?>" class="btn btn-secondary">
             <?= view('icons/cancel') ?>
@@ -44,6 +67,10 @@ use Fisharebest\Webtrees\Tree;
         </a>
     </div>
 </div>
+
+<?php View::push('styles') ?>
+    <link rel="stylesheet" href="<?= e($stylesheet) ?>">
+<?php View::endpush(); ?>
 
 <?php if (count($jsimp) > 0) {  ?>
     <?php for ( $i = 0, $iE = count($jsimp); $i < $iE; ++$i) : ?>

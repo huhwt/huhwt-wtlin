@@ -10,11 +10,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 import * as parms from "./parms.js";
-import { vec, brighten, darken, distance, jiggle, isNumber, logSVG } from "./utils.js";
-import { initInteractions, initZOOM, initTooltip, setDragactions, set_tickCounter, makeTickCountInfo, updatencounter } from "./interaction.js";
+import * as uti from "./utils.js";
+import { initInteractions, initTooltip, setDragactions, set_tickCounter, makeTickCountInfo, updatencounter } from "./interaction.js";
 import { TopoMap, NormalField, GradientField } from "./scalarfield.js";
-import { initIDX, getColor, setArrow} from "./indexman.js";
-import { RENDERhelper, reset } from "./RENDERhelpers.js";
+import { initIDX, getColor} from "./indexman.js";
+import { RENDERhelper, reset, setArrow } from "./RENDERhelpers.js";
 
 
 export function TREEexec(linObj, dmanObj) {
@@ -37,22 +37,28 @@ export function TREEexec(linObj, dmanObj) {
 
     // ------------------------------------------------------------------------------------------------------------------------
 
-    linObj.REPULSION_FORCE = d3.forceManyBody().strength(-parms.GET("REPULSION_STRENGTH"));
+
+    linObj.REPULSION_FORCE = d3.forceManyBody()
+        .strength(-parms.GET("REPULSION_STRENGTH"));
+
     linObj.LINK_FORCE = d3.forceLink(linObj.yLINKS).distance(function(d){ return d.distance; }).strength(parms.GET("LINK_STRENGTH"));
-    let _alpha = parms.GET("ALPHA_T");
+
+    let _alpha = parms.GET("ALPHA_T"); 
+
+    linObj.tickCallback = TREEtick;
 
     linObj.FORCE_SIMULATION = d3.forceSimulation(linObj.yNODES)
         .force("charge", linObj.REPULSION_FORCE)
         .force("x", d3.forceX(0).strength(parms.GET("GRAVITY_X"))) 
         .force("y", d3.forceY(0).strength(parms.GET("GRAVITY_Y"))) 
         .force("link", linObj.LINK_FORCE)
-        .force("similarity", function(alpha){ dmanObj.similarityForce(linObj.yNODES, alpha); })
+        .force("similarity", function(alpha){ dmanObj.similarityForceY(linObj.yNODES, _alpha); })
         .force("collide", d3.forceCollide().radius(function(d){ return 2 * d.r; }))
         .alpha(_alpha)
         // .alphaDecay(0.228)
         .alphaTarget(0.05)
         .velocityDecay(parms.GET("FRICTION"))
-        .on("tick", function tick() { TREEtick(linObj); })
+        .on("tick", function tick() { linObj.tickCallback(linObj); })
         .on("end", function update() { linObj.RENDERhelper.updateScalarField(linObj); })
         ;
 
@@ -73,7 +79,7 @@ export function TREEexec(linObj, dmanObj) {
 
 export function TREEdraw(linObj, dmanObj)
 {
-    const t = linObj.CANVAS.transition()
+    const ctr = linObj.CANVAS.transition()
         .duration(150);
 
     let _linkwidth = parms.GET("LINK_WIDTH");
@@ -98,7 +104,7 @@ export function TREEdraw(linObj, dmanObj)
         .data(linObj.yNODES).join(
             enter => enter.append("rect")
                 .style("stroke", function(node) { return node.fx == null ? "#222" : dmanObj.PARM_NODE_BORDER_COLOR_FIXED; })
-                .style("fill", function(node) { return getColor(node.sn_scDM); })
+                .style("fill", function(node) { return getColor(node.sortname); })
                 .attr("stroke-width", _nodeRadius + "px")
                 .attr("width", function (n) { return 2 * n.r; })
                 .attr("height", function (n) { return 2 * n.r; })
@@ -110,13 +116,13 @@ export function TREEdraw(linObj, dmanObj)
                 .remove()
           );
 
-    logSVG(i18n("F_G_I"), "SVG_NODES ", linObj.SVG_NODES);
-    logSVG(i18n("F_G_I"), "SVG_LINKS ", linObj.SVG_LINKS);
+    uti.logSVG(i18n("F_G_I"), "SVG_NODES ", linObj.SVG_NODES);
+    uti.logSVG(i18n("F_G_I"), "SVG_LINKS ", linObj.SVG_LINKS);
     // console.log(linObj.SVG_NODES);
-    linObj.SVG_DRAGABLE_ELEMENTS = linObj.SVG_NODES;
+    linObj.SVG_DRAGABLE_NODES = linObj.SVG_NODES;
     setDragactions(linObj);
-    initZOOM(linObj);
     initTooltip(linObj);
+    dmanObj.makeGuideLines(linObj);
 
     parms.dataMod(false);
 
@@ -156,18 +162,17 @@ function TREEtick(linObj)
             makeTickCountInfo(linObj);
         }
     } else {
-        if (dmanObj.tickCounter == 5) {
-            // this.adjustCanvas(linObj);
-        }
         return;
     }
+
     if (parms.dataMod()) { 
         if (linObj.SVG_NODES) linObj.SVG_NODES.remove();
         if (linObj.SVG_LINKS) linObj.SVG_LINKS.remove();
         if (linObj.SVG_NODE_LABELS) linObj.SVG_NODE_LABELS.remove();
-        if (linObj.SVG_DRAGABLE_ELEMENTS)  linObj.SVG_DRAGABLE_ELEMENTS.remove();
+        if (linObj.SVG_DRAGABLE_NODES)  linObj.SVG_DRAGABLE_NODES.remove();
         TREEdraw(linObj, dmanObj);
         parms.dataMod(false);
+        return;
     } else {
 
         // move node circles to defined position (d.x,d.y)
@@ -183,35 +188,39 @@ function TREEtick(linObj)
         // set links
         let _arrowDfactor = parms.GET("ARROW_DISTANCE_FACTOR");
         let _arrowRadius = parms.GET("ARROW_RADIUS");
+        let _linkwidth = parms.GET("LINK_WIDTH");
+        let _linkdist = parms.GET("LINK_DISTANCE");
+        let _lw3 = _linkwidth * 3;
         linObj.SVG_LINKS
             .attr("x1", function(d) { 
                 if (!d.directed)
                     return d.source.x; 
-                var l = distance(d.source, d.target), t = (l - d.source.r - _arrowDfactor * _arrowRadius) / l;
+                var ld = uti.distance(d.source, d.target), t = (ld - d.source.r - _arrowDfactor * _arrowRadius) / ld;
                 var x = d.source.x * t + d.target.x * (1-t);
                 return isNaN(x) ? d.source.x : x;
             })
             .attr("y1", function(d) { 
                 if (!d.directed)
                     return d.source.y; 
-                var l = distance(d.source, d.target), t = (l - d.source.r - _arrowDfactor * _arrowRadius) / l;
+                var ld = uti.distance(d.source, d.target), t = (ld - d.source.r - _arrowDfactor * _arrowRadius) / ld;
                 var y = d.source.y * t + d.target.y * (1-t);
                 return isNaN(y) ? d.source.y : y;
             })
             .attr("x2", function(d) { 
                 if (!d.directed)
                     return d.target.x;
-                var l = distance(d.source, d.target), t = (l - d.target.r - _arrowDfactor * _arrowRadius) / l;
+                var ld = uti.distance(d.source, d.target), t = (ld - d.target.r - _arrowDfactor * _arrowRadius) / ld;
                 var x = d.source.x * (1-t) + d.target.x * t;
                 return isNaN(x) ? d.target.x : x;
             })
             .attr("y2", function(d) { 
                 if (!d.directed)
                     return d.target.y;
-                var l = distance(d.source, d.target), t = (l - d.target.r - _arrowDfactor * _arrowRadius) / l;  
+                var ld = uti.distance(d.source, d.target), t = (ld - d.target.r - _arrowDfactor * _arrowRadius) / ld;  
                 var y = d.source.y * (1-t) + d.target.y * t;
                 return isNaN(y) ? d.target.y : y;
             })
+            .attr("stroke-width", function(d) { return d.directed ? _linkwidth + "px" : _lw3 + "px"; })
             ;
 
         // set labels

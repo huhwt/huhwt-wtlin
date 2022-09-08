@@ -1,0 +1,166 @@
+﻿<!--///////////////////////////////////////////////////////////////////////////////
+//
+// LINEAGE - huhwt
+// Copyright 2022 EW.Heinrich
+// inspired by:
+//  Topographic Attribute Maps Demo
+//  Copyright 2020 Reinhold Preiner, Johanna Schmidt, Gabriel Mistelbauer
+// This code is licensed under an GPL-3.0 License.
+//  Parts of the code in externally referenced modules may be subject to other licenses.
+//
+///////////////////////////////////////////////////////////////////////////////-->
+
+
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<title>LINEAGE - huhwt</title>
+
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<!-- <script src="src/externals/d3_v7_min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/d3-simple-slider@1.10.2/dist/d3-simple-slider.min.js"></script> -->
+	<script type="module" src="src/externals/d3-simple-slider.js"></script>
+	<script src="src/externals/i18n.js"></script>
+    <link rel="stylesheet" type="text/css" href="src/externals/bootstrap.min-453.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script type="module" src="src/js/parms.js"></script>
+	<script type="module" src="src/js/utils.js"></script>
+	<script type="module" src="src/js/translations.js"></script>
+    <script type="module" src="src/js/dbman.js"></script>
+	<script type="module" src="src/js/gedcom.js"></script>
+	<script type="module" src="src/js/scalarfield.js"></script>
+	<script type="module" src="src/js/interaction.js"></script>
+	<script type="module" src="src/js/filters.js"></script>
+	<script type="module" src="src/js/clusters.js"></script>
+	<script type="module" src="src/js/guiparts.js"></script>
+    <script type="module" src="src/js/indexman.js"></script>
+	<script type="module" src="src/js/RENDERhelpers.js"></script>
+	<script type="module" src="src/js/DATAman.js"></script>
+	<script type="module" src="src/js/lin-CLUSTER.js"></script>
+	<script type="module" src="src/js/lin-TLINE.js"></script>
+	<script type="module" src="src/js/lin-TREE.js"></script>
+	<script type="module" src="src/js/LIN_MAIN.js"></script>
+	<script type="module" src="src/js/export.js"></script>
+	<script type="module" src="src/js/interfaces.js"></script>
+    <script type="module" src="src/js/LINmain.js"></script>
+    <script type="module" src="src/js/sliderTimeline.js"></script>
+	<link rel="stylesheet" type="text/css" href="src/css/wtLIN.css">
+	<link rel="stylesheet" type="text/css" href="src/css/wtLINmenu.css">
+	<link rel="stylesheet" type="text/css" href="src/css/wtLINothers.css">
+	<link rel="stylesheet" type="text/css" href="src/css/sliderTimeline.css">
+	<link rel="stylesheet" type="text/css" href="src/css/yearscale.css">
+</head>
+
+<body>
+	<div id="menubar">
+	</div>
+	<!-------------------------------------------------------------------------------------->
+    <div id="mainContent">
+        <div id="main">
+            <div id="canvas">
+                <svg id="sTREE" xmlns="http://www.w3.org/2000/svg" vbDim="6x6" viewBox="-3000 -1600 6000 6000" preserveAspectRatio="xMinYMin meet" display="none">
+                    <defs>
+                        <!---  default arrow - colour black -->
+                        <marker id="arrowTREE" viewBox="0 0 8 8" refX="6" refY="4"
+                            markerWidth="6" markerHeight="6"
+                            orient="auto-start-reverse"
+                            fill="black"
+                            fill-opacity="1">
+                            <path d="M 0 0 L 8 4 L 0 8 z" />
+                        </marker>
+                        <!---  male arrow - colour blue --> 
+                        <marker id="arrowTREE1" viewBox="0 0 8 8" refX="6" refY="4"
+                            markerWidth="6" markerHeight="6"
+                            orient="auto-start-reverse"
+                            fill="#39F"
+                            fill-opacity="1">
+                            <path d="M 0 0 L 8 4 L 0 8 z" />
+                        </marker>
+                        <!---  female arrow - colour pink --> 
+                        <marker id="arrowTREE2" viewBox="0 0 8 8" refX="6" refY="4"
+                            markerWidth="6" markerHeight="6"
+                            orient="auto-start-reverse"
+                            fill="#F39"
+                            fill-opacity="1">
+                            <path d="M 0 0 L 8 4 L 0 8 z" />
+                        </marker>
+                    </defs>
+                </svg>
+                <svg id="sTLINE" xmlns="http://www.w3.org/2000/svg" vbDim="6x6" viewBox="-3000 -1600 6000 6000" preserveAspectRatio="xMinYMin meet" display="none">
+                    <defs>
+                        <!---  default arrow - colour black -->
+                        <marker id="arrowTLINE" viewBox="0 0 8 8" refX="6" refY="4"
+                            markerWidth="6" markerHeight="6"
+                            orient="auto-start-reverse"
+                            fill="black"
+                            fill-opacity="1">
+                        <path d="M 0 0 L 8 4 L 0 8 z" />
+                        </marker>
+                        <!---  male arrow - colour blue --> 
+                        <marker id="arrowTLINE1" viewBox="0 0 8 8" refX="6" refY="4"
+                            markerWidth="6" markerHeight="6"
+                            orient="auto-start-reverse"
+                            fill="#39F"
+                            fill-opacity="1">
+                            <path d="M 0 0 L 8 4 L 0 8 z" />
+                        </marker>
+                        <!---  female arrow - colour pink --> 
+                        <marker id="arrowTLINE2" viewBox="0 0 8 8" refX="6" refY="4"
+                            markerWidth="6" markerHeight="6"
+                            orient="auto-start-reverse"
+                            fill="#F39"
+                            fill-opacity="1">
+                            <path d="M 0 0 L 8 4 L 0 8 z" />
+                        </marker>
+                    </defs>
+                </svg>
+                <svg id="sCLUSTER" xmlns="http://www.w3.org/2000/svg" vbDim="6x6" viewBox="-3000 -1600 6000 6000" preserveAspectRatio="xMinYMin meet" display="none">
+                    <defs>
+                        <!---  default arrow - colour black -->
+                        <marker id="arrowCLUSTER" viewBox="0 0 8 8" refX="6" refY="4"
+                            markerWidth="6" markerHeight="6"
+                            orient="auto-start-reverse"
+                            fill="black"
+                            fill-opacity="1">
+                        <path d="M 0 0 L 8 4 L 0 8 z" />
+                        </marker>
+                    </defs>
+                </svg>
+                <svg id="bullsEye"></svg>
+            </div>
+        </div>
+    	<div id="persinfo" class="persinfo" style="display: none;"><!-- content generated by lin-TLINE.js|showPERSONs --></div>
+    </div>
+    <!-------------------------------------------------------------------------------------->
+    <div id="years" class="years">
+        <div id="yearRS" class="yearsRx"></div>
+        <div id="year" class="yearsRx"></div>
+        <div id="yearRE" class="yearsRx"></div>
+    </div>
+	<div id="overlay" style="display: none;"></div>
+	<div id="namelist" class="modal-nl" style="display: none;"><!-- content generated by filters.js|showFILTERs --></div>
+	<div id="tickcountInfo"  class="dialbar" style="display: none;"><!-- content generated by tickcounter.js|TICKCOUNTER_html --></div>
+    <div id="sliderTimeline" class="row"><!-- content generated by sliderTimeline.js|TLslider --></div>
+    <div id="ncounter"><!-- content generated by interaction.js|updatencounter --></div>
+    <div id="yearScale"><!-- content generated by yearScale.js|YEARSCALE --></div>
+    <div id="forceInfo" class="d3-zoom-controls"><!-- content generated by interaction.js|CONTROLS_html --></div>
+<!-------------------------------------------------------------------------------------->
+
+<script type="module">
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  DATA LOADING
+import { mainDB } from "./src/js/LINmain.js";
+import * as parms from "./src/js/parms.js";
+import { testDBstore } from "./src/js/dbman.js";
+
+parms.SET("DEVMODE", true);
+parms.SET("SIMmode", "TREE");
+testDBstore("wtLIN", ["TREEdata", "TIMEdata", "NAMEdata", "Gedcom"]);
+
+mainDB("Gedcom");
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+</script>
+
+</body>
+</html>

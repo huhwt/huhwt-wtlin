@@ -42,7 +42,7 @@ export function mainDB(stName) {
         default:
         case "Gedcom":
             idbKey = localStorage.getItem("loadLINEAGE");
-            // localStorage.removeItem("loadLINEAGE");
+            // localStorage.removeItem("<depreciated_key>");    // EW.H - will be used in case of refactoring
             loadDataFromIDB("Gedcom", idbKey);
             break;
             }

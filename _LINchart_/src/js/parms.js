@@ -12,6 +12,16 @@
 export const InterpolationType = {'MIN': 1, 'AVG': 2, 'MAX': 3};
 export const Sex = {'MALE': 1, 'FEMALE': 2};
 export const Mode = [ 'TREE', 'TIME', 'CLUSTER'];
+export const LINloop_Speed = [ 2400, 1600, 1000, 600, 400];   // -> lPARMS oploopspeed
+// -> lPARMS viewboxdim
+//          lfd   X-0    Y-0  Width Height
+export const VIEW_PORT_DIMS = {
+    '2x2': ['1', -1000, -533, 2000, 2000],
+    '4x4': ['2', -2000, -1066, 4000, 4000],
+    '6x6': ['3', -3000, -1600, 6000, 6000],
+    '9x9': ['4', -4500, -2400, 9000, 9000],
+    '12x12': ['5', -6000, -3200, 12000, 12000]
+};
 
 const NODE_RADIUS = 10;
 
@@ -22,7 +32,7 @@ const PARMSarr = [
     // LIN-Menu
     [ "SHOW_LINmenu", true],
     // SLIDERtimeline
-    [ "SHOW_SLIDERtl", true],
+    [ "SHOW_TLslider", true],
     // Load File
     [ "FILENAME" , ""],
     [ "SOURCE_FILE" , ""],
@@ -37,11 +47,12 @@ const PARMSarr = [
     // Force Simulation -- Force-Layout parameters
     [ "GRAVITY_X" , 0.06],
     [ "GRAVITY_Y" , 0.06],
-    [ "GRAVITY_X_x" , 0.09],
-    [ "GRAVITY_Y_x" , 0.09],
+    [ "GRAVITY_X_x" , 0.08],
+    [ "GRAVITY_Y_x" , 0.08],
     [ "REPULSION_STRENGTH_T" , 400],
     [ "REPULSION_STRENGTH_x" , 10],
     [ "LINK_STRENGTH" , 0.8],
+    [ "LINK_STRENGTH_TL" , 0.1],
     [ "SF_STRENGTH" , 0],
     [ "FRICTION" , 0.4],
 
@@ -105,6 +116,13 @@ const PARMSarr = [
     [ "MODE", "TREE"],                      // active mode
     [ "STORE_MODE", "TREE"],                // only this mode may be stored
 
+    [ "YEAR", 0],                           // actual year
+    [ "YEARs", 0],                          // start year
+    [ "YEARe", 0],                          // end year
+    [ "YEARsO", 0],                         // start year OriginalData
+    [ "YEAReO", 0],                         // end year OriginalData
+    [ "YEARdelta", 0],                      // count year up/down
+    [ "actYear", 0],                        // holds YEAR in case of exporting/importing data
 ];
 
 const PARMS = new Map(PARMSarr);
@@ -136,7 +154,11 @@ const lPARMSarr = [
     // cbfilterAny - true: Auch Teile eines Namens werden erkannt - false: surname komplett
     [ "cbfilterAny", false],
     // cbfilterSpouse - true: mit Partnern - false: nur gem. Namens-Filter
-    [ "cbfilterSpouse", false]
+    [ "cbfilterSpouse", false],
+    // oploopspeed - 0.. ..4 - 2400...1600...1000...600...400 - d3.interval LINloop_Speed
+    [ "oploopspeed", 4],
+    // viewboxdim - 0.. ..4 - 2x2...4x4...6x6...8x8...10x10 - viewport dimensions
+    [ "viewboxdim", '6x6']
 ];
 
 const lPARMS = new Map(lPARMSarr);

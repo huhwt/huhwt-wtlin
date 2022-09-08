@@ -14,22 +14,12 @@ function doAJAX(LINkey, btnID, getID, doneID, LINpath, textCompleted, nextText) 
     //     e.preventDefault();
     // });
     $(function() {
-        // jQuery.fn.extend({
-        //     disable: function(state) {
-        //         return this.each(function() {
-        //             var $this = $(this);
-        //             if($this.is('input, button'))
-        //                 this.disabled = state;
-        //             else
-        //                 $this.toggleClass('cce_disabled', state);
-        //         });
-        //     }
-        // });
-        
-        // $('a').disable(true);
-        
         $('body').on('click', 'a.cce_disabled', function(event) {
             event.preventDefault();
+        });
+
+        $('#btn_DSname').on('click', function(event) {
+            setOwnIdent();
         });
     });    
     var hrefID = document.getElementById(btnID);
@@ -44,6 +34,7 @@ function doAJAX(LINkey, btnID, getID, doneID, LINpath, textCompleted, nextText) 
         success: function (ret) {
             let response = JSON.parse(ret);
             let gedcom = response.gedcom;
+            let dsname = response.dsname;
             let names = response.names;
             let names_list = response.names_list;
             let names_lidx = response.names_lidx;
@@ -53,7 +44,8 @@ function doAJAX(LINkey, btnID, getID, doneID, LINpath, textCompleted, nextText) 
                 "gedData":  [{
                     "storeID": "download",
                     "nodeData": gedcom,
-                    "nameData": names
+                    "nameData": names,
+                    "dsname": dsname
                 }],
                 "gedFILTERs":  [{
                     "storeID": "download",
@@ -75,13 +67,37 @@ function doAJAX(LINkey, btnID, getID, doneID, LINpath, textCompleted, nextText) 
             hrefID.setAttribute("href", LINpath);
             hrefID.setAttribute("target", "_blank");
             hrefID.innerHTML = nextText;
-            // $('.cce_disabled').click = null;
-            // $('a').disable(false);
-            // hrefID.classList.toggle("xyz_disabled");
+            hrefID.classList.toggle("cce_disabled");
         },
         complete: function () {
         },
         timeout: function () {
         }
       });
+}
+
+function setOwnIdent() {
+    var ownDSname = document.getElementById('vizDSname');
+    if (ownDSname.value == '') { return; }
+    const dbaction = readFromDB('wtLIN', 'Gedcom', 'download');
+    dbaction.then( value => { 
+                    console.log(value);
+                    setOwnIdentDo(value, ownDSname);
+                 } )
+            .catch(err => { console.log(err); } )
+            ;
+}
+function setOwnIdentDo(dbset, ownDSname) {
+    let odsname = ownDSname.value;
+    let dataset = {
+        "gedData":  [{
+          "storeID": dbset.storeID,
+          "dsname": odsname,
+          "nodeData": dbset.nodeData,
+          "nameData": dbset.nameData
+        }]};
+    putDB('wtLIN', 'Gedcom', dataset.gedData);
+    var defDSname = document.getElementById('LINdname');
+    defDSname.textContent = odsname;
+    ownDSname.value = '';
 }

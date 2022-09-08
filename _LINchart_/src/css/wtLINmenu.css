@@ -4,6 +4,7 @@
     align-content: space-around;
     border: 1px solid #cccccc;
     background-color: #f6f6f6;
+    margin-left: 30px;
 }
     .mcontainer > div {
         width: 85%;
@@ -30,7 +31,7 @@
         border: 2px solid #cccccc;
         box-sizing: border-box;
         cursor: pointer;
-        font-size: 0.9em;
+        font-size: 0.6em;
         font-weight: 360;
         padding: 4px 4px;
         text-align: center;
@@ -46,6 +47,8 @@
     .mbutton:hover {
         background: #13d7ae;
         color: white;
+        font-size: 0.8em;
+        font-weight: 480;
     }
 
     .mbutton:active, .mbutton:focus {
@@ -97,9 +100,10 @@
         transition: all 0.1s ease-in-out 0s;
     }
 
-        .dialbar button:hover {
-            background: #13d7ae;
-        }
+[type=button]:not(:disabled):hover {
+    background: #13d7ae;
+    color: white;
+}
 
         .dialbar button:active, .dialbar button:focus {
             background: #0fae8d;
@@ -191,6 +195,49 @@
             text-align: center;
         }
 
+td.paramlabel {
+    width: 110px;
+    padding: 0px 15px 3px 0px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+td.param {
+    padding: 0px 0px 3px 5px;
+    width: 45px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: right;
+}
+
+td.paramL {
+    padding: 0px 0px 3px 5px;
+    width: 65px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.paramspinbox {
+    width: 45px;
+    text-align: right;
+    font-size: 11pt;
+}
+
+.LINmenu {
+    border-top: 1px solid rgb(17 15 130);
+    border-bottom: 1px solid rgb(17 15 130);
+    margin-left: 10px;
+    z-index: 99;
+}
+.menu_toggler + .LINmenu {
+    display: none;
+}
+.menu_toggler:checked + .LINmenu {
+    display: block;
+}
+
+
 .menu_toggler + .menu {
     display: none;
 }
@@ -204,5 +251,10 @@
 }
 .toggler:hover {
     background: #13d7ae;
+    color: white;
+}
+
+.fa:hover {
+    font-size: 1.6rem;
     color: white;
 }

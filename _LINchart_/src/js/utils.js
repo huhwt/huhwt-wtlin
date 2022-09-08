@@ -65,6 +65,14 @@ export function distance(a, b){
 }
 
 
+export function posDiff(a, b){
+    return {'x': a.x - b.x, 'y': a.y - b.y};
+}
+
+export function posAdd(a, b){
+    return {'x': a.x + b.x, 'y': a.y + b.y};
+}
+
 
 export function isNumber(val)
 {
@@ -113,7 +121,7 @@ export function timeStart(name, debug=false) {
 }
 export function timeEnd(name, debug=false) {
     if (debug) {
-       console.timeEnd(name);
+        console.timeEnd(name);
     }
 }
 
@@ -142,6 +150,22 @@ export function cleanDOM(_DOMelem) {
     }
 }
 
+export function textSize(text, t_size="20pt") {
+    let container = d3.select('body').append('svg');
+    container.append('text')
+  
+      .style("font-size", t_size)
+      .style("font-family", "helvetica, arial")
+      .text(text);
+  
+    let sel = container.selectAll('text').node();
+    let width = sel.getComputedTextLength();
+    let height = sel.getExtentOfChar(0).height;
+    container.remove();
+
+    return {width, height};
+  }
+
 export function logOBJ(_obj, _depth=null) {
     for (let prop in _obj) {
         console.log(`${prop}: ${_obj[prop]}`);
@@ -169,13 +193,65 @@ export function rebuildOBJ(_obj) {
         }
         aobj.set(p1, oM2);
     }
-    console.log(...aobj);
+    console.log("rebuildOBJ", ...aobj);
     return aobj;
 }
 
 export function logSVG(message, text, svgOBJ) {
     console.log(message, text, svgOBJ._groups[0].length);
 
+}
+
+export function logElemRect(elemID) {
+    let elem = document.getElementById(elemID);
+    let _rect = elem.getBoundingClientRect();
+    console.log("dimensions", elemID, "width:", _rect.width, "height:", _rect.height);
+}
+
+export function logTLINE_a(message, _alpha, linObj) {
+    if (linObj.verbose) {
+        if (linObj.pNODESt.length < 1)
+            return;
+        let theNODE = linObj.pNODESt[0];
+        console.log(message, linObj.TLINEtcount, "data.group", theNODE.group, "alpha", _alpha, "id", theNODE.ynode.id, "x", theNODE.x, "y", theNODE.y);
+    }
+}
+export function logTLINE_ag(message, _alpha, linObj, g) {
+    if (linObj.verbose) {
+        if (linObj.pNODESt.length < 1)
+            return;
+        let theNODE = linObj.pNODESt[0];
+        console.log(message, linObj.TLINEtcount, "data.group", theNODE.group, "alpha", _alpha, "id", theNODE.ynode.id, "x", theNODE.x, "y", theNODE.y, "g-x", g.x, "g-y", g.y);
+    }
+}
+
+
+export function logCLUSTER(message, theNODEs) {
+    if (theNODEs.length > 0) {
+    let theNODE = theNODEs[0];
+    if (theNODE.ynode)
+        console.log(message, "data.group", theNODE.group, "id", theNODE.ynode.id, "x", theNODE.x, "y", theNODE.y);
+    else
+        console.log(message, "data.group", theNODE.data.group, "index", theNODE.index, "x", theNODE.x, "y", theNODE.y);
+    }
+}
+
+export function logCLUSTER_a(message, _alpha, linObj) {
+    if (linObj.verbose) {
+        if (linObj.pNODESc.length < 1)
+            return;
+        let theNODE = linObj.pNODESc[0];
+        console.log(message, linObj.CLUSTERtcount, "data.group", theNODE.group, "alpha", _alpha, "id", theNODE.ynode.id, "x", theNODE.x, "y", theNODE.y);
+    }
+}
+
+export function logCLUSTER_ag(message, _alpha, linObj, g) {
+    if (linObj.verbose) {
+        if (linObj.pNODESc.length < 1)
+            return;
+        let theNODE = linObj.pNODESc[0];
+        console.log(message, linObj.CLUSTERtcount, "data.group", theNODE.group, "alpha", _alpha, "id", theNODE.ynode.id, "x", theNODE.x, "y", theNODE.y, "g-x", g.x, "g-y", g.y);
+    }
 }
 
 export function chkZeichen(_strZ) {
@@ -214,4 +290,27 @@ export function chkZeichen(_strZ) {
             break;
         }
     return _chkZ;
+}
+
+export function PZ_low_high(theCount) {
+    const PZ_100 = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
+    let _tC = Math.round(Math.sqrt(theCount));
+    let pzl = 0;
+    let pzh = 0;
+    for (let i=0; i<PZ_100.length; i++) {
+        let z = PZ_100[i];
+        if (z <= _tC)
+            pzl = z;
+        else
+            break;
+    }
+    for (let i=0; i<PZ_100.length; i++) {
+        let z = PZ_100[i];
+        pzh = z;
+        if (pzl >= z)
+            continue;
+        else
+            break;
+    }
+    return {l: pzl, h:pzh};
 }

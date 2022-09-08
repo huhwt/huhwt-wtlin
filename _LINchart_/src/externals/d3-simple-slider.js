@@ -53,6 +53,8 @@ var right = 2;
 var bottom = 3;
 var left = 4;
 
+var theCONTEXT = null;
+
 function translateX(x) {
   return 'translate(' + x + ',0)';
 }
@@ -117,6 +119,8 @@ function slider(orientation, scale) {
   var handleSelection = null;
   var fillSelection = null;
   var textSelection = null;
+  var sliderSelection = null;
+  
 
   if (scale) {
     domain = [d3Array.min(scale.domain()), d3Array.max(scale.domain())];
@@ -130,8 +134,10 @@ function slider(orientation, scale) {
     scale = scale.clamp(true);
   }
 
+  var sContext = null;
   function slider(context) {
     selection$1 = context.selection ? context.selection() : context;
+    theCONTEXT = context;
 
     if (!scale) {
       scale = domain[0] instanceof Date ? d3Scale.scaleTime() : d3Scale.scaleLinear();
@@ -167,7 +173,7 @@ function slider(orientation, scale) {
       .attr('transform', transformAcross(k * 7))
       .attr('class', 'axis');
 
-    var sliderSelection = selection$1.selectAll('.slider').data([null]);
+    sliderSelection = selection$1.selectAll('.slider').data([null]);
 
     var sliderEnter = sliderSelection
       .enter()
@@ -245,8 +251,8 @@ function slider(orientation, scale) {
         orientation === right
           ? 'start'
           : orientation === left
-          ? 'end'
-          : 'middle'
+            ? 'end'
+            : 'middle'
       );
 
     handleEnter
@@ -693,6 +699,10 @@ function slider(orientation, scale) {
     }
   }
 
+  slider.sContext = function (_) {
+    return theCONTEXT;
+  };
+
   slider.min = function (_) {
     if (!arguments.length) return domain[0];
     domain[0] = _;
@@ -793,7 +803,7 @@ function slider(orientation, scale) {
     return slider;
   };
 
-  slider.silentValue = function (_) {
+  slider.silentValue = function (_, sContext) {
     if (!arguments.length) {
       if (value.length === 1) {
         return value[0];
@@ -808,11 +818,28 @@ function slider(orientation, scale) {
     });
 
     if (scale) {
-      var pos = toArray.map(scale).map(identityClamped);
-      var newValue = pos.map(scale.invert).map(alignedValue);
+        // EW.H - mod ... when loading new dataset -> identityClamped is null ... don't know why this can happen
+        if (!identityClamped) {
+            identityClamped = d3Scale.scaleLinear()
+            .range(scale.range())
+            .domain(scale.range())
+            .clamp(true);
 
-      updateHandle(newValue, false);
-      updateValue(newValue, false);
+            tickFormat = tickFormat || scale.tickFormat();
+            displayFormat = displayFormat || tickFormat || scale.tickFormat();
+        
+        }
+        var pos = toArray.map(scale).map(identityClamped);
+        var newValue = pos.map(scale.invert).map(alignedValue);
+
+        if (!selection$1) {
+            selection$1 = sContext.selection ? sContext.selection() : sContext;
+            textSelection = selection$1.selectAll('.parameter-value text');
+            fillSelection = selection$1.select('.track-fill');
+            sliderSelection = selection$1.selectAll('.slider').data([null]);
+        }
+        updateHandle(newValue, false);
+        updateValue(newValue, false);
     } else {
       value = toArray;
     }

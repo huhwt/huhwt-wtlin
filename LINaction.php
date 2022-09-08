@@ -102,7 +102,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '2.1.0.9.1';
+        return '1.0.0';
     }
 
     /**
@@ -251,7 +251,12 @@ class LINaction extends AbstractModule
 
         // the path to LINEAGE-subsystem - pure javascript, no php
         $LINpath = e(asset('snip/'));
-        $LINpath = str_replace("/public/snip/", "", $LINpath) . "/modules_v4/huhwt-wtlin/_LINchart_/index.html";
+        $LINpath = str_replace("/public/snip/", "", $LINpath) . "/modules_v4/huhwt-wtlin/_LINchart_/index_DL.html";
+
+        $LINdname = Session::get('VIZ_DSname');
+        $LINdname = str_replace("VIZ", "LIN", $LINdname);
+        $LINdname = str_replace("DATA", $tree->name(), $LINdname);
+        Session::put('LIN_DSname', $LINdname);
 
         // we don't want to transfer gedcom directly - prepare url for AJAX call
         $urlAJAX = [];
@@ -267,10 +272,11 @@ class LINaction extends AbstractModule
         $jsImp[] = $this->assetUrl('js/LINaction.js');
 
         // TODO : 'module' is hardcoded - how to get the name from foreign PHP-class 'ClippingsCartModuleEnhanced20'?
-        $module_cce = '_huhwt-cce20_';
-        if (str_starts_with(Webtrees::VERSION, '2.1')) {
-            $module_cce = '_huhwt-cce_';
+        $module_cce = '_huhwt-cce_';
+        if (str_starts_with(Webtrees::VERSION, '2.0')) {
+            $module_cce = '_huhwt-cce20_';
         }
+
         return $this->viewResponse($this->name() . '::' . 'LINaction', [
             'module_cce'     => $module_cce,
             'actKey'         => $actKey,
@@ -278,8 +284,10 @@ class LINaction extends AbstractModule
             'label'          => $label,
             'tree'           => $tree,
             'LINpath'        => $LINpath,
+            'LINdname'       => $LINdname,
             'urlAJAX'        => $urlAJAX,
             'jsimp'          => $jsImp,
+            'stylesheet'     => $this->assetUrl('css/cceLa.css'),
         ]);
     }
 
@@ -303,9 +311,12 @@ class LINaction extends AbstractModule
 
         $gedKey = Session::get($actKey);
         $theGedcom = Session::get($gedKey);
+        $LINdname = Session::get('LIN_DSname');
+
         $arr_string = array();
         $decodedstring = json_decode($theGedcom);
         $arr_string["gedcom"] = $decodedstring->gedcom;
+        $arr_string["dsname"] = $LINdname;
 
         $Txrefs = Session::get('wt2LINxrefsI');
         $arr_string = $this->getSoundex($tree, @$arr_string, $Txrefs);

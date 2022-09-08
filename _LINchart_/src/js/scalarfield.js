@@ -67,7 +67,7 @@ export class TopoMap extends Field
         // specify undefined data accessors
         if (!xAccess) xAccess = function(p) { return p.x; };
         if (!yAccess) yAccess = function(p) { return p.y; };
-        if (!valueAccess) valueAccess = function(p) { return p.value; };
+        if (!valueAccess) valueAccess = function(p) { return p.Yvalue; };
         
         //--------------------------------------------------------------------
         // define field extent based on data
@@ -83,8 +83,10 @@ export class TopoMap extends Field
             ymin = Math.min(ymin, y);
             ymax = Math.max(ymax, y);
             let value = valueAccess(p);
-            vmin = Math.min(value, vmin);
-            vmax = Math.max(value, vmax);
+            if (value) {
+                vmin = Math.min(value, vmin);
+                vmax = Math.max(value, vmax);
+            }
         });
 
         // ("Value range in data: " + [vmin, vmax])
@@ -103,7 +105,8 @@ export class TopoMap extends Field
         let height = Math.ceil((ymax - ymin) / cellSize);
 
         // ("Map dimensions: " + (xmax-xmin) + ", " + (ymax-ymin))
-        console.log(i18n("M_dim", { pX: (xmax-xmin), pY: (ymax-ymin) } ));
+        // console.log(i18n("M_dim", { pX: (xmax-xmin), pY: (ymax-ymin) } ));
+        console.log(i18n("M_dim", { pX: width, pY: height } ));
 
         //--------------------------------------------------------------------
         // initialize class (defining 'this')
@@ -485,7 +488,7 @@ export class TopoMap extends Field
 
     interpolatePointsDiffusion(data, dilationIters, interpolationType)
     {
-        var INIT_AVG = false; //!parms.SHOW_TUNNELS;
+        var INIT_AVG = false;
 
         // ("+++ Starting Diffusion")
         console.log(i18n("S_Dffsn"));

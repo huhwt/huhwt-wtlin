@@ -29,14 +29,14 @@ import * as parms from "./parms.js";
 import { initInteractions, setDragactions, set_tickCounter, makeTickCountInfo } from "./interaction.js";
 import { TopoMap, NormalField, GradientField } from "./scalarfield.js";
 import { initIDX, getColor, getNameDm, getNameStd} from "./indexman.js";
-import { TIMELINE } from "./sliderTimeline.js";
+import { TLslider_html, TLslider } from "./sliderTimeline.js";
 import { YEARSCALE } from "./yearScale.js";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export class DATAman
 {
-    constructor()
+    constructor(linObj)
     {
         // Data and Variables
         this.GRAPH_DATA = null;
@@ -63,6 +63,8 @@ export class DATAman
         this.CurrentYear = new Date().getFullYear();
 
         this.instance = this;
+        this.linObj = linObj;
+        this.tstamp = new Date();
         this.RENDERtype = 0;
         this.zoomO = null;
 
@@ -71,6 +73,7 @@ export class DATAman
         this.isInitialized = false;
 
         this.PARM_NODE_BORDER_COLOR_FIXED = "#ad0de2";
+        this.PARM_GROUP_NODE_BORDER_COLOR = "#f88";
 
         const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
@@ -86,22 +89,23 @@ export class DATAman
         this.height = outerheight - margin.top - margin.bottom;
         this.height2 = this.height / 2;
 
-        this.Year = parms.GET("RANGE_MAX");
+        this.Year = parms.GET("YEAR");
 
-        this.TIMEline = new TIMELINE(this.instance);
-        this.TIMEline.initSlider();
-        parms.oSET('TIMEline', this.TIMEline);
+        this.sliderTL = new TLslider(this.instance);
+        this.sliderTL.initSlider();
+        parms.oSET('TLslider', this.sliderTL);
 
-        this.YEARscale_offset = 40;
+        this.YEARscale_offset = 60;
         this.YEARscale = new YEARSCALE(this.instance);
         this.YEARscale.initYearScale();
         parms.oSET('YEARSCALE', this.YEARscale);
 
         // Einstellungen Namens-Filter
-        this.nameFilter = '';                   // entspricht Inhalt #menu_names
-        this.nameFilter_aktiv = '';             // Ausprägungen nach Umsetzung [Klartext, soundDM, soundSTD]
+        this.nameFilter = "";                   // entspricht Inhalt #menu_names
+        this.nameFilter_aktiv = "";             // Ausprägungen nach Umsetzung [Klartext, soundDM, soundSTD]
         this.cAind = 1;
-        this.clusters_aktiv = 'soundDM';
+        this.cAmode = "soundDM";
+        this.cAtag = "Dm";
         this.cbfilterSpouse = false;
         this.cbfilterAny = false;
 
@@ -209,7 +213,7 @@ export class DATAman
         } else {
             // Abgleich Nachname gegen Vergleichsmerkmal - soundex-Dm | soundex-R | Klarnamen
             for(let i=0; i<filterItems.length; i++) {
-                switch (this.clusters_aktiv) {
+                switch (this.cAmode) {
                     case 'soundDM':
                         if (node.sn_scDM == filterItems[i]) {
                             return true;
@@ -232,6 +236,21 @@ export class DATAman
     }
 
     /**
+     * aktuelles Jahr setzen
+     */
+    setYear(_year) {
+        this.Year = _year;
+    }
+
+    /**
+     * aktuelles Jahr abfragen
+     */
+    getYear() {
+        let _year = this.Year;
+        return _year;
+    }
+
+    /**
      * Gegen Namen gefilterte Daten gegen Jahres-Vorgaben prüfen
      */
      makeYearedData(linObj) {
@@ -239,9 +258,10 @@ export class DATAman
             nodes: [],
             links: []
         };
-        let _TL = this.TIMEline;
-        let _year = _TL.Year;
-        let _yearS = _TL.YearS;
+        let _TL = this.sliderTL;
+        let _year = parms.GET("YEAR");
+        let _yearDM = this.getYear();
+        let _yearS = parms.GET("YEARs");
         YearedData.nodes = this.yearNodes(linObj.FilteredData.nodes, _year, _yearS);
 
         YearedData.links = this.yearLinks(linObj.FilteredData.links, YearedData.nodes);
@@ -331,14 +351,38 @@ export class DATAman
     {
         let _rangeMax = parms.GET("RANGE_MAX");
         let _rangeMin = parms.GET("RANGE_MIN");
+        let _colormap = parms.oGET("COLORMAP");
         // var thresholds = d3.range(_rangeMin, _rangeMax, parms.GET("CONTOUR_STEP")); 
         if (parms.GET("REVERSE_COLORMAP")) {
-            linObj.SVG_COLORMAP = d3.scaleDiverging(parms.oGET("COLORMAP")).domain([_rangeMin, (_rangeMax + _rangeMin) * 0.5, _rangeMax]);
+            // linObj.SVG_COLORMAP = d3.scaleDiverging(parms.oGET("COLORMAP")).domain([_rangeMin, (_rangeMax + _rangeMin) * 0.5, _rangeMax]);
+            linObj.SVG_COLORMAP = d3.scaleDiverging()
+                .domain([_rangeMin, (_rangeMax + _rangeMin) * 0.5, _rangeMax])
+                .interpolator(_colormap);
         } else {
-            linObj.SVG_COLORMAP = d3.scaleDiverging(parms.oGET("COLORMAP")).domain([_rangeMax, (_rangeMax + _rangeMin) * 0.5, _rangeMin]);
+            // linObj.SVG_COLORMAP = d3.scaleDiverging(parms.oGET("COLORMAP")).domain([_rangeMax, (_rangeMax + _rangeMin) * 0.5, _rangeMin]);
+            linObj.SVG_COLORMAP = d3.scaleDiverging()
+                .domain([_rangeMax, (_rangeMax + _rangeMin) * 0.5, _rangeMin])
+                .interpolator(_colormap);
         }
     }
 
+    makeGuideLines(linObj) {
+        let guideLinesHTML = `
+        <path id="midlines" class="separator guideline" stroke="orange" stroke-dasharray="2" d="M-400,0,-400,-600 M0,300,800,300"/>
+        <path id="gl_center" class="guideline" stroke="blue" stroke-width="3" d="M0,-800,0,800 M-800,0,800,0"/>
+        <path id="midmaxx" class="guideline" stroke="orange" stroke-dasharray="1" stroke-width="2" d="M400,0,400,800 M960,0,960,800"/>
+        <path id="miny" class="guideline" stroke="#9b59b6" stroke-width="5" d="M0,0,960,0"/>
+        <path id="midmaxy" class="guideline" stroke="#9b59b6" stroke-dasharray="1" stroke-width="2" d="M0,400,960,400 M0,800,960,800"/>
+    `;
+    guideLinesHTML = `
+    <path id="gl_center" class="guideline" stroke="darkgrey" stroke-dasharray="2" stroke-width="3" d="M0,-800,0,800 M-800,0,800,0"/>
+`;
+
+        let elem = document.getElementById(linObj.GUIDE_LAYERid);
+        elem.innerHTML = guideLinesHTML;
+    }
+    
+    
     initSVGLayers(linObj)
     {
         let sKENN = linObj.get_sKENN();
@@ -353,9 +397,17 @@ export class DATAman
         } else {
             linObj.CANVAS = d3.select("#s" + sKENN).append("g");
         }
+
+        let _guidelayerID = "guidelayer" + sKENN;
+        linObj.GUIDE_LAYER = linObj.CANVAS.append("g").attr("id", "guidelayer" + sKENN);
+        linObj.GUIDE_LAYERid = _guidelayerID;
+
         linObj.TOPO_LAYER = linObj.CANVAS.append("g").attr("id", "topolayer" + sKENN);
         linObj.SHADING_LAYER = linObj.CANVAS.append("g").attr("id", "shadinglayer" + sKENN);
-        linObj.GRAPH_LAYER = linObj.CANVAS.append("g").attr("id", "graphlayer" + sKENN);
+
+        let _graphlayerID = "graphlayer" + sKENN;
+        linObj.GRAPH_LAYER = linObj.CANVAS.append("g").attr("id", _graphlayerID);
+        linObj.GRAPH_LAYERid = _graphlayerID;
     }
     
 
@@ -363,6 +415,7 @@ export class DATAman
     {
         let sKENN = linObj.get_sKENN();
     
+        if (linObj.GUIDE_LAYER) d3.select("#guidelayer" + sKENN).remove();
         d3.select("#topolayer" + sKENN).remove();
         d3.select("#shadinglayer" + sKENN).remove();
         d3.select("#graphlayer" + sKENN).remove();
@@ -375,9 +428,28 @@ export class DATAman
     
         }
     }
+
+    resetTslider()
+    {
+        this.sliderTL.resetHandlers();
+
+        let TLelmnt = document.getElementById("sliderTimeline");
+        let TLe_nl = TLelmnt.childNodes;
+        for (let n = TLe_nl.length; n > 0; n-- ) {
+            let TLe_chld = TLelmnt.childNodes[n-1];
+            TLe_chld.remove();
+        }
+        // // TLelmnt.innerHTML = "";
+        // let tlHTML = TLslider_html();
+        // TLelmnt.innerHTML = tlHTML;
+
+        // this.sliderTL = new TLslider(this.instance);
+        // this.sliderTL.initSlider();
+        // parms.oSET('TLslider', this.sliderTL);
+        // return this.sliderTL;
+    }
     
-    
-    similarityForce(nodes, alpha) 
+    similarityForceY(nodes, alpha) 
     { 
         let _sfStrength = parms.GET("SF_STRENGTH");
         if (_sfStrength == 0)
@@ -410,10 +482,10 @@ export class DATAman
 
                     var F = targetvec.mul(VIRTUAL_LINK_STRENGTH * alpha);
 
-                    p.vx += F.x;
-                    p.vy += F.y;
-                    q.vx -= F.x;
-                    q.vy -= F.y;
+                    p.vx -= F.x;
+                    p.vy -= F.y;
+                    q.vx += F.x;
+                    q.vy += F.y;
                 } else {
                     continue;
                 }
@@ -424,7 +496,7 @@ export class DATAman
     setNodeColors(linObj) 
     {
         if (linObj.SVG_NODES) {
-            linObj.SVG_NODES.style("fill", function(node) { return getColor(node.sn_scDM); });
+            linObj.SVG_NODES.style("fill", function(node) { return getColor(node.sortname); });
         }
     }
 
@@ -444,7 +516,7 @@ export class DATAman
             this.nameFilter_aktiv = _filter;
             if ( !this.cbfilterAny ) {                          // we have to check if name-ref is in filter
                 let filters_IN = _filter.split(";");
-                switch (this.clusters_aktiv) {                      // type of check-criteria
+                switch (this.cAmode) {                      // type of check-criteria
                     case 'soundDM':                                     // soundex Daitch-Mokotoff
                         let filters_DM = [];
                         for(let i = 0; i < filters_IN.length; i++) {
@@ -481,6 +553,11 @@ export class DATAman
         let _ysShow = _doShow ? 'block' : 'none';
         let _YearScale = d3.select('#yearScale');
         _YearScale.style('display', _ysShow);
+    }
+
+    packOdata(linObj, dmanObj) {
+
+        return linObj.packCdata(linObj, dmanObj.ONODES, dmanObj, "o");
     }
 
 }

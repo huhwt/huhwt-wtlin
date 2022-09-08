@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// wtLINEAGE
+// wsliderTLAGE
 //
 // i18n functionality added by huhwt
 // Web storage functionality added by huhwt
@@ -17,10 +17,14 @@ import * as parms from "./parms.js";
 import * as DBman from "./dbman.js";
 import { onChangeFile, openNewTab, loadDataFromIDB } from "./interfaces.js";
 import { createDownloadSVG, dump_Htree } from "./export.js";
-import * as Tline from "./sliderTimeline.js";
+import * as sliderTL from "./sliderTimeline.js";
 import { showNameList, close_namelist } from "./filters.js";
 import * as Rhelper from "./RENDERhelpers.js";
 import { CLUSTERsAt } from "./clusters.js";
+import { CLUSTERexec, CLUSTERexec_DO } from "./lin-CLUSTER.js";
+import { TREEexec } from "./lin-TREE.js";
+import * as uti from "./utils.js";
+import { shiftRuler } from "./yearScale.js";
 
 export function initInteractions(linObj) 
 {
@@ -57,15 +61,7 @@ export function initInteractions(linObj)
     }
 
     // initialize zoom and pan capabilities
-    let the_CANVAS = linObj.CANVAS;
-    var the_zoom = d3.zoom()
-                .scaleExtent([0.01, 100])
-                .on("zoom", function({transform}) { the_CANVAS.attr("transform", transform); });
-    linObj.zoomO = the_zoom;
-    the_SVG
-        .call(the_zoom)
-        .on('dblclick.zoom', null)
-        ;
+    initZoom(linObj);
 
     // initialize tooltips for hovering over nodes
     initTooltip(linObj);
@@ -83,6 +79,28 @@ export function initInteractions(linObj)
     // reset tickCounterInfo
     initTickCountInfo();
 
+}
+
+export function initZoom(linObj) {
+    // initialize zoom and pan capabilities
+    let the_CANVAS = linObj.CANVAS;
+    var the_zoom = d3.zoom()
+                .on("zoom", function({transform}) {
+                    linObj.s_transform.k = transform.k;
+                    linObj.s_transform.x = transform.x;
+                    linObj.s_transform.y = transform.y;
+                    the_CANVAS.attr("transform", transform); 
+                    d3.select('#zoom_value').text(transform.k*100);
+                    d3.select('#x_value').text(transform.x);
+                    d3.select('#y_value').text(transform.y);
+                })
+                .scaleExtent([0.01, 100])
+                ;
+    linObj.zoomO = the_zoom;
+    linObj.SVG
+        .call(the_zoom)
+        .on('dblclick.zoom', null)
+        ;
 }
 
 export function initTickCountInfo() {
@@ -177,36 +195,81 @@ function setTAMInteractions()
 export function setDragactions(linObj) 
 {
     // make nodes draggable
-    linObj.SVG_DRAGABLE_ELEMENTS.call(d3.drag()
-        .on("start", dragStartNode)
-        .on("drag", dragNode)
-        .on("end", dragEndNode)
-    );
+    function setDRAG(SVG_DRAGABLE) {
+        SVG_DRAGABLE
+            .call(d3.drag()
+                .on("start", dragStartNode)
+                .on("drag", dragNode)
+                .on("end", dragEndNode)
+            )
+            .on("click", onMouseClick)
+            .on("dblclick", onDblClick);
+    }
 
-    linObj.SVG_DRAGABLE_ELEMENTS
-        .on("click", onMouseClick)
-        .on("dblclick", onDblClick);
+    if (linObj.SVG_DRAGABLE_NODES)
+        setDRAG(linObj.SVG_DRAGABLE_NODES);
+}
+//---------------------------------------------------------------------------
+function dragStartNode(event, d)
+{
+    event.sourceEvent.stopPropagation();
+    // console.log(event, event.active, d);
+    let renderer = parms.oGET("RENDERER");
+
+    renderer.RENDERhelper.resetScalarField(renderer.instance);
+    if (!parms.GET("ENERGIZE"))
+        renderer.FORCE_SIMULATION.velocityDecay(1);    // don't move anything than the selected node!
+    renderer.FORCE_SIMULATION.alpha(0.1).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+    d.sr = 2;
+    console.log(event, event.active, d);
+
+    if (parms.GET("SHOW_TOOLTIPS"))
+        d3.select("#tooltip").style("opacity", parms.GET("TOOLTIP_DRAG_OPACITY"));
+}
+//---------------------------------------------------------------------------
+function dragNode(event, d)
+{
+    d.fx = event.x;
+    d.fy = event.y;
+
+    if (parms.GET("SHOW_TOOLTIPS"))
+        d3.select("#tooltip")
+            .style("top", (event.sourceEvent.pageY - 10) + "px")
+            .style("left", (event.sourceEvent.pageX + 15) + "px");
+}
+//---------------------------------------------------------------------------
+function dragEndNode(event, d)
+{
+    console.log(event, event.active, d);
+
+    if (!parms.GET("ENERGIZE"))
+        parms.oGET("RENDERER").FORCE_SIMULATION.velocityDecay(parms.GET("FRICTION")).alpha(0);    // reset friction
+
+    if (parms.GET("SHOW_TOOLTIPS"))
+        d3.select("#tooltip").style("opacity", 1.0);
+
+    rerunSIM(parms.oGET("RENDERER"));
 }
 //---------------------------------------------------------------------------
 function onMouseClick(event, d)
 {
     d.fx = d.fy = null;
-    if (d.type == "FAMILY")
-        return;
     if (d.sr == 2)
         d.sr = 1;
 }
 //---------------------------------------------------------------------------
 function onDblClick(event, d)
 {
-    if (d.type == "FAMILY") {
-        d.fx = d.x;
-        d.fy = d.y;
-    } else if (d.type == "PERSON") {
+    if (d.type == "PERSON" ) {
         d.sr = 2;
         d.fx = d.x;
         d.fy = d.y;
-    }
+    } else {
+        d.fx = d.x;
+        d.fy = d.y;
+   }
 }
 //---------------------------------------------------------------------------
 function mouseoverContour(event, c)
@@ -226,49 +289,6 @@ function mouseoverContour(event, c)
                 }
             );
     }
-}
-//---------------------------------------------------------------------------
-function dragStartNode(event, d)
-{
-    event.sourceEvent.stopPropagation();
-    let renderer = parms.oGET("RENDERER");
-    if (!event.active)
-    {
-        renderer.RENDERhelper.resetScalarField(renderer.instance);
-
-        if (!parms.GET("ENERGIZE"))
-            renderer.FORCE_SIMULATION.velocityDecay(1);    // don't move anything than the selected node!
-
-        renderer.FORCE_SIMULATION.alpha(0.1).restart();
-    }
-    d.fx = d.x;
-    d.fy = d.y;
-    d.sr = 2;
-
-    if (parms.GET("SHOW_TOOLTIPS"))
-        d3.select("#tooltip").style("opacity", parms.GET("TOOLTIP_DRAG_OPACITY"));
-}
-//---------------------------------------------------------------------------
-function dragNode(event, d)
-{
-    d.fx = event.x;
-    d.fy = event.y;
-
-    if (parms.GET("SHOW_TOOLTIPS"))
-        d3.select("#tooltip")
-            .style("top", (event.sourceEvent.pageY - 10) + "px")
-            .style("left", (event.sourceEvent.pageX + 15) + "px");
-}
-//---------------------------------------------------------------------------
-function dragEndNode(event, d)
-{
-    if (!event.active && !parms.GET("ENERGIZE"))
-        parms.oGET("RENDERER").FORCE_SIMULATION.velocityDecay(parms.GET("FRICTION")).alpha(0);    // reset friction
-
-    //d.fx = d.fy = null;
-
-    if (parms.GET("SHOW_TOOLTIPS"))
-        d3.select("#tooltip").style("opacity", 1.0);
 }
 //---------------------------------------------------------------------------
 function toggleEnergizeSimulation(pALPHA)
@@ -345,7 +365,10 @@ function toggleNames()
     parms.TOGGLE("SHOW_NAMES");
     let _renderer = parms.oGET("RENDERER");
     if (parms.GET("SHOW_NAMES")) {
-        _renderer.RENDERhelper.showNames(_renderer.instance);
+        if (_renderer.SIMmode == 'TLINE')
+            _renderer.RENDERhelper.showNamesPL(_renderer.instance);
+        else
+            _renderer.RENDERhelper.showNames(_renderer.instance);
     } else {
         _renderer.RENDERhelper.hideNames(_renderer.instance);
     }
@@ -365,7 +388,7 @@ function toggleReverseColormap()
     parms.TOGGLE("REVERSE_COLORMAP");
     if (!parms.GET("ENERGIZE")) {
         let _renderer = parms.oGET("RENDERER");
-        _renderer.setColorMap(_renderer.instance);
+        _renderer.DATAman.setColorMap(_renderer.instance);
         _renderer.RENDERhelper.updateScalarField(_renderer.instance);
     }
 }
@@ -417,22 +440,33 @@ function toggleShowTickcount()
     }
 }
 //---------------------------------------------------------------------------
-export function toggleSLIDERtl(_doShow=null)
+export function toggleTLslider(_doShow=null)
 {
-    let _shSLtl = _doShow;
+    let _shTLsl = _doShow;
     if (_doShow === null) {
-        parms.TOGGLE("SHOW_SLIDERtl");
-        _shSLtl = parms.GET("SHOW_SLIDERtl");
+        parms.TOGGLE("SHOW_TLslider");
+        _shTLsl = parms.GET("SHOW_TLslider");
     } else {
-        if (parms.GET("SHOW_SLIDERtl") == _doShow)
+        if (parms.GET("SHOW_TLslider") == _doShow)
             return;
-        parms.SET("SHOW_SLIDERtl", _shSLtl);
+        parms.SET("SHOW_TLslider", _shTLsl);
     }
     let _slelem = d3.select("#sliderTimeline");
-    if (_shSLtl) {
+    if (_shTLsl) {
         _slelem.style("display", null);
     } else {
         _slelem.style("display", "none");
+    }
+}
+//---------------------------------------------------------------------------
+export function togglePERSinfo(_doShow=false)
+{
+    let _shPinfo = _doShow;
+    let _sPIelem = d3.select("#persinfo");
+    if (_shPinfo) {
+        _sPIelem.style("display", null);
+    } else {
+        _sPIelem.style("display", "none");
     }
 }
 //---------------------------------------------------------------------------
@@ -448,6 +482,8 @@ export function set_linDefaultParameters()
     parms.lSET("fAind", 0);
     parms.lSET("cbfilterAny", false);
     parms.lSET("cbfilterSpouse", false);
+    parms.lSET("oploopspeed", 4);
+    parms.lSET("viewboxdim", '6x6');
 }
 //---------------------------------------------------------------------------
 export function set_tamDefaultParameters()
@@ -541,7 +577,7 @@ export function initMenubar()
         let ctHTML = gui.CONTROLS_html();
         let FIelmnt = document.getElementById("forceInfo");
         FIelmnt.innerHTML = ctHTML;
-        let tlHTML = Tline.TIMELINE_html();
+        let tlHTML = sliderTL.TLslider_html();
         let TLelmnt = document.getElementById("sliderTimeline");
         TLelmnt.innerHTML = tlHTML;
     }
@@ -608,6 +644,25 @@ function set_linMENUBAR_actions()
 {
     let renderer = parms.oGET("RENDERER");
 
+    // // show active menu on top
+    // d3.selectAll(".LINmenu").on("mouseenter", function(e) {
+    //     let elem = e.target;
+    //     elem.style.zIndex = 99;
+    // });
+
+    // set verbose 'ON' / 'OFF'
+    d3.select("#version").on("click", function(e) {
+        let renderer = parms.oGET("RENDERER");
+        renderer.verbose = !renderer.verbose;
+        if (renderer.verbose) {
+            console.log("verbose -> ON");
+            renderer.RENDERhelper.TooltipMaker = renderer.RENDERhelper.getNodeAttributesAsStringPos;
+        } else {
+            renderer.RENDERhelper.TooltipMaker = renderer.RENDERhelper.getNodeAttributesAsString;
+            console.log("verbose -> OFF");
+        }
+    });
+
     //  switch simulation-mode
     d3.selectAll("button[data-view]").on("click", function(e) {
         let _this = this;
@@ -648,10 +703,38 @@ function set_linMENUBAR_actions()
 
     // time
     d3.selectAll("button[data-year]").on("click", function (e) {
-        let _TL = parms.oGET('TIMEline');
+        let renderer = parms.oGET("RENDERER");
+        let _TL = renderer.DATAman.sliderTL; // parms.oGET('TLslider');
         let valueYear = this.getAttribute("data-year");
         e.stopPropagation();
         _TL.setYear(valueYear);
+    });
+
+    // loopspeed
+    d3.selectAll("[data-speed]").on("click", function (e) {
+        let vspeed = parseInt(this.value);
+        document.activeElement.blur();
+        let renderer = parms.oGET("RENDERER");
+        let linObj = renderer.instance;
+        renderer.newInterval(linObj, vspeed);
+    });
+
+    // viewboxdim
+    d3.selectAll("[data-vbdim]").on("click", function (e) {
+        let vbdim = this.value;
+        let vbdact = parms.lGET("viewboxdim");
+        if (vbdim !== vbdact) {
+            document.activeElement.blur();
+            renderer.setvbDim(vbdim);
+        }
+    });
+
+    // CLUSTER view - GA -> Grid-View   HA -> Heap-View
+    d3.select("#opCluster").on("change", function(e) {
+        let renderer = parms.oGET("RENDERER");
+        if (renderer.SVG_GROUP_LABELS) renderer.SVG_GROUP_LABELS.remove();
+        renderer.instance.Cview = e.target.value;
+        CLUSTERexec_DO(renderer.instance, renderer.DATAman);
     });
 
     // set position for year indicator
@@ -697,16 +780,19 @@ function DSprep() {
 
     let cAselmnt = document.getElementById("clustersAsel");
     cAselmnt.innerHTML = '';
+    let CsAt_i = 0;
     for (const key in CLUSTERsAt) {
         let _text = CLUSTERsAt[key];
         let cAsd = document.createElement("div");
         let cAsb = document.createElement('button');
-        cAsb.classList = "btn btn_sm button__60";
+        cAsb.classList = "btn btn_sm button__50";
         cAsb.innerHTML = key;
         cAsb.value = key;
         cAsb.title = i18n(_text);
         // here we are setting a data attribute on our button to say what type of sorting we want done if it is clicked!
         cAsb.setAttribute('data-sound', key);
+        cAsb.setAttribute('sound-index', CsAt_i);
+        CsAt_i++;
         cAsd.appendChild(cAsb);
         cAselmnt.appendChild(cAsd);
     }
@@ -736,11 +822,28 @@ function DSprep() {
  */
 function DVclicked(event, _this) {
     let renderer = parms.oGET("RENDERER");
+    let linObj = renderer.instance;
+    let _SIMmode = renderer.SIMmode;
     let valueDO = _this.getAttribute("data-view");
-    if (valueDO == renderer.SIMmode) return;
+    if (valueDO == _SIMmode) return;                        // same Mode, nothing to do
+
+    if (_SIMmode == "CLUSTER") {                            // old SIMmode is 'CLUSTER' ...
+        let _actF = document.getElementById("opCluster");
+        _actF.classList.toggle("off");                      // ... hide radio buttons
+    }
+
+    let _actB = document.querySelector(".btn.active");
+    if (_actB) _actB.classList.toggle("active");
+
+    _this.classList.toggle("active");
+    if (valueDO == "CLUSTER") {                             // new SIMmode is 'CLUSTER' ...
+        let _actF = document.getElementById("opCluster");
+        _actF.classList.toggle("off");                      // ... show radio buttons
+    }
 
     parms.SET("SIMmode", valueDO);
-    renderer.createForceGraph(valueDO, renderer);
+
+    renderer.createForceGraph(valueDO, linObj);
 }
 
 /**
@@ -749,14 +852,18 @@ function DVclicked(event, _this) {
 function DSclicked(event, _this) {
     let renderer = parms.oGET("RENDERER");
     let valueDO = _this.getAttribute("data-sound");
-    if (valueDO == renderer.DATAman.clusters_aktiv) return;
+    if (valueDO == renderer.DATAman.cAmode) return;
 
     let _bs = document.getElementById("clustersA");
     _bs.innerHTML = valueDO;
-    _bs.title = i18n('Filtermodus') + ": " + i18n(CLUSTERsAt[valueDO]);
+    let _csAt = CLUSTERsAt[valueDO];
+    _bs.title = i18n('Filtermodus') + ": " + i18n(_csAt[0]);
     document.querySelector("#clustersAsel").style.display = "none";
 
-    renderer.DATAman.clusters_aktiv = valueDO;
+    let _csAt_i = parseInt(_this.getAttribute("sound-index"));
+    renderer.DATAman.cAmode = valueDO;
+    renderer.DATAman.cAtag = _csAt[1];
+    renderer.DATAman.cAind = _csAt_i;
 
     let _smode = renderer.SIMmode;
     renderer.createForceGraph(_smode, renderer);
@@ -767,8 +874,8 @@ function YBprep()
 {
     let YBelmnt = document.getElementById("yearBoxes");
     YBelmnt.innerHTML = '';
-    let _YearS = parms.GET("RANGE_MIN");
-    let _YearE = parms.GET("RANGE_MAX");
+    let _YearS = parseInt(parms.GET("RANGE_MIN"));
+    let _YearE = parseInt(parms.GET("RANGE_MAX"));
     if (_YearS > 1500) {
         _YearS = 1500;
     } else {
@@ -777,16 +884,22 @@ function YBprep()
     let _bcnt = 0;
     let YBeld = document.createElement('div');
     YBelmnt.appendChild(YBeld);
-    for (let y=_YearS; y<_YearE; y+=100) {
+    for (let y=_YearS; y<_YearE; y+=50) {
         _bcnt++;
-        if (_bcnt > 3) {
+        if (_bcnt > 4) {
             YBeld = document.createElement('div');
             YBelmnt.appendChild(YBeld);
-            _bcnt = 0;
+            _bcnt = 1;
         }
         let YBbtn = document.createElement('button');
-        YBbtn.classList = "btn btn_sm button__60";
-        YBbtn.innerHTML = y;
+        let _classb_xx = "button__40";
+        let _yt = "" + y;
+        if ( y % 100 != 0) {
+            _classb_xx = "button__30";
+            _yt = "+50";
+        }
+        YBbtn.classList = "btn btn_sm " + _classb_xx;
+        YBbtn.innerHTML = _yt;
         YBbtn.value = y;
         YBbtn.title = i18n("Aktuelles Jahr einstellen");
         // here we are setting a data attribute on our button to say what type of sorting we want done if it is clicked!
@@ -871,9 +984,10 @@ function set_tamMENUBAR_actions()
         renderer.REPULSION_FORCE.strength(-_tv);
     });
     d3.select("#settings_link_strength").on("input", function() {
-        let _tv = this.value;    
-        parms.SET("LINK_STRENGTH", _tv);    
-        renderer.LINK_FORCE.strength(parms.GET("LINK_STRENGTH"));
+        let _tv = parseFloat(this.value);
+        parms.SET("LINK_STRENGTH", _tv);
+        // renderer.LINK_FORCE.strength(parms.GET("LINK_STRENGTH"));
+        TREEexec(renderer.instance, renderer.DATAman);
     });
     d3.select("#settings_simforce_strength").on("input", function() {
         let _tv = parseFloat(this.value);
@@ -897,7 +1011,11 @@ function set_tamMENUBAR_actions()
     d3.select("#settings_linkwidth").on("input", function() {
         let _tv = parseInt(this.value);
         parms.SET("LINK_WIDTH", _tv);
-        if (renderer.SVG_LINKS)    renderer.SVG_LINKS.attr("stroke-width", _tv + "px");
+        if (renderer.SVG_LINKS) { 
+            let _tv3 = _tv * 3;
+            renderer.SVG_LINKS
+                .attr("stroke-width", function(l) { return l.directed ? _tv + "px" : _tv3 + "px"; });
+            }
         if (renderer.SVG_LINKS_STREETS) renderer.SVG_LINKS_STREETS.attr("stroke-width", _tv + "px");
         if (renderer.SVG_LINKS_TUNNELS) renderer.SVG_LINKS_TUNNELS.attr("stroke-width", _tv + "px");
         if (renderer.SVG_TUNNEL_ENTRIES_1) renderer.SVG_TUNNEL_ENTRIES_1.attr("stroke-width", _tv + "px");
@@ -906,12 +1024,22 @@ function set_tamMENUBAR_actions()
     d3.select("#settings_noderadius").on("input", function() {
         let _tv = parseInt(this.value);
         parms.SET("NODE_RADIUS", _tv);
-        if (renderer.SVG_NODE_CIRCLES) renderer.SVG_NODE_CIRCLES.attr("r", _tv);
+        if (renderer.yNODES) {
+            let _tw = 2 * _tv;
+            renderer.yNODES.forEach(n => {n.r0 = _tv; n.r = _tv;});
+            if (renderer.SVG_NODES) {
+                renderer.SVG_NODES
+                    .attr("width", function (p) { return _tw; })
+                    .attr("height", function (p) { return _tw; })
+                ;
+            }
+        }
     });
     d3.select("#settings_pnodeopacity").on("input", function() {
         let _tv = parseFloat(this.value);
         parms.SET("PERSON_LABEL_OPACITY",_tv);
         if (renderer.SVG_NODE_LABELS) renderer.SVG_NODE_LABELS.style("opacity", _tv);
+        if (renderer.SVG_GROUP_LABELS) renderer.SVG_GROUP_LABELS.style("opacity", _tv);
     });
     //  Map Appearance
     d3.select("#settings_show_contours").on("input", function() {
@@ -995,10 +1123,6 @@ function set_tamMENUBAR_actions()
         Wswitch_locale('nl');
     });
 
-    d3.select("#settings_linkdist").on("input", function() {
-        parms.SET("LINK_DISTANCE", parseInt(this.value));
-    });
-
     // tickcount-Info
     d3.select("#btn_tcIreset").on("click", function (e) {
         setTickCountInfo(renderer.instance, 'min');
@@ -1012,6 +1136,11 @@ function set_tamMENUBAR_actions()
             console.log(renderer.FORCE_SIMULATION);
             console.log(renderer.NODES);
             console.log(renderer.LINKS);
+        } else if(valueInfo == "export") {
+            let _rkenn = renderer.svgKENN;
+            let _elem = 's' + _rkenn;
+            let _fnSVG = _rkenn + '.svg';
+            createDownloadSVG(document.getElementById(_elem).outerHTML, _fnSVG);
         } else if(valueInfo == "stop") {
             let _siMODE = parms.GET("SIMmode");
             if (_siMODE == "TREE") {
@@ -1022,35 +1151,35 @@ function set_tamMENUBAR_actions()
                 // renderer.FORCE_SIMULATION.alpha(0);
                 // parms.SET("SHOW_YEARVALUES", true);
                 registertooltipYVeventhandler();
-            } else {
+            } else if (_siMODE == "TLINE") {
+                    toggleEnergizeSimulation("ALPHA_T");
+                    // parms.SET("ENERGIZE", false);
+                    // renderer.forceRefresh = false;
+                    // renderer.simLoop = 90;
+                    // renderer.FORCE_SIMULATION.alpha(0);
+                    // parms.SET("SHOW_YEARVALUES", true);
+                    registertooltipYVeventhandler();
+                } else {
                 toggleEnergizeSimulation("ALPHA_x");
             }
         } else if(valueInfo == "rerun") {
-            parms.SET("ENERGIZE", true);
-            let _aF = renderer.FORCE_SIMULATION.alpha();
-            _aF += 0.1;
-            let _aFm = 1;
-            let _aT = parms.GET("ALPHA_target");
-            if (renderer.SIMmode == "TREE") {
-                renderer.RENDERhelper.resetScalarField(renderer.instance);
-                renderer.forceRefresh = true;
-                parms.SET("SHOW_YEARVALUES", false);
-                registertooltipYVeventhandler();
-                _aFm = parms.GET("ALPHA_T");
-                if (_aF > _aFm) { _aF = _aFm; }
-                renderer.FORCE_SIMULATION
-                    .alpha(_aF)
-                    .alphaTarget(_aT)
-                    .restart()
-                    ;
-            } else {
-                _aFm = parms.GET("ALPHA_x");
-                if (_aF > 1) { _aF = 1; }
-                renderer.FORCE_SIMULATION
-                    .alpha(_aF)
-                    .restart()
-                    ;
-            }
+            rerunSIM(renderer);
+        } else if(valueInfo == "center") { 
+            let linObj = renderer.instance;
+            var _SVG = linObj.SVG;
+            // let the_CANVAS = linObj.CANVAS._groups[0][0];
+            // let _transform = the_CANVAS.getAttribute('transform');
+            _SVG.call(
+                linObj.zoomO.transform,
+                d3.zoomIdentity.translate(0, 0).scale(1)
+            );
+            linObj.s_transform.x = 0;
+            linObj.s_transform.y = 0;
+            linObj.s_transform.k = 1;
+            shiftRuler(0);
+            // let the_CANVASu = linObj.CANVAS._groups[0][0];
+            // let _transformu = the_CANVASu.getAttribute('transform');
+            // console.log("center pre:", _transform,"post:", _transformu);
         }
     });
     d3.select('#alpha_value').on("click", function(e) {
@@ -1064,9 +1193,37 @@ function set_tamMENUBAR_actions()
 
 }
 
+export function rerunSIM(renderer) {
+    parms.SET("ENERGIZE", true);
+    let _aF = renderer.FORCE_SIMULATION.alpha();
+    _aF += 0.1;
+    let _aFm = 1;
+    let _aT = parms.GET("ALPHA_target");
+    if (renderer.SIMmode == "TREE") {
+        renderer.RENDERhelper.resetScalarField(renderer.instance);
+        renderer.forceRefresh = true;
+        parms.SET("SHOW_YEARVALUES", false);
+        registertooltipYVeventhandler();
+        _aFm = parms.GET("ALPHA_T");
+        if (_aF > _aFm) { _aF = _aFm; }
+        renderer.FORCE_SIMULATION
+            .alpha(_aF)
+            .alphaTarget(_aT)
+            .restart()
+            ;
+    } else {
+        _aFm = parms.GET("ALPHA_x");
+        if (_aF > 1) { _aF = 1; }
+        renderer.FORCE_SIMULATION
+            .alpha(_aF)
+            .restart()
+            ;
+    }
+}
+
 function setRANGE(renderer, _RANGE, _tv) {
     parms.SET(_RANGE, _tv);
-    renderer.setColorMap(renderer.instance);
+    renderer.DATAman.setColorMap(renderer.instance);
     renderer.updateRange(renderer.instance);
     if (!parms.GET("ENERGIZE")) renderer.RENDERhelper.updateScalarField(renderer.instance);
 }
@@ -1140,31 +1297,43 @@ function setTickCountInfo(linObj, _tLevel) {
 
 //---------------------------------------------------------------------------
 
-export function initZOOM(linObj) {
-    // initialize zoom and pan capabilities
-    let the_CANVAS = linObj.CANVAS;
-    var the_zoom = d3.zoom()
-                .scaleExtent([0.01, 100])
-                .on("zoom", function({transform}) { the_CANVAS.attr("transform", transform); });
-    linObj.zoomO = the_zoom;
-    linObj.SVG
-        .call(the_zoom)
-        .on('dblclick.zoom', null)
-        ;
-}
+// export function initZOOM(linObj) {
+//     // initialize zoom and pan capabilities
+//     let the_CANVAS = linObj.CANVAS;
+//     var the_zoom = d3.zoom()
+//                 .scaleExtent([0.01, 100])
+//                 .on("zoom", function({transform}) { 
+//                     the_CANVAS.attr("transform", transform);
+//                     let k = transform.k; 
+//                     d3.select('#zoom_value').text(t.k*100);
+//                 });
+//     linObj.zoomO = the_zoom;
+//     linObj.SVG
+//         .call(the_zoom)
+//         .on('dblclick.zoom', null)
+//         ;
+// }
 
 export function initTooltip(linObj)
 {
     if (parms.GET("SHOW_TOOLTIPS")) {
-        if (!linObj.SVG_DRAGABLE_ELEMENTS ) {
+        if (!linObj.SVG_DRAGABLE_NODES ) {
             return;
         }
-        linObj.SVG_DRAGABLE_ELEMENTS
+        linObj.SVG_DRAGABLE_NODES
             .on("mouseover", null)
             .on("mouseenter", null)
             .on("mousemove", null)
             .on("mouseout", null);
-    }
+        if (linObj.SVG_DRAGABLE_OTHERS) {
+            linObj.SVG_DRAGABLE_OTHERS
+                .on("mouseover", null)
+                .on("mouseenter", null)
+                .on("mousemove", null)
+                .on("mouseout", null)
+                ;
+        }
+        }
     d3.select("#tooltip").remove(); // remove any previous elements
     d3.select("#main").append("div").attr("id", "tooltip");
     registerTooltipEventhandler(linObj);
@@ -1178,43 +1347,50 @@ function registerTooltipEventhandler(linObj)
         }
     if (parms.GET("SHOW_TOOLTIPS")) {
         let tooltip = d3.select("#tooltip");
-        linObj.SVG_DRAGABLE_ELEMENTS
-            .on("mouseover", function (node) {
-                return tooltip.style("visibility", "visible");
-            })
-            .on("mousemove", function (event) { // adjust tooltip position
-                return tooltip
-                    .style("top", (event.pageY - 10) + "px")
-                    .style("left", (event.pageX + 15) + "px");
-            })
-            .on("mouseout", function () {
-                return tooltip.style("visibility", "hidden");
-            })
-        ;
-        if (linObj.SIMmode !== "TREE") {
-            linObj.SVG_DRAGABLE_ELEMENTS
-                .on("mouseenter", function (event, node) { // insert tooltip content
-                    let tooltipString = linObj.RENDERhelper.getNodeAttributesAsString(node.data.ynode);
-                    return tooltip.text(tooltipString);
-                })
-            ;
-        } else {
-            linObj.SVG_DRAGABLE_ELEMENTS
-                .on("mouseenter", function (event, node) { // insert tooltip content
-                    let tooltipString = linObj.RENDERhelper.getNodeAttributesAsString(node);
-                    return tooltip.text(tooltipString);
-                })
-            ;
-        }
+        if (linObj.SVG_DRAGABLE_NODES)
+            tooltipON(linObj, linObj.SVG_DRAGABLE_NODES, tooltip);
+        if (linObj.SVG_DRAGABLE_OTHERS)
+            tooltipON(linObj, linObj.SVG_DRAGABLE_OTHERS, tooltip);
     } else {
-        linObj.SVG_DRAGABLE_ELEMENTS
-            .on("mouseover", null)
-            .on("mouseenter", null)
-            .on("mousemove", null)
-            .on("mouseout", null)
-            ;
+        if (linObj.SVG_DRAGABLE_NODES)
+            tooltipOFF(linObj.SVG_DRAGABLE_NODES);
+        if (linObj.SVG_DRAGABLE_OTHERS)
+            tooltipOFF(linObj.SVG_DRAGABLE_OTHERS);
         d3.select("#tooltip").style("visibility", "hidden");
     }
+}
+export function tooltipOFF(SVG_ELEMENTS) {
+    SVG_ELEMENTS
+        .on("mouseover", null)
+        .on("mouseenter", null)
+        .on("mousemove", null)
+        .on("mouseout", null)
+        ;
+}
+export function tooltipON(linObj, SVG_ELEMENTS, tooltip) {
+    SVG_ELEMENTS
+        .on("mouseover", function (node) {
+            return tooltip.style("visibility", "visible");
+        })
+        .on("mousemove", function (event) { // adjust tooltip position
+            return tooltip
+                .style("top", (event.pageY - 10) + "px")
+                .style("left", (event.pageX + 15) + "px");
+        })
+        .on("mouseout", function () {
+            return tooltip.style("visibility", "hidden");
+        })
+    ;
+    SVG_ELEMENTS
+        .on("mouseenter", function (event, node) { // insert tooltip content
+            // let tooltipString = linObj.RENDERhelper.getNodeAttributesAsString(node);
+            let tooltipString = linObj.RENDERhelper.TooltipMaker(linObj, node);
+            return tooltip.text(tooltipString);
+        })
+    ;
+}
+export function switchToolTip(SVG_ELEMENTS) {
+
 }
 
 function inittooltipYV(linObj)
@@ -1296,7 +1472,7 @@ export function showIDBstate() {
     let db;
     const mkeyList = new Map();
     const DB = new Promise((resolve, reject) => {
-        const request = indexedDB.open("wtTAM");
+        const request = indexedDB.open("wtLIN");
         request.onsuccess = () => resolve(request.result);
     });
     const idbSlist = new Promise((resolve, reject) => {
@@ -1429,15 +1605,39 @@ function showIDBkeysLdo(actNode, sname, keyList, actNodeE) {
 }
 
 export function updatencounter(linObj) {
-    let osn = linObj.yNODES;
-    let nc = osn.length;
     let oon = linObj.DATAman.originalData.nodes;
     let ncn = oon.length;
-    ncn = ncn - nc;
-    let snodes = "Anzahl Knoten " + nc + " (" + ncn + " ausgeblendet)";
-    let ncE = d3.select('#ncounter');
+
+    let snodes = "Anzahl Knoten ... (... ausgeblendet)";
     let _ncl = linObj.DATAman.width/2 - 200;
-    let _nct = linObj.DATAman.height - 40;
+    let _nct = linObj.DATAman.height - 50;
+    switch (linObj.SIMmode)
+    {
+        case "CLUSTER":
+            let osg = parms.oGET("odataDm");
+            let osc = osg.children.length;
+            let gsg = linObj.gNODESc;
+            let nsc = gsg.length;
+            let ocn = osc - nsc;
+            let opn = linObj.pNODESc;
+            let opc = opn.length;
+            ncn = ncn - opc;
+            snodes = "Anzahl Gruppen " + nsc + " (" + ocn + " ausgeblendet) |";
+            let _ncEdimC = uti.textSize(snodes);
+            _ncl = linObj.DATAman.width/2 - _ncEdimC.width + 5.5;
+            snodes += " Anzahl Knoten " + opc + " (" + ncn + " ausgeblendet)";
+            _nct = linObj.DATAman.height - 50;
+            break;
+        default:
+            let osn = linObj.yNODES;
+            let nc = osn.length;
+            ncn = ncn - nc;
+            snodes = "Anzahl Knoten " + nc + " (" + ncn + " ausgeblendet)";
+            let _ncEdim = uti.textSize(snodes);
+            _ncl = linObj.DATAman.width/2 - _ncEdim.width/2;
+            break;
+    }
+    let ncE = d3.select('#ncounter');
     ncE.text(snodes)
        .style('left', _ncl  + "px")
        .style('top', _nct  + "px");

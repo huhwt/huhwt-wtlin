@@ -1,0 +1,64 @@
+#yearScale {
+    position: absolute;
+    top: 96%;
+    height: 5% !important;
+    left: 40px;
+    display: none;
+    z-index: 3;
+}
+#yearScaleD {
+    height: 100%;
+}
+#yearScaleD > svg {
+    height: 100%;
+}
+#yearScaleC {
+    height: 80%;
+    position: absolute;
+    top: 10px;
+    z-index: 5;
+}
+
+#yearScaleS {
+    position: inherit;
+    top: 0;
+    fill: black;
+    stroke-width: 0.5;
+    stroke: black;
+    text-anchor: middle;
+    font-size: 0.75em;
+}
+
+.YCline .YCcrosshair{
+    fill: none;
+    stroke-width: 1px;
+}
+.YCline #YCcrosshairX {
+    stroke: blue;
+}
+
+#YCcrosshairTxt{
+    position: absolute;
+    top: 4px;
+    height: 20px;
+    padding: 0 1px;
+    background-color: yellow;
+    border-color: yellow darkblue;
+    border-style: double;
+    border-width: 0px thick;
+    color: darkblue;
+    font-size: 1.1em;
+    font-weight: bold;
+    z-index: 4;
+}
+.shifted {
+    stroke-width: 3px;
+}
+
+.YChandle {
+    fill: blue;
+    z-index: 10;
+}
+.YChandle:hover {
+    fill: #13d7ae;
+}

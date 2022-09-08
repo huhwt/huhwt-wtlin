@@ -9,5 +9,5 @@ mix.js.map
 /node_modules/
 /vendor/
 # others
-/_assets/
+/_DOKU/
 /src/sass/images/

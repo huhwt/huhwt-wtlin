@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 import { getMetadata } from "./export.js";
-import { getNames0 } from "./indexman.js";
+import { getColor, getNames0, swapIDX } from "./indexman.js";
 import * as parms from "./parms.js";
 
 var fAind = 0;
@@ -296,8 +296,8 @@ function save_namefilter() {
  */
 function showFILTERs_nl(menu_names) {
     nlShow = parms.oGETmap("names_list");                                  // get the list of names in data
-    parms.lSET("nlSort", "count");                      // default: sort by count
-    parms.lSET("nlFill", i18n("Alle"));                       // default: full namelist
+    parms.lSET("nlSort", "count");                          // default: sort by count
+    parms.lSET("nlFill", i18n("Alle"));                     // default: full namelist
 
     const _names = document.getElementById("names_sel").children[0];            // target HTML-element
     if (menu_names.value) _names.value = menu_names.value;                      // show already selected names
@@ -320,26 +320,33 @@ function showFILTERs_nl(menu_names) {
 }
 
 function make_liHead(_liHead) {
+    //Options names_complete | names_yeared
+    let soNLo = document.createElement("div");
+    soNLo.classList = "nlheadR";
+    soNLo.textContent = i18n("Namens-Liste enthält ...");
+    make_liHead_rb("alle Namen", "NLc", soNLo, true, "nlcontent", nl_content);
+    make_liHead_rb("aktive Namen", "NLy", soNLo, false, "nlcontent", nl_content);
+    _liHead.appendChild(soNLo);
+
+    //select Names ...
     let soD = document.createElement("div");
     soD.classList = "nlhead";
 
-    function make_liHead_rb(_text, _value, _pel, _checked=false) {
+    function make_liHead_rb(_text, _value, _pel, _checked=false, _name="sortby", _callback=nl_rebuild) {
         let rbl = document.createElement("label");
         rbl.textContent = i18n(_text) + ":";
         let rbc = document.createElement("input");
         rbc.type = "radio";
         rbc.value = _value;
-        rbc.name = "sortby";
-        if (_checked) {
-            rbc.checked = true;
-        }
+        rbc.name = _name;
+        rbc.checked = _checked;
         rbc.onclick = function(event) {
-            nl_rebuild(event);
+            _callback(event);
         };
         rbl.appendChild(rbc);
         _pel.appendChild(rbl);
     }
-    //Select A-Z
+    //select A-Z
     let selAZ = document.createElement("div");
     soD.textContent = i18n("Auswahl Namen beginnt mit ...");
     make_liHead_sB(selAZ);
@@ -361,43 +368,49 @@ function make_liHead(_liHead) {
 }
 function make_liLines(_liLines) {
     nlShow.forEach(function(value, key) {
-        // console.log(key + ' = ' + value);
-        // make a HTML-'li'
-        let liItem = document.createElement("li");
-        liItem.classList = 'nlulli';
+        if (key > "") {
+            // console.log(key + ' = ' + value);
+            // make a HTML-'li'
+            let liItem = document.createElement("li");
+            liItem.classList = 'nlulli';
 
-        //Create checkbox dynamically       
-        let cb = document.createElement( "input" );
-        cb.type = "checkbox";
-        cb.value = key;                                                         // put the name in 'li'
-        cb.checked = nlNames.indexOf(key) >= 0 ? true : false;          // <checked> if name is already set in active_names
-        cb.setAttribute('nl-task', key);                                        // prep event-handler
-        cb.onchange = function(event) {
-            nl_toggle(event);
-        };
-        //Append the checkbox to the li
-        liItem.appendChild(cb);
-        //Create the text node for key after the the checkbox
-        let spX = document.createElement( "div" );
-        //Create the text node for key after the the checkbox
-        let spL = document.createElement( "span" );
-        let textL = document.createTextNode(key);
-        //Append the text node to the <li>
-        spL.appendChild(textL);
-        spX.appendChild(spL);
-        //Create the text node for value after the the checkbox
-        let spR = document.createElement( "span" );
-        let textR = document.createTextNode(value);
-        //Append the text node to the <li>
-        spR.appendChild(textR);
-        spX.appendChild(spR);
-        liItem.appendChild(spX);
+            //Create checkbox dynamically       
+            let cb = document.createElement( "input" );
+            cb.type = "checkbox";
+            cb.value = key;                                                         // put the name in 'li'
+            cb.checked = nlNames.indexOf(key) >= 0 ? true : false;          // <checked> if name is already set in active_names
+            cb.setAttribute('nl-task', key);                                        // prep event-handler
+            cb.classList = "nl_cb";                                                 // css target
+            cb.onchange = function(event) {
+                nl_toggle(event);
+            };
+            //Append the checkbox to the li
+            liItem.appendChild(cb);
+            //Create the text node for key after the the checkbox
+            let spX = document.createElement( "div" );
+            //Create the text node for key after the the checkbox
+            let spL = document.createElement( "span" );
+            let textL = document.createTextNode(key);
+            //Append the text node to the <li>
+            spL.appendChild(textL);
+            spX.appendChild(spL);
+            //Create the text node for value after the the checkbox
+            let spR = document.createElement( "span" );
+            let textR = document.createTextNode(value);
+            //Append the text node to the <li>
+            spR.appendChild(textR);
+            spX.appendChild(spR);
+            liItem.appendChild(spX);
 
-        //Append the <li> to the <ul>
-        _liLines.appendChild(liItem);
+            //Append the <li> to the <ul>
+            _liLines.appendChild(liItem);
+        }
     });
 }
 
+/**
+ * Auswahl Alle / A-Z generieren
+ */
 function make_liHead_sB(selPar) {
     selPar.classList = "nlheadR";
     let selBall = document.createElement("div");
@@ -428,6 +441,7 @@ function make_liHead_sB(selPar) {
             if (!idxN0.has(_ch)) {
                 selB.disabled = true;
             } else {
+                selB.style.color = getColor(_ch);
                 selB.onclick = function(event) {
                     nl_fill(event);
                 };
@@ -478,6 +492,19 @@ function nl_toggle(event) {
     nlNames = _names.value;
 }
 
+function nl_content(event) {
+    let actC = event.target.value;
+    let nlMap = "names_list";
+    if (actC == "NLy") {
+        swapIDX(actC);
+        nlMap = "idyNames";
+    }
+    let _fmode = parms.lGET("nlFill");
+    nl_fill_do(_fmode, nlMap);
+
+    return true;
+}
+
 function nl_fill(event) {
     let actE = event.target;
     let _fmode = parms.lGET("nlFill");
@@ -486,8 +513,11 @@ function nl_fill(event) {
     }
     _fmode = actE.value;
     parms.lSET("nlFill", _fmode);
+    nl_fill_do(_fmode, "names_list");
+}
 
-    nlShow = parms.oGETmap("names_list");                                  // get the list of names in data
+function nl_fill_do(_fmode, _nlMap) {
+    nlShow = parms.oGETmap(_nlMap);                                  // get the list of names in data
     if (_fmode != i18n("Alle")) {
         let _n0 = getNames0(_fmode);
         let _n0s = _n0.split(";");
@@ -520,12 +550,14 @@ function nl_build(_smode) {
                 let _nlShowT = new Map();
                 let _nlShowF = new Map();
                 nlShow.forEach(function(value, key) {
-                    let _key = key + ";";
-                    let _checked = nlNames.indexOf(_key) >= 0 ? true : false;          // <checked> if name is already set in active_names
-                    if (_checked) {
-                        _nlShowT.set(key, value);
-                    } else {
-                        _nlShowF.set(key, value);
+                    if (key > "") {
+                        let _key = key + ";";
+                        let _checked = nlNames.indexOf(_key) >= 0 ? true : false;          // <checked> if name is already set in active_names
+                        if (_checked) {
+                            _nlShowT.set(key, value);
+                        } else {
+                            _nlShowF.set(key, value);
+                        }
                     }
                 });
                 nlShow = new Map([..._nlShowT, ..._nlShowF]);
