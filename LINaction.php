@@ -102,7 +102,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '1.0.0';
+        return '2.1.0.9';
     }
 
     /**
@@ -112,7 +112,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleLatestVersionUrl(): string {
-        return 'https://github.com/huhwt/huhwt-wttam/master/latest-version.txt';
+        return 'https://github.com/huhwt/huhwt-wtlin/master/latest-version.txt';
     }
 
     /**
@@ -122,7 +122,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleSupportUrl(): string {
-        return 'https://github.com/huhwt/huhwt-wttam/issues';
+        return 'https://github.com/huhwt/huhwt-wtlin/issues';
     }
 
     /**
