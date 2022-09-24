@@ -163,14 +163,14 @@ This section describes how to install this module.
 For the latest version, simply replace the existing huhwt-wtlin files with those from the latest release.
 
 <a name="translation"></a>
-## translation
+## Translation
 
 You can help with the translation of this module. The po/mo system is used in the PHP part. The javascript functions have their own independent i18n implementation.
 Updated translations will be distributed with the next version of the module.
 
-So far, the system primarily speaks German, functions adapted from **TAM** are also translated into English and Dutch.
+All **LIN** texts are available in English and German, functions adapted from **TAM** are also translated into Dutch.
 
-The internationalization is currently still ´work in progress´.
+~~The internationalization is currently still ´work in progress´.~~
 
 <a name="support"></a>
 ## Support

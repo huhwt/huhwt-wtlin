@@ -13,9 +13,9 @@ import * as parms from "./parms.js";
 import * as uti from "./utils.js";
 
 export const CLUSTERsA = [ "surName", "soundDM", "soundSTD" ];
-export const CLUSTERsAt = { "surName": ["Nachname wird direkt übernommen", "Sn"],
-                            "soundDM": ["Nachname umgesetzt gem. Soundex-DaitchMokotoff", "Dm"], 
-                            "soundSTD": ["Nachname umgesetzt gem. Soundex-Russell", "Std"]
+export const CLUSTERsAt = { "surName": ["Surname is taken directly", "Sn"],
+                            "soundDM": ["Surname implemented according to Soundex-DaitchMokotoff", "Dm"], 
+                            "soundSTD": ["Surname implemented according to Soundex-Russell", "Std"]
                           };
 
 var cAmode = "soundDM";

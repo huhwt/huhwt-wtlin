@@ -577,11 +577,9 @@ export function initMenubar()
         let ctHTML = gui.CONTROLS_html();
         let FIelmnt = document.getElementById("forceInfo");
         FIelmnt.innerHTML = ctHTML;
-        let tlHTML = sliderTL.TLslider_html();
-        let TLelmnt = document.getElementById("sliderTimeline");
-        TLelmnt.innerHTML = tlHTML;
     }
 
+    YSprep();
     DSprep();
     YBprep();
 
@@ -638,7 +636,7 @@ export function initMenubar()
  * - toggle names_list -> value is hosted in 'data-filter'
  * - suppress onkey for input field 'menu_names' -> if not, keys pressed would trigger TAM-specific actions
  * - toggle filter any_names
- * - toggle filter with_spouses
+ * - toggle filter with_spouse
  */
 function set_linMENUBAR_actions()
 {
@@ -694,8 +692,8 @@ function set_linMENUBAR_actions()
         toggleFilterToggle(renderer);
     });
 
-    // toggle filter action 'with_spouses'
-    // -> when active, spouses of individuals filtered by 'names_list' will be displayed too
+    // toggle filter action 'with_spouse'
+    // -> when active, spouse of individuals filtered by 'names_list' will be displayed too
     d3.select("#cbfilterSpouse").on("change", function(e) {
         let renderer = parms.oGET("RENDERER");
         toggleFilterSpouse(renderer);
@@ -772,7 +770,7 @@ function toggleShowCa()
 
 function DSprep() {
     let cA_elmnt = document.getElementById("clustersA");
-    cA_elmnt.title = i18n('Filtermodus') + ": " + i18n(CLUSTERsAt.soundDM);
+    cA_elmnt.title = i18n('Filtering mode') + ": " + i18n(CLUSTERsAt.soundDM);
     d3.select("#clustersA").on("click", null);
     d3.select("#clustersA").on("click", function (e) {
         toggleShowCa();
@@ -857,7 +855,7 @@ function DSclicked(event, _this) {
     let _bs = document.getElementById("clustersA");
     _bs.innerHTML = valueDO;
     let _csAt = CLUSTERsAt[valueDO];
-    _bs.title = i18n('Filtermodus') + ": " + i18n(_csAt[0]);
+    _bs.title = i18n('Filtering mode') + ": " + i18n(_csAt[0]);
     document.querySelector("#clustersAsel").style.display = "none";
 
     let _csAt_i = parseInt(_this.getAttribute("sound-index"));
@@ -867,6 +865,36 @@ function DSclicked(event, _this) {
 
     let _smode = renderer.SIMmode;
     renderer.createForceGraph(_smode, renderer);
+}
+//---------------------------------------------------------------------------
+
+/**
+ * Set title for elements in '#yearSlider' and '#yearScale' 
+ */
+ function YSprep()
+{
+    function YSel(pelem) {
+        let helem = pelem.querySelectorAll(".hasTitle");
+        helem.forEach((celem) => {
+            if ( celem.tagName == 'path' || celem.tagName == 'circle')  // svg-elements -> 'title' in separate subordered element
+                celem.firstChild.textContent = i18n(celem.id);
+            else
+                celem.title = i18n(celem.id);                           // others -> set explicitly
+        });
+    }
+    let TLelmnt = document.getElementById("sliderTimeline");            // titled elements are buttons
+    if (TLelmnt.childElementCount < 1) {
+        let tlHTML = sliderTL.TLslider_html();
+        TLelmnt.innerHTML = tlHTML;
+    } else {
+        YSel(TLelmnt);
+    }
+
+    let YSelmnt = document.getElementById("yearScale");                 // titled elements are svg-elements
+    if (YSelmnt.childElementCount < 1) {
+    } else {
+        YSel(YSelmnt);
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -901,7 +929,7 @@ function YBprep()
         YBbtn.classList = "btn btn_sm " + _classb_xx;
         YBbtn.innerHTML = _yt;
         YBbtn.value = y;
-        YBbtn.title = i18n("Aktuelles Jahr einstellen");
+        YBbtn.title = i18n("Set active year");
         // here we are setting a data attribute on our button to say what type of sorting we want done if it is clicked!
         YBbtn.setAttribute('data-year', y);
         YBeld.appendChild(YBbtn);
@@ -912,7 +940,7 @@ function YBprep()
     YBbtn.classList = "btn btn_sm button__60";
     YBbtn.innerHTML = _YearE;
     YBbtn.value = _YearE;
-    YBbtn.title = i18n("Aktuelles Jahr einstellen");
+    YBbtn.title = i18n("Set active year");
     // here we are setting a data attribute on our button to say what type of sorting we want done if it is clicked!
     YBbtn.setAttribute('data-year', _YearE);
     YBeld.appendChild(YBbtn);

@@ -158,39 +158,39 @@ function html_linm() {
 	<div class="options">
 		<hr>
         <div class="views">
-            <h3>${i18n("Knotenansichten:")}</h3>
-            <div id="viewportDim" title="${i18n('Bildschirm - Grundeinstellung')}">
-    			<button class="vbutton vbutton__1" data-vbdim="2x2" value="2x2" title="${i18n('Bildschirm - Grundeinstellung') + ' 2x2'}">&nbsp;</button>
-    			<button class="vbutton vbutton__2" data-vbdim="4x4" value="4x4" title="${i18n('Bildschirm - Grundeinstellung') + ' 4x4'}">&nbsp;</button>
-    			<button class="vbutton vbutton__3 vb_active" data-vbdim="6x6" value="6x6" title="${i18n('Bildschirm - Grundeinstellung') + ' 6x6'}">&nbsp;</button>
-    			<button class="vbutton vbutton__4" data-vbdim="8x8" value="9x9" title="${i18n('Bildschirm - Grundeinstellung') + ' 9x9'}">&nbsp;</button>
-    			<button class="vbutton vbutton__5" data-vbdim="10x10" value="12x12" title="${i18n('Bildschirm - Grundeinstellung') + ' 12x12'}">&nbsp;</button>
+            <h3>${i18n('Nodal views:')}</h3>
+            <div id="viewportDim" title="${i18n("Viewport - Basic setting")}">
+    			<button class="vbutton vbutton__1" data-vbdim="2x2" value="2x2" title="${i18n('Viewport - Basic setting') + ' 2x2'}">&nbsp;</button>
+    			<button class="vbutton vbutton__2" data-vbdim="4x4" value="4x4" title="${i18n('Viewport - Basic setting') + ' 4x4'}">&nbsp;</button>
+    			<button class="vbutton vbutton__3 vb_active" data-vbdim="6x6" value="6x6" title="${i18n('Viewport -Basic setting') + ' 6x6'}">&nbsp;</button>
+    			<button class="vbutton vbutton__4" data-vbdim="8x8" value="9x9" title="${i18n('Viewport - Basic setting') + ' 9x9'}">&nbsp;</button>
+    			<button class="vbutton vbutton__5" data-vbdim="10x10" value="12x12" title="${i18n('Viewport - Basic setting') + ' 12x12'}">&nbsp;</button>
             </div>
         </div>
 		<div class="views">
-            <div class="views__B"><button class="btn active btn-sm button__99" data-view="TREE">${i18n("Baum")}</button></div>
-			<div class="views__B"><button class="btn btn-sm button__99" data-view="TLINE">${i18n("Zeitleiste")}</button></div>
+            <div class="views__B"><button class="btn active btn-sm button__99" data-view="TREE">${i18n("Tree")}</button></div>
+			<div class="views__B"><button class="btn btn-sm button__99" data-view="TLINE">${i18n("Timeline")}</button></div>
             <div class="views__D">
-                <div class="views__DB"><button class="btn btn-sm button__99" data-view="CLUSTER">${i18n("Gruppen")}</button></div>
+                <div class="views__DB"><button class="btn btn-sm button__99" data-view="CLUSTER">${i18n("Clusters")}</button></div>
                 <div class="views__DO views__B">
                 <fieldset id="opCluster" class="fvisible off">
-                    <label type="options__label" for="opClusterH" title="${i18n('Haufen-Ansicht')}">
-                        <input id="opClusterH" name="opClusterX" type="radio" class="checkbox-lg" checked value="HV">${i18n("H-A")}</label>
-                    <label type="options__label" for="opClusterG" title="${i18n('Gitter-Ansicht')}">
-                        <input id="opClusterG" name="opClusterX" type="radio" class="checkbox-lg" value="GV">${i18n("G-A")}</label>
+                    <label type="options__label" for="opClusterH" title="${i18n('Heap view')}">
+                        <input id="opClusterH" name="opClusterX" type="radio" class="checkbox-lg" checked value="HV">${i18n("H-V")}</label>
+                    <label type="options__label" for="opClusterG" title="${i18n('Grid view')}">
+                        <input id="opClusterG" name="opClusterX" type="radio" class="checkbox-lg" value="GV">${i18n("G-V")}</label>
                 </fieldset>
                 </div>
             </div>
 		</div>
 		<hr>
 		<div class="namesFilter">
-			<h3>${i18n("Nachnamenfilter:")}</h3>
+			<h3>${i18n("Surname filter:")}</h3>
 			<div class="checkboxO">
-				<button id="clustersA" class="btn btn-sm button__50" title="${i18n('Filtermodus')}">soundDM</button>
-				<label type="options__label" for="cbfilterAny" title="${i18n('Wenn aktiv -> jeder Teil-Text wirkt')}">
-					<input id="cbfilterAny" type="checkbox" class="checkbox-lg">${i18n("beliebig")}</label>
-				<label type="options__label" for="cbfilterSpouse" title="${i18n('Mit Partnern')}">
-					<input id="cbfilterSpouse" type="checkbox" class="checkbox-lg">${i18n("mit Partnern")}</label>
+				<button id="clustersA" class="btn btn-sm button__50" title="${i18n('Filtering mode')}">soundDM</button>
+				<label type="options__label" for="cbfilterAny" title="${i18n('If active -> each part text acts')}">
+					<input id="cbfilterAny" type="checkbox" class="checkbox-lg">${i18n('arbitrary')}</label>
+				<label type="options__label" for="cbfilterSpouse" title="${i18n('With spouse')}">
+					<input id="cbfilterSpouse" type="checkbox" class="checkbox-lg">${i18n('with spouse')}</label>
 			</div>
 			<div id="clustersAsel" class="sounds" >
 			<!-- content generated by interaction.js|DSprep -->
@@ -198,8 +198,8 @@ function html_linm() {
 		</div>
 		<div class="filterS">
 			<div class="filterS-parts">
-				<div class="text-info">${i18n("Mehrere Namen durch ';' trennen!")}</div>
-				<a data-filter="menu_names" class="btn btn-circle"><span class="fa fa-list-ul fa-big" title="${i18n('Filter bearbeiten')}"></span></a>
+				<div class="text-info">${i18n("Separate several names by ';'!")}</div>
+				<a data-filter="menu_names" class="btn btn-circle"><span class="fa fa-list-ul fa-big" title="${i18n('Edit filters')}"></span></a>
 			</div>
 			<div>
 				<input id="menu_names" class="form-control input-lg" value="">
@@ -343,7 +343,7 @@ export function IDB_INDEX() {
 
 export function linMENUBAR_html() {
 	let html_mb = `
-	<button id="bt_toggleMenu" class="toggle__button" title="${i18n("Menü ein/ausfalten")}">${i18n("Menü")}</button>
+	<button id="bt_toggleMenu" class="toggle__button" title="${i18n("Show / hide menu")}">${i18n("Menu")}</button>
 	`;
 
 	return html_os() + html_mb + html_title() + html_linm() + html_fo() + html_ga() + html_lang();

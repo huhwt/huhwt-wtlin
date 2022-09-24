@@ -174,9 +174,9 @@ Um die neueste Version zu erhalten, ersetzen Sie einfach die vorhandenen huhwt-w
 Sie können bei der Übersetzung dieses Moduls helfen. Das po/mo-System wird im PHP-Teil verwendet. Die Javascript-Funktionen haben ihre eigene unabhängige i18n-Implementierung.
 Aktualisierte Übersetzungen werden mit der nächsten Version des Moduls verteilt.
 
-Bislang gibt spricht das System primär Deutsch, aus **TAM** adaptierte Funktionen sind auch ins Englische und Niederländische übersetzt.
+Alle **LIN**-Texte stehen in Englisch und Deutsch zur Verfügung, aus **TAM** adaptierte Funktionen sind auch Niederländische übersetzt.
 
-Die Internationalisierung ist derzeit noch `Work in Progress`.
+~~Die Internationalisierung ist derzeit noch `Work in Progress`.~~
 
 <a name="support"></a>
 ## Support

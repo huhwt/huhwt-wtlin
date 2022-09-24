@@ -1,3 +1,5 @@
+/* jshint -W014 */
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // wtLINEAGE
@@ -110,7 +112,7 @@ export class YEARSCALE
                             .append('g')
                                 .append('path')
                                 .attr('id', 'YCactLeftmost')
-                                .attr('class', 'YChandle')
+                                .attr('class', 'YChandle hasTitle')
                                 .attr('transform', 'translate(' + (ysCenter-56) + ', 2.5) scale(2.2)')
                                 .attr('d', trileftmost)
                                 .on('click', val => {
@@ -124,13 +126,13 @@ export class YEARSCALE
                                 })                            
                             ;
             YearScaleActLM.append('title')
-                    .text(i18n('1. Gruppe - links'))
+                    .text(i18n('YCactLeftmost'))
                     ;
         const YearScaleActL = YearScaleActs
                     .append('g')
                         .append('path')
                         .attr('id', 'YCactLeft')
-                        .attr('class', 'YChandle')
+                        .attr('class', 'YChandle hasTitle')
                         .attr('transform', 'translate(' + (ysCenter-36) + ',0) scale(2.75)')
                         .attr('d', trileft)
                         .on('click', val => {
@@ -150,14 +152,14 @@ export class YEARSCALE
                         })
                     ;
             YearScaleActL.append('title')
-                    .text(i18n('nächste Gruppe - links'))
+                    .text(i18n('YCactLeft'))
                     ;
 
         const YearScaleActR = YearScaleActs
                             .append('g')
                                 .append('path')
                                 .attr('id', 'YCactRight')
-                                .attr('class', 'YChandle')
+                                .attr('class', 'YChandle hasTitle')
                                 .attr('transform', 'translate(' + (ysCenter+17) + ', -1) scale(2.75)')
                                 .attr('d', triright)
                                 .on('click', val => {
@@ -176,13 +178,13 @@ export class YEARSCALE
                                 })
                             ;
             YearScaleActR.append('title')
-                    .text(i18n('nächste Gruppe - rechts'))
+                    .text(i18n('YCactRight'))
                     ;
         const YearScaleActRM = YearScaleActs
                     .append('g')
                         .append('path')
                         .attr('id', 'YCactRightmost')
-                        .attr('class', 'YChandle')
+                        .attr('class', 'YChandle hasTitle')
                         .attr('transform', 'translate(' + (ysCenter+39) + ', 2.5) scale(2.2)')
                         .attr('d', trirightmost)
                         .on('click', val => {
@@ -196,12 +198,12 @@ export class YEARSCALE
                         })                            
                     ;
             YearScaleActRM.append('title')
-                    .text(i18n('letzte Gruppe - rechts'))
+                    .text(i18n('YCactRightmost'))
                     ;
     const YearScaleCenter = YearScaleActs
                             .append('circle')
                             .attr('id', 'YCactCenter')
-                            .attr('class', 'YChandle')
+                            .attr('class', 'YChandle hasTitle')
                             .attr('transform', 'translate(' + (ysCenter) + ', -10)')
                             .attr('r',12)
                             .attr('cx',0)
@@ -213,7 +215,7 @@ export class YEARSCALE
                             })
                         ;
         YearScaleCenter.append('title')
-                        .text(i18n('Gruppen - zentrieren'))
+                        .text(i18n('YCactCenter'))
                         ;
 
         this.YEARscale = cYearScale;

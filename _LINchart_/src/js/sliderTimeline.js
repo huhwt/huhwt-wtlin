@@ -12,28 +12,28 @@ export function TLslider_html() {
 	let html_tl = `
     <div class="column" >
         <div class="sliderTimelineB row">
-            <input id="slideButtonB" class="slideButton slideButton-L center" type="button" title="${i18n('Jahrläufer - Runterzählen')}" value="&#x23f4;"/>
-            <input id="slideButtonH" class="slideButton-lg center" type="button" title="${i18n('Jahrläufer - Zählen Stop')}" value="&#x23f8;" disabled/>
-            <input id="slideButtonF" class="slideButton slideButton-R left" type="button" title="${i18n('Jahrläufer - Hochzählen')}" value="&#x23f5;"/>
+            <input id="slideButtonB" class="slideButton slideButton-L center hasTitle" type="button" title="${i18n('slideButtonB')}" value="&#x23f4;"/>
+            <input id="slideButtonH" class="slideButton-lg center hasTitle" type="button" title="${i18n('slideButtonH')}" value="&#x23f8;" disabled/>
+            <input id="slideButtonF" class="slideButton slideButton-R left hasTitle" type="button" title="${i18n('slideButtonF')}" value="&#x23f5;"/>
         </div>
         <div class="sliderTimelineB row">
             <div>
-                <input id="slideButtonYM" class="slideButton-sm slideButton-2 center" type="button" title="${i18n('-1 Jahr')}" value="<"/>
+                <input id="slideButtonYM" class="slideButton-sm slideButton-2 center hasTitle" type="button" title="${i18n('slideButtonYM')}" value="<"/>
             </div>
-            <div id="slideSpeed" title="${i18n('Jahrläufer - Verweildauer')}">
+            <div id="slideSpeed" class="hasTitle" title="${i18n('slideSpeed')}">
     			<button class="sbutton sbutton__1" data-speed="1" value=0>&nbsp;</button>
     			<button class="sbutton sbutton__2" data-speed="2" value=1>&nbsp;</button>
     			<button class="sbutton sbutton__3" data-speed="3" value=2>&nbsp;</button>
     			<button class="sbutton sbutton__4" data-speed="4" value=3>&nbsp;</button>
     			<button class="sbutton sbutton__5" data-speed="5" value=4>&nbsp;</button>
             </div>
-            <input id="slideButtonYP" class="slideButton-sm slideButton-2 center" type="button" title="${i18n('+1 Jahr')}" value=">"/>
+            <input id="slideButtonYP" class="slideButton-sm slideButton-2 center hasTitle" type="button" title="${i18n('slideButtonYP')}" value=">"/>
         </div>
     </div>
     <div class="column align-top">
-        <div id="yearSlider" title="${i18n('Jahr einstellen (je 10)')}"></div>
+        <div id="yearSlider" class="hasTitle" title="${i18n('yearSlider')}"></div>
 		<!-- content generated in constructor -->
-        <div id="yearRange" title="${i18n('Anfangs-/Endjahr festlegen')}"></div>
+        <div id="yearRange" class="hasTitle" title="${i18n('yearRange')}"></div>
 		<!-- content generated in constructor -->
     </div>`;
 
