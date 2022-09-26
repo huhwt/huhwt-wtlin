@@ -136,7 +136,7 @@ Anders als in den beiden anderen Ansichten bewirkt 'Simulation Stop' nur den Abb
 
 <p><img src="_ASSETTS/wtlin-screen-TLINE.png" alt="Screenshot wtlin" align="right" width="50%"></p>
 
-Diese Ansicht fokussiert auf die zeitliche Ebene. Die Personen werden nach Geburtsjahr gruppiert, die Zeit-Gruppen werden über den Zeitstrahl verteilt dargestellt. Die Länge des Zeitstrahls entspricht dabei der Spannbreite der Geburtsjahre. Am unteren Bildschirmrand gibt es ein zusätzliches Steuerelement, mit dem man in der Darstellung navigieren kann. Im Ausgangszustand ist die Darstellung so angeordnet, dass der Mittelpunkt dem Mittelpunkt des Zeitstrahls entspricht. Mit den Schaltflächen des Steuerlements kann man sowohl auf die jeweiligen Extrem-Punkte (1. und letzte Gruppe) als auch auf die Zeitpunkte der jeweils nächstliegenden Gruppen links und rechts (-1 bzw. +1) positionieren bzw. wieder auf das Zentrum zurücksetzen. Die 'Links'- und 'Rechts'-1 Schritt-Schaltflächen sind mit Auto-Repeat ausgestattet, bei längerem Klick auf die Flächen werden die Gruppen fortlaufend gewechselt, hört der Klick auf, endet auch das automatische Weiterspringen.
+Diese Ansicht fokussiert auf die zeitliche Ebene. Die Personen werden nach Geburtsjahr gruppiert, die Zeit-Gruppen werden über den Zeitstrahl verteilt dargestellt. Die Länge des Zeitstrahls entspricht dabei der Spannbreite der Geburtsjahre. Am unteren Bildschirmrand gibt es ein zusätzliches Steuerelement, mit dem man in der Darstellung navigieren kann. Im Ausgangszustand ist die Darstellung so angeordnet, dass der Mittelpunkt dem Mittelpunkt des Zeitstrahls entspricht. Mit den Schaltflächen des Steuerelements kann man sowohl auf die jeweiligen Extrem-Punkte (1. und letzte Gruppe) als auch auf die Zeitpunkte der jeweils nächstliegenden Gruppen links und rechts (-1 bzw. +1) positionieren bzw. wieder auf das Zentrum zurücksetzen. Die 'Links'- und 'Rechts'-1 Schritt-Schaltflächen sind mit Auto-Repeat ausgestattet, bei längerem Klick auf die Flächen werden die Gruppen fortlaufend gewechselt, hört der Klick auf, endet auch das automatische Weiterspringen.
 
 Beim Sprung auf eine konkrete Gruppe wird auf dem Zeitstrahl die entsprechnde relative Position mit der jeweiligen Jahreszahl markiert, die Gruppe selbst wird hervorgehoben und die gesamte Darstellung wird so verschoben, dass die Gruppe in der Bildschirm-Mitte dargestellt ist.
 
@@ -146,7 +146,10 @@ Die Personen-Knoten sind in der Ansicht permanent eingeblendet und den Zeit-Grup
 
 Die Personen-Knoten sind mit zusätzlichen Eigenschaften ausgestattet: 
 * Ein STRG-Klick/CTRL-Klick auf einen Knoten zeigt die ansonsten im Tooltip gelisteten Informationen in einem permanenten Element im Darstellungs-Hintergrund, der Knoten selbst wird an seiner Position hervorgehoben dargestellt. Das Info-Element wird bei einem weiteren STRG-Klick auf den Knoten oder durch einen Einfach-Klick in das Info-Element wieder geschlossen. Werden mehrere Knoten nacheinander solcherart aktiviert, werden die Info-Elemente in der Abfolge ihrer Entstehung von links nach rechts mehrreihig dargestellt. Wird ein Element geschlossen, rücken die nachfolgenden Elemente unmittelbar auf.
-* Ein DOPPEL-Klick auf einen Knoten blendet die zugehörigen Beziehungen/Verknüpfungen/Links ein, außerdem wird der Knoten vergrößert und farbig hervorgehoben sowie deutlich oberhalb des Gruppen-Balkens angeordnet. Diese Funktion erlaubt es, Abstammungslinien im Zeitverlauf darzustellen. 
+* Ein DOPPEL-Klick auf einen Knoten blendet die zugehörigen Beziehungen/Verknüpfungen/Links ein, außerdem wird der Knoten vergrößert und farbig hervorgehoben sowie deutlich oberhalb des Gruppen-Balkens angeordnet. Diese Funktion erlaubt es, Abstammungslinien im Zeitverlauf darzustellen.
+
+Auch die Gruppen-Balken verfügen über eine zusätzliche Eigenschaft:
+* Ein STRG-Klick/CTRL-Klick auf einen Balken wird die gesamte Darstellung unmittelbar so verschoben, dass dieser Balken in der Bildschirm-Mitte positioniert ist (analog der schrittweisen Verschiebung über die Steuerflächen) und auf dem Zeitstrahl wird die zugehörige Zeitmarke eingeblendet.
 
 <a name="requirements"></a>
 ## Voraussetzungen

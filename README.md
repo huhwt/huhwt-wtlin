@@ -142,6 +142,9 @@ The person nodes are equipped with additional properties:
 * A CTRL-click/CTRL-click on a node displays the information otherwise listed in the tooltip in a permanent element in the display background, the node itself is highlighted at its position. The info element is closed again by another CTRL-click on the node or by a single click in the info element. If several nodes are activated one after the other in this way, the info elements are displayed in several rows from left to right in the sequence in which they were created. If an element is closed, the following elements move up immediately.
 * A DOUBLE-click on a node shows the corresponding relations/connections/links, furthermore the node is enlarged and highlighted in color as well as placed clearly above the group bar. This function allows to display lineages over time. 
 
+The time group bars also have an additional property:
+* A CTRL-click on a bar will immediately shift the entire display so that this bar is positioned in the center of the screen (analogous to the stepwise shift via the control buttons) and the associated time marker will be displayed on the timeline.
+
 <a name="requirements"></a>
 ## Requirements
 
@@ -178,8 +181,6 @@ All **LIN** texts are available in English and German, functions adapted from **
 <span style="font-weight: bold;">Issues: </span>You can report bugs by filing an issue in this GitHub repository.
 
 <a name="thanks"></a>
-## Danksagungen
-
 ## Thanks
 
 * **Lineage**   Ben Garvey https://github.com/bengarvey/lineage / Jens-Peter Stern https://knoten.familie-stern.de/

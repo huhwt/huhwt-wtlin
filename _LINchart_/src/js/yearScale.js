@@ -277,6 +277,11 @@ export class YEARSCALE
         this.YEARscale.attr('display', 'block');
     }
 
+    clickedYear(linObj, _gy)
+    {
+        clickYear_DO(linObj, this.instance, _gy);
+    }
+
     transformSVGloop(val) {
         if (this.cLoop) 
             return;
@@ -356,8 +361,11 @@ function clickYear(event, ysObj) {
     if (_cY > ysObj.YearE)
         _cY = ysObj.YearE;
     console.log("clickYear", event.clientX, _xS, _xSr, _cY);
-    let _gNact = ysObj.gNlast + 1;
     let linObj = ysObj.rendRef.linObj;
+    clickYear_DO(linObj, ysObj, _cY);
+}
+function clickYear_DO(linObj, ysObj, _cY) {
+    let _gNact = ysObj.gNlast + 1;
     for (let i = 0; i < ysObj.gNODES.length; ++i) {
         let gN = ysObj.gNODES[i];
         if (gN.nodeID > _cY) {
@@ -378,7 +386,6 @@ function clickYear(event, ysObj) {
 
     ysObj.transformSVG_gNact(ysObj.gNact, linObj, linObj.s_transform);
     setCrosshairX(ysObj, ysObj.gNact);
-
 }
 
 function setCrosshairX(ysObj, gNact) {

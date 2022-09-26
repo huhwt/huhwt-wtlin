@@ -910,21 +910,25 @@ function onMouseClick(event, d)
 {
     if (event.button == 0) {                    // left mousebutton
         if (event.ctrlKey) {
+            let linObj = parms.oGET("RENDERER").instance;
             if (d.type == "PNODE") {
                 if ( d.sr !== 2) {
-                    let linObj = parms.oGET("RENDERER").instance;
                     showPERSONs(linObj, d);
                 } else {
                     d.fx = d.fy = null;
                     d.sr = 1;
                 }
+            } else if (d.type == "GNODE") {
+                    let _gy = d.nodeID;
+                    let ysObj = linObj.DATAman.YEARscale;
+                    ysObj.clickedYear(linObj, _gy);
             } else {
                 d.fx = d.fy = null;
                 d.sr = 1;
             }
             event.stopPropagation();
             return;
-            }
+        }
     }
     d.fx = d.fy = null;
     d.sr = 1;

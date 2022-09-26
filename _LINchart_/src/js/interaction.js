@@ -577,6 +577,9 @@ export function initMenubar()
         let ctHTML = gui.CONTROLS_html();
         let FIelmnt = document.getElementById("forceInfo");
         FIelmnt.innerHTML = ctHTML;
+        let renderer = parms.oGET("RENDERER");
+        if (renderer)
+            updatencounter(renderer.instance);
     }
 
     YSprep();
@@ -1636,7 +1639,7 @@ export function updatencounter(linObj) {
     let oon = linObj.DATAman.originalData.nodes;
     let ncn = oon.length;
 
-    let snodes = "Anzahl Knoten ... (... ausgeblendet)";
+    let snodes = "show_nc_ncn";
     let _ncl = linObj.DATAman.width/2 - 200;
     let _nct = linObj.DATAman.height - 50;
     switch (linObj.SIMmode)
@@ -1650,17 +1653,17 @@ export function updatencounter(linObj) {
             let opn = linObj.pNODESc;
             let opc = opn.length;
             ncn = ncn - opc;
-            snodes = "Anzahl Gruppen " + nsc + " (" + ocn + " ausgeblendet) |";
+            snodes = i18n('show_nc_ncnC', { pnc: nsc, pncn: ocn}) + ' |';
             let _ncEdimC = uti.textSize(snodes);
             _ncl = linObj.DATAman.width/2 - _ncEdimC.width + 5.5;
-            snodes += " Anzahl Knoten " + opc + " (" + ncn + " ausgeblendet)";
+            snodes += i18n('show_nc_ncn', { pnc: opc, pncn: ncn});
             _nct = linObj.DATAman.height - 50;
             break;
         default:
             let osn = linObj.yNODES;
             let nc = osn.length;
             ncn = ncn - nc;
-            snodes = "Anzahl Knoten " + nc + " (" + ncn + " ausgeblendet)";
+            snodes = i18n('show_nc_ncn', { pnc: nc, pncn: ncn});
             let _ncEdim = uti.textSize(snodes);
             _ncl = linObj.DATAman.width/2 - _ncEdim.width/2;
             break;

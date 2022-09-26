@@ -364,6 +364,8 @@ const LINtext_de = `{"values":{
     "nl_names": "Namen",
     "nl_count": "Anzahl",
     "nl_all": "Alle",
+    "show_nc_ncn": "Anzahl Knoten %{pnc} (%{pncn} ausgeblendet)",
+    "show_nc_ncnC": "Anzahl Gruppen %{pnc} (%{pncn} ausgeblendet)",
     "ZZZL": "de"
 }}`;
 
@@ -396,6 +398,8 @@ const LINtext_en = `{"values":{
     "nl_names": "Names",
     "nl_count": "Count",
     "nl_all": "All",
+    "show_nc_ncn": "Number of nodes %{pnc} (%{pncn} hidden)",
+    "show_nc_ncnC": "Number of clusters %{pnc} (%{pncn} ausgeblendet)",
     "ZZZL": "en"
 }}`;
 
