@@ -454,7 +454,7 @@ const LINtext_nl = `{"values":{
     "nl_rbl_alln": "alle namen",
     "nl_rbl_actn": "actieve namen",
     "nl_snfc": "Selecteer namen - de eerste letter is ...",
-    "nl_snlb": "Naamlijst sorteren op",
+    "nl_snlb": "Namenlijst sorteren op:",
     "nl_names": "Namen",
     "nl_count": "Aantal",
     "nl_all": "Alle",
