@@ -9,10 +9,9 @@ Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-
 
 Die hier vorgestellte Version kombiniert die Konzepte der Originale mit Elementen aus TAM und eigenen Erweiterungen.
 
-Derzeit ist das Modul noch in laufender Entwicklung, noch nicht alle Aktionen führen zu den gewünschten Ergebnissen.  Die primären Funktionen sind jedoch bereits genügend stabil, so dass ich es für vertretbar halte, es als **Pre-Release** zu veröffentlichen.
+Das Modul ist noch in laufender Entwicklung, noch nicht alle Aktionen führen zu den gewünschten Ergebnissen.  Die primären Funktionen sind jedoch stabil, so dass ich es für vertretbar halte, es als **Pre-Release** zu veröffentlichen.
 
-Was noch offen ist: 
-* Übersetzungen - es gibt kaum Einträge für i18n
+Was noch zu erledigen ist:
 * Storage-Management - Lesen und Schreiben von/auf Datei funktioniert, in/aus IndexedDB funktioniert nicht
 * Gnitches - Einige Einstellungen wirken in allen Funktionen, andere nur lokal in ihrem Zweig, da muss noch nachgearbeitet werden
 * Feintuning und Review - es funktioniert ... aber elegant ist es nicht wirklich. Anregungen und Hinweise werden gerne entgegen genommen ... 
@@ -177,9 +176,7 @@ Um die neueste Version zu erhalten, ersetzen Sie einfach die vorhandenen huhwt-w
 Sie können bei der Übersetzung dieses Moduls helfen. Das po/mo-System wird im PHP-Teil verwendet. Die Javascript-Funktionen haben ihre eigene unabhängige i18n-Implementierung.
 Aktualisierte Übersetzungen werden mit der nächsten Version des Moduls verteilt.
 
-Alle **LIN**-Texte stehen in Englisch und Deutsch zur Verfügung, aus **TAM** adaptierte Funktionen sind auch Niederländische übersetzt.
-
-~~Die Internationalisierung ist derzeit noch `Work in Progress`.~~
+Alle Texte und Meldungen stehen in Englisch, Deutsch und Niederländisch zur Verfügung.
 
 <a name="support"></a>
 ## Support

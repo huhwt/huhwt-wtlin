@@ -406,7 +406,7 @@ const LINtext_en = `{"values":{
 const LINtext_nl = `{"values":{
     "Show / hide menu" : "Menu weergeven/verbergen",
     "Menu" : "Menu",
-    "Viewport - Basic setting" : "Weergave - Basisinstelling,
+    "Viewport - Basic setting" : "Weergave - Basisinstelling",
     "Menu" : "Menu",
     "Nodal views:" : "Knooppuntweergaven:",
     "Tree" : "Boom",

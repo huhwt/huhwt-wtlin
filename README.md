@@ -9,7 +9,12 @@ This [webtrees](https://www.webtrees.net/) module hosts Lineage, a node-link dia
 
 The version presented here combines the concepts of the originals with elements from TAM and own extensions.
 
-Currently, the module is still under development, not all actions lead to the desired results yet.  However, the primary function is already sufficiently stable that I consider it reasonable to publish it as a **pre-release**.
+The module is still under development, not all actions lead to the desired results yet.  However, the primary functions are stable, so I think it is reasonable to publish it as **pre-release**.
+
+What still needs to be done:
+* Memory management - read and write to/from file works, to/from IndexedDB does not.
+* Gnitches - some settings work in all functions, others only locally in their branch, still need to be reworked.
+* Fine tuning and verification - it works ... but it's not really elegant. Suggestions and hints are welcome ...
 
 ## Contents
 This readme contains the following main sections
@@ -171,9 +176,7 @@ For the latest version, simply replace the existing huhwt-wtlin files with those
 You can help with the translation of this module. The po/mo system is used in the PHP part. The javascript functions have their own independent i18n implementation.
 Updated translations will be distributed with the next version of the module.
 
-All **LIN** texts are available in English and German, functions adapted from **TAM** are also translated into Dutch.
-
-~~The internationalization is currently still ´work in progress´.~~
+All texts and messages are available in English, German and Dutch.
 
 <a name="support"></a>
 ## Support
