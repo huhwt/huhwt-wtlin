@@ -911,6 +911,16 @@ function noEvent(event, d)
 function onMouseClick(event, d)
 {
     if (event.button == 0) {
+        if (event.ctrlKey) {
+            if (d.type == "PNODE") {
+                d.fx = d.fy = null;
+                d.sr = 1;
+                return;
+            }
+            d.chShow = !d.chShow;
+            switchVis(d);
+            return;
+        }
         d.fx = d.fy = null;
         d.sr = 1;
         if (d.type == "GNODE") {
@@ -922,15 +932,15 @@ function onMouseClick(event, d)
         }
         return;
     }
-    if (event.button == 2) {
-        if (d.type == "PNODE") {
-            d.fx = d.fy = null;
-            d.sr = 1;
-            return;
-        }
-        d.chShow = !d.chShow;
-        switchVis(d);
-    }
+    // if (event.button == 2) {
+    //     if (d.type == "PNODE") {
+    //         d.fx = d.fy = null;
+    //         d.sr = 1;
+    //         return;
+    //     }
+    //     d.chShow = !d.chShow;
+    //     switchVis(d);
+    // }
 }
 function switchVis(g) {
     var linObj = parms.oGET("RENDERER").instance;

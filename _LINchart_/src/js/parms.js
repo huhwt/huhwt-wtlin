@@ -22,6 +22,7 @@ export const VIEW_PORT_DIMS = {
     '9x9': ['4', -4500, -2400, 9000, 9000],
     '12x12': ['5', -6000, -3200, 12000, 12000]
 };
+export const ZOOMfactor = 1.1486983549970351;
 
 const NODE_RADIUS = 10;
 

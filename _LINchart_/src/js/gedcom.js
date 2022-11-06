@@ -219,13 +219,33 @@ function build_gedcom(lines)
             {
                 for (let j = 2; j < tokens.length; j++)
                 {
-                    if (current_pers.surname == null && tokens[j].startsWith("/")) {     // extract surname
-                        current_pers.surname = tokens[j].replace(/\//g, " ").trim();        // remove '/'s
+                    let _tj = tokens[j].trim();
+                    if (current_pers.surname == null && _tj.startsWith("/")) {     // extract surname
+                        current_pers.surname = _tj.replace(/\//g, " ").trim();        // remove '/'s
+                        if (_tj.endsWith("/")) {
+                            break;
+                        } else {
+                            for (let js = j + 1; js < tokens.length; js++) {
+                                _tj = tokens[js].replace(/\//g, " ").trim();
+                                current_pers.surname = current_pers.surname + ' ' + _tj;
+                            }
+                            j = tokens.length;
+                            break;
+                        }
                     } else {
                         if (current_pers.givenname == null) {                          // given name
-                            current_pers.givenname = tokens[j].trim();
+                            current_pers.givenname = _tj;
                         } else {
-                            current_pers.givenname = current_pers.givenname + ' ' + tokens[j].trim();
+                            switch (_tj) {
+                                case "von":
+                                case "der":
+                                case "des":
+                                case "zu":
+                                case "of":
+                                    break;
+                                default:
+                                    current_pers.givenname = current_pers.givenname + ' ' + _tj;
+                            }
                         }
                     }
                     if (current_pers.givenname == null) {

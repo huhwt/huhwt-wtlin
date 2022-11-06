@@ -10,6 +10,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 import * as parms from "./parms.js";
+import * as gui from "./guiparts.js";
+import { loadDataFromIDB } from "./interfaces.js";
 
 export function putDB(dbName, storeName, data) {
     let idb = writeToDB(dbName, storeName, data);
@@ -210,4 +212,157 @@ function showSnames(DBname, sname) {
                         "osnames": osnames });
         };
     });
+}
+
+export function closeModalIDB()
+{
+    document.querySelector("#overlay").style.display = "none";
+    let ovHTML = gui.FILE_MODAL();
+    let OVelmnt = document.getElementById("overlay");
+    OVelmnt.innerHTML = ovHTML;
+}
+
+export function showIDBstate() {
+    let ovHTML = gui.IDB_INDEX();
+    let OVelmnt = document.getElementById("overlay");
+    OVelmnt.innerHTML = ovHTML;
+    d3.select("#overlay").on("click", function(event) {
+        closeModalIDB(event);
+    });
+
+    const _liHead = document.getElementById("idbstores");
+    _liHead.innerHTML = "";
+    let db;
+    const mkeyList = new Map();
+    const DB = new Promise((resolve, reject) => {
+        const request = indexedDB.open("wtLIN");
+        request.onsuccess = () => resolve(request.result);
+    });
+    const idbSlist = new Promise((resolve, reject) => {
+        DB.then(idb => {
+            db = idb;
+            let dbos = idb.objectStoreNames;
+            let _dbos = Array.from(dbos);
+            resolve(_dbos);
+        });
+    });
+    idbSlist.then(snames => {
+            let _snames = snames;
+                snames.forEach(sname => {
+                    const liItem = document.createElement("li");
+                    liItem.classList = 'ulli';
+                    _liHead.appendChild(liItem);
+                    const param = document.createElement("p");
+                    param.innerHTML = sname;
+                    liItem.appendChild(param);
+                    const showButton = document.createElement('button');
+                    liItem.appendChild(showButton);
+                    showButton.innerHTML = '>';
+                    showButton.title = 'Click to Show Items';
+                    // here we are setting a data attribute on our show button to say what task we want shown if it is clicked!
+                    showButton.setAttribute('key-task', sname);
+                    showButton.onclick = function(event) {
+                      showIDBkeys(event);
+                    };
+                    // liItem itself will do nothing
+                    liItem.onclick = function(event) {
+                        event.stopPropagation();
+                    };
+                });
+                document.querySelector("#overlay").style.display = "inline";
+        });
+}
+
+function showFromIDB(event) {
+    let actNodeE = event.target;
+    let dstring = event.target.getAttribute("show-task");
+    event.stopPropagation();
+    closeModalIDB();
+    let dstrings = dstring.split("|");
+    let dbName = "wtLIN";
+    let dbStore = dstrings[0];
+    let dbKey = dstrings[1];
+    loadDataFromIDB(dbStore, dbKey);
+}
+
+function showIDBkeys(event) {
+    let actNodeE = event.target;
+    let actNode = actNodeE.parentNode;
+    let sname = event.target.getAttribute("key-task");
+    event.stopPropagation();
+    let db;
+    const DB = new Promise((resolve, reject) => {
+        const request = indexedDB.open("wtLIN");
+        request.onsuccess = () => {
+            db = request.result;
+            showIDBkeysL(actNode, db, sname, actNodeE);
+            resolve(db);
+        };
+    });
+}
+
+function showIDBkeysL(actNode, db, sname, actNodeE) {
+    const DBtactn = new Promise((res, rej) => {
+        let taction = db.transaction(sname, "readonly");
+        let ostore = taction.objectStore(sname);
+        let req = ostore.openCursor();
+
+        let _keyList = [];
+        req.onsuccess = function(e) {
+            let curs = e.target.result;
+            if (curs) {
+                let _key = curs.primaryKey;
+                _keyList.push(_key);
+                curs.continue();
+            } else {
+                showIDBkeysLdo(actNode, sname, _keyList, actNodeE);
+            }
+        };
+        req.oncomplete = (ev) => {
+            res(_keyList);
+        };
+        req.onerror = (ev) => {
+            rej(ev);
+        };
+    });
+}
+
+function showIDBkeysLdo(actNode, sname, keyList, actNodeE) {
+    const oliHead = document.createElement("ol");
+    if (keyList.length > 0) {
+        keyList.forEach( idbKey => {
+            const oliItem = document.createElement("li");
+            // oliItem.innerHTML = ':';
+            oliItem.classList = 'olli';
+            oliHead.appendChild(oliItem);
+            oliItem.title = 'Load from Store';
+            const param = document.createElement("p");
+            param.innerHTML = idbKey;
+            oliItem.appendChild(param);
+            // here we are setting a data attribute on our param to say what task we want done if it is clicked!
+            param.setAttribute('show-task', sname+'|'+idbKey);
+            param.onclick = function(event) {
+                showFromIDB(event);
+            };
+            const delButton = document.createElement('button');
+            oliItem.appendChild(delButton);
+            delButton.innerHTML = 'E';
+            delButton.title = 'Erase from Store';
+            // here we are setting a data attribute on our del button to say what task we want done if it is clicked!
+            delButton.setAttribute('del-task', sname+'|'+idbKey);
+            delButton.onclick = function(event) {
+                delIDBkey(event);
+            };
+        });
+    } else {
+        const param = document.createElement("p");
+        // oliItem.innerHTML = ':';
+        oliHead.appendChild(param);
+        param.innerHTML = 'Number of entries in this Store: 0';
+    }
+    actNode.appendChild(oliHead);
+    actNodeE.innerHTML = '';       // show button will be set inactiv
+    actNodeE.onclick = function(event) {
+        event.stopPropagation();
+    };
 }

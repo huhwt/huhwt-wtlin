@@ -17,13 +17,213 @@ import * as parms from "./parms.js";
 import { timestamp } from './utils.js';
 import { putDB } from "./dbman.js";
 
-const LINEAGE_DESCRIPTION = "LINEAGE - Genealogic Force Diagram";
+const LINEAGE_DESCRIPTION = "LINEAGE H&Hwt";
+const SVG_ACTION = "wtLIN - SVG Export";
 
 var downloadableFile = null;
 
-export function createDownloadSVG(svgText, filename)
+function html_stub_I() {
+    return `
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>${SVG_ACTION}</title>
+	</head>
+	<body>
+        <!--    Adapted from https://dev.to/stackfindover/zoom-image-point-with-mouse-wheel-11n3
+                Separated zoom and pan and applied directly to svg because encapsulating the svg 
+                in outer div prevented printing from browser at higher zoom levels.
+        -->
+        <style>
+        .hT {
+            position: absolute;
+            top: 0;
+            display: block;
+            font-size: 2em;
+            margin-block-start: 0.67em;
+            margin-block-end: 0.67em;
+            margin-inline-start: 0px;
+            margin-inline-end: 0px;
+            font-weight: bold;
+        }
+        </style>
+        `;
+}
+function html_stub_II(filename, svgID) {
+    return `
+<div class="hT" title="${i18n('svg_Export_h1')}">${svgID} - ${filename}</div>
+
+`;
+}
+function html_stub_III() { 
+    return `
+	</body>
+</html>
+`;
+}
+
+function zoom_pan_js() {
+    return `
+<script>
+const ZOOMfactor = 1.1486983549970351;
+const MINxy = 1e-9;
+
+var scale = 1,
+        panning = false,
+        px0 = window.innerWidth / 2,
+        py0 = window.innerHeight / 2,
+        pointX = 0,
+        pointY = 0,
+        Pstart = { x: 0, y: 0 },
+        Plast = { x: 0, y: 0 },
+        // Multiplier Viewbox-Dim vs. Screen-Dim
+        scaleScreen = 0;
+        // Here works the Viewbox
+        container = null,
+        // Here works the transform
+        target = null;
+
+function mousepos(event){
+        console.log(
+            event.type,
+            "  screenX|Y: ",event.screenX, " | ", event.screenY, 
+            "  pageX|Y: ",event.pageX, " | ", event.pageY, 
+            "  clientX|Y: ", event.clientX, " | ", event.clientY, 
+            "  offsetX|Y: ", event.offsetX, " | ", event.offsetY,
+            "  pointX|Y: ",pointX, " | ", pointY, 
+            )
+}
+
+// window.addEventListener('click', mousepos);
+
+function handleLoad(evt) {
+    if (!document)
+        window.document = evt.target.ownerDocument;
+
+    container = evt.target;
+
+    target = container.children[1];
+    if (target.hasAttributes()) {
+        let _elt = target.getAttribute("transform");
+        let _elt_ar = _elt.split(" ");
+        let _eltr = "";
+        let _elts = "";
+        if (_elt_ar[0].startsWith("translate")) {
+            _eltr = _elt_ar[0];
+            _elts = _elt_ar[1];
+        } else {
+            _eltr = _elt_ar[1];
+            _elts = _elt_ar[0];
+        }
+        _elts = _elts.substring(_elts.indexOf("("));
+        _elts = _elts.replace("(","").replace(")","");
+		scale = parseFloat(_elts);
+        _eltr = _eltr.substring(_eltr.indexOf("("));
+        _eltr = _eltr.replace("(","").replace(")","").replaceAll(" ","");
+		let _eltr_ar = _eltr.split(",");
+		pointX = parseFloat(_eltr_ar[0]);
+		pointY = parseFloat(_eltr_ar[1]);
+    } else {
+        let _eltn = "translate(0,0) scale(1)";
+        target.setAttribute("transform", _eltn);
+    }
+
+    container.onmousedown = doMouseDown;
+    container.onmouseup = doMouseUp;
+    container.onmousemove = doMouseMove;
+    container.ondblclick = doRescale;
+    container.onwheel = onWheel;
+
+    var viewbox = container.getAttributeNS(null, "viewBox").split(" ");
+    scaleScreen = parseFloat(viewbox[2]) / window.innerWidth;
+
+    let _tcBox = target.getBBox();
+    px0 = _tcBox.width / 2;
+    py0 = _tcBox.height / 2;
+}
+
+function doRescale(e) {
+    pointX = 0;
+    pointY = 0;
+    scale = 1;
+    setTransform();
+    setSVGscale();
+}
+
+function setTransform() {
+    let _elt = target.getAttribute("transform");
+    let _pscale = _elt.indexOf("scale") - 1;
+    let _eltn = "translate(" + pointX + ", " + pointY + ")" + _elt.substr(_pscale);
+    target.setAttribute("transform", _eltn);
+
+}
+
+function setSVGscale() {
+    let _elt = target.getAttribute("transform");
+    let _pscale = _elt.indexOf("scale") + 6;
+    let _eltn = _elt.substring(0, _pscale)  + scale + ")";
+    target.setAttribute("transform", _eltn);
+
+}
+
+function doMouseDown(e) {
+    e.preventDefault();
+    Plast = { x: e.clientX, y: e.clientY};
+    panning = true;
+}
+
+function doMouseUp (e) {
+    panning = false;
+    e.preventDefault();
+    mousepos(e);
+}
+
+function doMouseMove (e) {
+    e.preventDefault();
+    if (!panning) {
+      return;
+    }
+    pointX += (e.clientX - Plast.x) * scaleScreen;
+    pointY += (e.clientY - Plast.y) * scaleScreen;
+    Plast = { x: e.clientX, y: e.clientY};
+    setTransform();
+}
+
+function onWheel (e) {
+    e.preventDefault();
+    let delta = e.deltaY; // (e.wheelDelta ? e.wheelDelta : -e.deltaY);
+    let oldscale = scale;
+    (delta > 0) ? (scale /= ZOOMfactor) : (scale *= ZOOMfactor);
+    let x = scale / oldscale * (pointX - e.clientX) + e.clientX;
+    let y = scale / oldscale * (pointY - e.clientY) + e.clientY;
+    // if ( Math.abs(x) \< MINxy)
+    //     x = 0;
+    // if ( Math.abs(y) \< MINxy)
+    //     y = 0;
+    // pointX = x; // e.clientX - xs * scale;
+    // pointY = y; // e.clientY - ys * scale;
+
+    setSVGscale();
+}    
+</script>
+`;
+}
+
+export function createDownloadSVG(svgText, filename, svgID)
 {
-    const data = new Blob([svgText], { type: 'image/svg+xml' });
+    // set the identifier for the current view
+    let _tfilename = document.getElementById("filename");
+    let _actYear = parms.GET("YEAR");
+    let _identifier = _tfilename.value + "(" + _actYear + ")";
+
+    // prepare svg for interaction with javascript-stub
+    let _svgText_ar = svgText.split(/\r?\n/);
+    let _svgL0 = _svgText_ar[0];
+    _svgL0 = _svgL0.substring(0, _svgL0.length-1) + ' onload="handleLoad(evt);">';
+    _svgText_ar[0] = _svgL0;
+    let _svgText = _svgText_ar.join('\n');
+
+    const data = new Blob([html_stub_I(), html_stub_II(_identifier, svgID), _svgText, zoom_pan_js(), html_stub_III()], { type: 'text/html' });
     const a = document.createElement('a');
 
     // If we are replacing a previously generated file we need to
@@ -249,7 +449,6 @@ export function dump_Htree(d) {
     let filenameWithoutSuffix = _fileName.slice(0, _fileName.lastIndexOf('.'));
 
     let _primID = d.id;
-    // createDownloadFromBlob(blob, filenameWithoutSuffix + "_H-" + _primID + ".tam");
 
     let _primName = d.givenname + '/' + d.surname + '/';
     let idb_key = _primName + "-" + _primID;

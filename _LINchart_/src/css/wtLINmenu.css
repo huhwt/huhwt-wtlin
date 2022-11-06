@@ -4,10 +4,11 @@
     align-content: space-around;
     border: 1px solid #cccccc;
     background-color: #f6f6f6;
-    margin-left: 30px;
+    margin-left: 5px;
+    padding-top: 5px;
 }
     .mcontainer > div {
-        width: 85%;
+        width: 90%;
         margin: 5px;
         padding: 2px 2px 2px 5px;
         text-align: center;
@@ -16,34 +17,38 @@
         background-color: #f6f6f6;
     }
     .mcontainer > p {
-        width: 86%;
+        width: 97%;
         margin: 5px;
         padding: 0px 1px 0px 5px;
         text-align: left;
         line-height: 16px;
         background-color: #f6f6f6;
     }
-
-    .mbutton {
-        background: transparent;
-        border-radius: 0.25em;
-        min-width: 60px;
-        border: 2px solid #cccccc;
-        box-sizing: border-box;
-        cursor: pointer;
-        font-size: 0.6em;
-        font-weight: 360;
-        padding: 4px 4px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        outline: none;
-        background: #cacaca;
-        color: rgb(128, 124, 124);
-        box-shadow: 0 0.5px 0 #0c8d72;
-        text-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.5);
-        transition: all 0.1s ease-in-out 0s;
+    .mcontainer > p > .filelabel {
+        width: 97%;
+        height: 18px;
     }
+
+.mbutton {
+    background: transparent;
+    border-radius: 0.25em;
+    min-width: 60px;
+    border: 2px solid #cccccc;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 0.6em;
+    font-weight: 360;
+    padding: 4px 4px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    outline: none;
+    background: #cacaca;
+    color: rgb(128, 124, 124);
+    box-shadow: 0 0.5px 0 #0c8d72;
+    text-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.5);
+    transition: all 0.1s ease-in-out 0s;
+}
     .mbutton:hover {
         background: #13d7ae;
         color: white;
@@ -58,12 +63,44 @@
 
 #menubar {
     position: absolute;
-    width: 340px;
-    height: 96%;
+    width: 282px;
     top: 0px;
     left: 0px;
     z-index: 1;
     background-color: rgba(250,250,250,0.75);
+}
+
+#menu_names {
+    border-width: 1px;
+    border-color: rgb(1, 1, 92);
+    border-style: double;
+    background-color: white;
+    height: 1.6em;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: rgb(19 116 196);
+    width: 100%;
+    padding-left: 0.5em;
+    margin-bottom: 12px;
+    overflow: auto;
+}
+
+.title {
+    padding: 10px 0px 10px 0px !important;
+    text-align: center;
+    font-family: Helvetica;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-top: 2px double rgba(17, 15, 130, 0.7);
+    border-bottom: 2px double rgba(17, 15, 130, 0.7);
+}
+
+.version {
+    font-size: 6pt;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: right;
+    margin-left: 3px;
+    font-weight: normal;
 }
 
 .dialbar {
@@ -77,23 +114,23 @@
 }
 
     .dialbar button {
-        background: transparent;
-        border-radius: 15em;
+        backgroundX: transparent;
+        border-radiusX: 15em;
         border: 2px solid #cccccc;
         box-sizing: border-box;
         cursor: pointer;
         font-size: 1rem;
         font-weight: 700;
         line-height: 1.4em;
-        padding: 10px 10px;
+        paddingX: 10px 10px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
         outline: none;
-        background: #10bc98;
-        color: #fff;
-        box-shadow: 0 3px 0 #0c8d72;
-        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+        backgroundX: #10bc98;
+        colorX: #fff;
+        box-shadowX: 0 3px 0 #0c8d72;
+        text-shadowX: 0 1px 1px rgba(0, 0, 0, 0.5);
         -webkit-transition: all 0.1s ease-in-out 0s;
         -moz-transition: all 0.1s ease-in-out 0s;
         -ms-transition: all 0.1s ease-in-out 0s;
@@ -170,6 +207,12 @@
         /*box-shadow: 2px 2px 2px gray;*/
     }
 
+        .addopt {
+            width: 32px;
+            padding: 0px !important;
+            margin: 5px 0 10px 3px !important;
+        }
+
         .dialbar fieldset legend label {
             font-size: 8pt;
             padding: 2px 5px 2px 5px;
@@ -183,7 +226,8 @@
 
                 .dialbar fieldset legend label.toggler:hover {
                     border: 1px solid #bbb;
-                    background: #f6f6f6;
+                    background: #13d7ae;
+                    color: white;
                 }
 
         .dialbar fieldset table {
@@ -225,9 +269,10 @@ td.paramL {
 }
 
 .LINmenu {
-    border-top: 1px solid rgb(17 15 130);
-    border-bottom: 1px solid rgb(17 15 130);
-    margin-left: 10px;
+    border-top: 1px solid rgba(17, 15, 130, 0.7);
+    border-bottom: 1px solid rgba(17, 15, 130, 0.7);
+    margin: 1px;
+    padding: 5px 3px 5px;
     z-index: 99;
 }
 .menu_toggler + .LINmenu {

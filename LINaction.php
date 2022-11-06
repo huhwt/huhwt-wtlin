@@ -102,7 +102,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '2.1.0.9';
+        return '2.1.7.1';
     }
 
     /**
@@ -271,7 +271,7 @@ class LINaction extends AbstractModule
         $jsImp[] = $this->assetUrl('js/LINaction_DBman.js');
         $jsImp[] = $this->assetUrl('js/LINaction.js');
 
-        // TODO : 'module' is hardcoded - how to get the name from foreign PHP-class 'ClippingsCartModuleEnhanced20'?
+        // TODO : 'module' is hardcoded - how to get the name from foreign PHP-class 'ClippingsCartModuleEnhanced'?
         $module_cce = '_huhwt-cce_';
         if (str_starts_with(Webtrees::VERSION, '2.0')) {
             $module_cce = '_huhwt-cce20_';

@@ -8,6 +8,12 @@
 
 // import {default as i18n} from "./i18n.js";
 
+export const LANGsA = [ "DE", "EN", "NL" ];
+export const LANGsAt = { "DE": ["German", "de"],
+                  "EN": ["English", "en"], 
+                  "NL": ["Dutch", "nl"]
+                };
+
 const TAMtext_de = `{"values":{
     "Yes": "Ja",
     "No": "Nein",
@@ -106,6 +112,9 @@ const TAMtext_de = `{"values":{
     "mb_UT": "Hintergrund Schwellw.:",
     "kc_Y": "J",
     "kc_M": "K",
+    "lang_German": "Deutsch",
+    "lang_English": "Englisch",
+    "lang_Dutch": "Niederländisch",
     "ZZZZ": "de"
 }}`;
 
@@ -364,8 +373,17 @@ const LINtext_de = `{"values":{
     "nl_names": "Namen",
     "nl_count": "Anzahl",
     "nl_all": "Alle",
+    "nl_checked": "checked",
     "show_nc_ncn": "Anzahl Knoten %{pnc} (%{pncn} ausgeblendet)",
     "show_nc_ncnC": "Anzahl Gruppen %{pnc} (%{pncn} ausgeblendet)",
+    "fi_export": "Export SVG",
+    "fi_SimStop": "Simulation Stop",
+    "fi_SimAnim": "Simulation Animieren",
+    "fi_LI": "Log-Info",
+    "zoom_in": "Ansicht vergrößern",
+    "cntrl_center": "Ansicht zentrieren",
+    "zoom_out": "Ansicht verkleinern",
+    "svg_Export_h1": "Klick und Ziehen: Verschieben | Maus-Rad: Zoom | Doppel-Klick: Reset",
     "ZZZL": "de"
 }}`;
 
@@ -398,8 +416,17 @@ const LINtext_en = `{"values":{
     "nl_names": "Names",
     "nl_count": "Count",
     "nl_all": "All",
+    "nl_checked": "checked",
     "show_nc_ncn": "Number of nodes %{pnc} (%{pncn} hidden)",
     "show_nc_ncnC": "Number of clusters %{pnc} (%{pncn} hidden)",
+    "fi_export": "Export SVG",
+    "fi_SimStop": "Simulation stop",
+    "fi_SimAnim": "Start simulation",
+    "fi_LI": "Log info",
+    "zoom_in": "Zoom in",
+    "cntrl_center": "Center the view",
+    "zoom_out": "Zoom out",
+    "svg_Export_h1": "Click and drag: Move | Mouse wheel: Zoom | Double-click: Reset",
     "ZZZL": "en"
 }}`;
 
@@ -454,7 +481,7 @@ const LINtext_nl = `{"values":{
     "nl_rbl_alln": "alle namen",
     "nl_rbl_actn": "actieve namen",
     "nl_snfc": "Selecteer namen - de eerste letter is ...",
-    "nl_snlb": "Namenlijst sorteren op:",
+    "nl_snlb": "Naamlijst sorteren op",
     "nl_names": "Namen",
     "nl_count": "Aantal",
     "nl_all": "Alle",
@@ -471,9 +498,9 @@ function load_TAMtext(_locale) {
             break;
         case 'nl':
             _text = TAMtext_nl;
-        break;
+            break;
         default:
-        _text = TAMtext_de;
+            _text = TAMtext_de;
     }
     // Prepare - remove newlines and double whitespaces to get proper JSON-ready text
     _text = _text.replace(/[\r]/g, '');
@@ -490,9 +517,9 @@ function load_LINtext(_locale) {
             break;
         case 'nl':
             _text = LINtext_nl;
-        break;
+            break;
         default:
-        _text = LINtext_de;
+            _text = LINtext_de;
     }
     // Prepare - remove newlines and double whitespaces to get proper JSON-ready text
     _text = _text.replace(/[\r]/g, '');
@@ -511,6 +538,8 @@ export function switch_locale(_locale) {
 
     let LINdata = load_LINtext(_locale);
     i18n.translator.add(LINdata);
+
+    console.log("switch_locale", _locale);
 }
 
 switch_locale('en');

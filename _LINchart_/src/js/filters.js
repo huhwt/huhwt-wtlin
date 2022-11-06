@@ -361,7 +361,8 @@ function make_liHead(_liHead) {
     let soR = document.createElement("div");
     soR.classList = "nlheadR";
     //Create radiobuttons dynamically
-    make_liHead_rb("checked", "CB", soR);
+    _rb_label = i18n('checked');
+    make_liHead_rb(_rb_label, "CB", soR);
     _rb_label = i18n('nl_names');
     make_liHead_rb(_rb_label, "name", soR);
     _rb_label = i18n('nl_count');

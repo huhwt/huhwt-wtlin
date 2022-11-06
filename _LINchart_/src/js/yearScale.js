@@ -265,6 +265,9 @@ export class YEARSCALE
         document.querySelector("#yearScaleD").addEventListener("click", function(event) {
             clickYear(event, ysObj);
         });
+        // document.querySelector("#yearScaleC").addEventListener("click", function(event) {
+        //     clickYear(event, ysObj);
+        // });
     }
 
     hideYearScale()
@@ -318,6 +321,7 @@ export class YEARSCALE
         } else {
             this.transformSVG_0(this.instance, linObj, linObj.s_transform);
             setCrosshairX(this.instance, null);
+            linObj.test_persList("OFF");
         }
     }
     transformSVG_gNact(gNact, linObj, _s_transform) {

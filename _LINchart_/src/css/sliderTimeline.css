@@ -26,17 +26,17 @@
 #sliderTimeline {
     position: absolute;
     top: 0;
-    left: 340px;
     height: 40px;
     width: 100%;
     display: flex;
-    margin-left: 100px;
+    margin-left: 110px;
     flex-direction: row;
     justify-content: flex-start;
     z-index: 5;
 }
 
 .sliderTimelineB {
+    display: flex;
     width: 100px;
     justify-content: space-between;
 }

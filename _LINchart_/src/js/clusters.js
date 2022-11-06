@@ -13,15 +13,26 @@ import * as parms from "./parms.js";
 import * as uti from "./utils.js";
 
 export const CLUSTERsA = [ "surName", "soundDM", "soundSTD" ];
-export const CLUSTERsAt = { "surName": ["Surname is taken directly", "Sn"],
-                            "soundDM": ["Surname implemented according to Soundex-DaitchMokotoff", "Dm"], 
-                            "soundSTD": ["Surname implemented according to Soundex-Russell", "Std"]
-                          };
+const CLUSTERsAt = { "surName": ["Surname is taken directly", "Sn"],
+                     "soundDM": ["Surname implemented according to Soundex-DaitchMokotoff", "Dm"], 
+                     "soundSTD": ["Surname implemented according to Soundex-Russell", "Std"]
+                    };
 
 var cAmode = "soundDM";
 
 export function getCLUSTERsA() {
     return this.CLUSTERsA[cAmode];
+}
+
+export function getCLUSTERsAt(cAmode) {
+    if (cAmode) {
+        let cAtext = CLUSTERsAt[cAmode];
+        let _text = i18n(cAtext[0]);
+        _text += ' | ' + cAtext[1];
+        return _text;
+    } else {
+        return CLUSTERsAt;
+    }
 }
 
 var Ycount = 11;        // rowcount

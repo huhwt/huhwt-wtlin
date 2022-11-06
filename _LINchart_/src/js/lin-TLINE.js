@@ -699,6 +699,22 @@ function makeYPOS(Ynodes, dmanObj) {
         return data_xx;
     }
 
+    function Tsortbd(data_xx) {
+        for (let d of data_xx.children) 
+        {
+            d.children.sort((a, b) => {
+                let a_bd = a.ynode.bdate;
+                let b_bd = b.ynode.bdate;
+                if(a_bd < b_bd)
+                    return -1;
+                if(a_bd > b_bd)
+                    return 1;
+                return 0;
+            });
+            }
+        return data_xx;
+    }
+
     let data_YP = ({
         children: Array.from(
             d3.group(
@@ -706,14 +722,16 @@ function makeYPOS(Ynodes, dmanObj) {
                     group: n.Yvalue,
                     pvalue: 1,
                     ynode: n
-                })
-            ),
-            d => d.group
-            ),
+                    })
+                ),
+                d => d.group
+                ),
             ([, children]) => ({children})
-    )});
+        )
+    });
     let nodes_YP = Tpack(data_YP, dmanObj.width, dmanObj.height);
     data_YP = Tvalue(data_YP);
+    data_YP = Tsortbd(data_YP);
 
     console.log("tnodesYP", nodes_YP);
     parms.oSET("tnodesYP", nodes_YP);
@@ -922,6 +940,8 @@ function onMouseClick(event, d)
                     let _gy = d.nodeID;
                     let ysObj = linObj.DATAman.YEARscale;
                     ysObj.clickedYear(linObj, _gy);
+                    let ysCenter = ysObj.offset + ysObj.ysCenter;
+                    listPERSONs(linObj, d, ysCenter);
             } else {
                 d.fx = d.fy = null;
                 d.sr = 1;
@@ -1152,6 +1172,52 @@ function showLINKS(linObj, node) {
         linObj.SVG_LINKS.remove();
         TLINEdrawLinks(linObj);
     }
+}
+
+function listPERSONs(linObj, gnode, scY) {
+    let listPERSONs = document.getElementById("perslist");
+    let _ID = gnode.nodeID;
+    listPERSONs.innerHTML = `
+    <div id="persons_liHead">
+        <!-- content generated  -->
+    </div>
+    <ul id="persons_liLines">
+        <!-- content generated  -->
+    </ul>
+`;
+    let _liLines = document.getElementById("persons_liLines");                    // reset persons_list
+    _liLines.innerHTML = "";
+    for (let gc of gnode.children) {
+        let node = gc.ynode;
+        let yfn = node.getFullName();
+        // make a HTML-'li'
+        let liItem = document.createElement("li");
+        liItem.classList = 'nlulli';
+        let spX = document.createElement( "div" );
+        //Create the text node for key after the the checkbox
+        let spL = document.createElement( "span" );
+        let textL = document.createTextNode(yfn);
+        //Append the text node to the <li>
+        spL.appendChild(textL);
+        spX.appendChild(spL);
+        // //Create the text node for value after the the checkbox
+        // let spR = document.createElement( "span" );
+        // let textR = document.createTextNode(value);
+        // //Append the text node to the <li>
+        // spR.appendChild(textR);
+        // spX.appendChild(spR);
+        liItem.appendChild(spX);
+
+        //Append the <li> to the <ul>
+        _liLines.appendChild(liItem);
+}
+
+    listPERSONs = d3.select("#perslist");
+    listPERSONs
+        .style("left", scY + "px")
+        .style("display", null);
+    linObj.TLINElistP = true;
+
 }
 
 function showPERSONs(linObj, node) {

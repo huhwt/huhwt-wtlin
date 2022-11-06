@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// wsliderTLAGE
+// wtLINEAGE
 //
 // i18n functionality added by huhwt
 // Web storage functionality added by huhwt
@@ -10,9 +10,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 import * as gui from "./guiparts.js";
+import { showIDBstate } from "./dbman.js";
 import { TICKCOUNTER_html } from "./tickcounter.js";
-// import { default as i18n } from "./i18n.js";
-import { switch_locale } from "./translations.js";
+import * as translate from "./translations.js";
 import * as parms from "./parms.js";
 import * as DBman from "./dbman.js";
 import { onChangeFile, openNewTab, loadDataFromIDB } from "./interfaces.js";
@@ -20,7 +20,7 @@ import { createDownloadSVG, dump_Htree } from "./export.js";
 import * as sliderTL from "./sliderTimeline.js";
 import { showNameList, close_namelist } from "./filters.js";
 import * as Rhelper from "./RENDERhelpers.js";
-import { CLUSTERsAt } from "./clusters.js";
+import { getCLUSTERsAt } from "./clusters.js";
 import { CLUSTERexec, CLUSTERexec_DO } from "./lin-CLUSTER.js";
 import { TREEexec } from "./lin-TREE.js";
 import * as uti from "./utils.js";
@@ -276,16 +276,19 @@ function mouseoverContour(event, c)
 {
     let renderer = parms.oGET("RENDERER");
     if (parms.GET("USE_MOUSEOVER")) {
+        let sSuff = renderer.instance.get_sKENN();
+        let pKENN = "#pattern" + sSuff;
         renderer.SVG_CONTOURS
             .attr("fill",
                 function(d)
                 {
                     // Currently selected one will be always at 0.5
-                    if (c.value === d.Yvalue)
+                    if (c.value === d.value)
                     {
-                        return "url(#myPattern) #000";//chromadepth(0.5);
+                        let _url = "url(" + pKENN + ") #000";
+                        return _url;//chromadepth(0.5);
                     }
-                    return renderer.SVG_COLORMAP(d.Yvalue);
+                    return renderer.SVG_COLORMAP(d.value);
                 }
             );
     }
@@ -411,7 +414,7 @@ function toggleShowTooltips()
     registerTooltipEventhandler();
 }
 //---------------------------------------------------------------------------
-export function toggleLINmenu(_doShow=null)
+export function toggleLINmenu(linObj, _doShow=null)
 {
     let _shLM = _doShow;
     if (_doShow === null) {
@@ -421,10 +424,10 @@ export function toggleLINmenu(_doShow=null)
         parms.SET("SHOW_LINmenu", _shLM);
     }
     let _mbar = d3.select('#menubar');
-    let _left = _shLM ? '0px' : '-341px';
+    let _left = _shLM ? '0px' : '-' + linObj.mb_width;
     _mbar.transition().duration(200).style('left', _left);
     let _main = d3.select('#main');
-    _left = _shLM ? '341px' : '0px';
+    _left = _shLM ? linObj.mb_width : '0px';
     _main.transition().duration(200).style('left', _left);
 }
 //---------------------------------------------------------------------------
@@ -553,6 +556,7 @@ export function set_tamDefaultParameters()
 export function Wswitch_locale(_locale) {
     let active_language = i18n("ZZZZ");
     if (active_language != _locale) {
+        console.log("Wswich_locale", _locale);
         parms.SET("ACTIVE_LOCALE", _locale);
         initMenubar();
         set_tamMENUBAR_actions();
@@ -564,7 +568,7 @@ export function initMenubar()
 {
     let active_language = i18n("ZZZZ");
     if (active_language != parms.GET("ACTIVE_LOCALE")) {
-        switch_locale(parms.GET("ACTIVE_LOCALE"));
+        translate.switch_locale(parms.GET("ACTIVE_LOCALE"));
         let mbHTML = gui.linMENUBAR_html();
         let MBelmnt = document.getElementById("menubar");
         MBelmnt.innerHTML = mbHTML;
@@ -585,6 +589,7 @@ export function initMenubar()
     YSprep();
     DSprep();
     YBprep();
+    LBprep();
 
     d3.select("#settings_dataset").property("value", parms.GET("FILENAME"));
 
@@ -644,6 +649,8 @@ export function initMenubar()
 function set_linMENUBAR_actions()
 {
     let renderer = parms.oGET("RENDERER");
+    if (!renderer)
+        return;
 
     // // show active menu on top
     // d3.selectAll(".LINmenu").on("mouseenter", function(e) {
@@ -771,9 +778,15 @@ function toggleShowCa()
 }
 //---------------------------------------------------------------------------
 
+
 function DSprep() {
+    let renderer = parms.oGET("RENDERER");
+    if (!renderer)
+        return;
+
     let cA_elmnt = document.getElementById("clustersA");
-    cA_elmnt.title = i18n('Filtering mode') + ": " + i18n(CLUSTERsAt.soundDM);
+    let cAtext = getCLUSTERsAt(renderer.DATAman.cAmode);
+    cA_elmnt.title = i18n('Filtering mode') + ": " + cAtext;
     d3.select("#clustersA").on("click", null);
     d3.select("#clustersA").on("click", function (e) {
         toggleShowCa();
@@ -782,8 +795,9 @@ function DSprep() {
     let cAselmnt = document.getElementById("clustersAsel");
     cAselmnt.innerHTML = '';
     let CsAt_i = 0;
+    let CLUSTERsAt = getCLUSTERsAt();
     for (const key in CLUSTERsAt) {
-        let _text = CLUSTERsAt[key];
+        let _text = getCLUSTERsAt(key);
         let cAsd = document.createElement("div");
         let cAsb = document.createElement('button');
         cAsb.classList = "btn btn_sm button__50";
@@ -832,6 +846,9 @@ function DVclicked(event, _this) {
         let _actF = document.getElementById("opCluster");
         _actF.classList.toggle("off");                      // ... hide radio buttons
     }
+    if (_SIMmode == "TLINE") {                              // old SIMmode is 'TLINE' ...
+        linObj.test_persList();
+    }
 
     let _actB = document.querySelector(".btn.active");
     if (_actB) _actB.classList.toggle("active");
@@ -845,6 +862,9 @@ function DVclicked(event, _this) {
     parms.SET("SIMmode", valueDO);
 
     renderer.createForceGraph(valueDO, linObj);
+    if (valueDO == "TLINE") {                               // new SIMmode is 'TLINE' ...
+        linObj.test_persList("ON");
+    }
 }
 
 /**
@@ -852,13 +872,16 @@ function DVclicked(event, _this) {
  */
 function DSclicked(event, _this) {
     let renderer = parms.oGET("RENDERER");
+    if (!renderer)
+        return;
+
     let valueDO = _this.getAttribute("data-sound");
     if (valueDO == renderer.DATAman.cAmode) return;
 
     let _bs = document.getElementById("clustersA");
     _bs.innerHTML = valueDO;
-    let _csAt = CLUSTERsAt[valueDO];
-    _bs.title = i18n('Filtering mode') + ": " + i18n(_csAt[0]);
+    let _csAt = getCLUSTERsAt[valueDO];
+    _bs.title = i18n('Filtering mode') + ": " + _csAt;
     document.querySelector("#clustersAsel").style.display = "none";
 
     let _csAt_i = parseInt(_this.getAttribute("sound-index"));
@@ -948,39 +971,73 @@ function YBprep()
     YBbtn.setAttribute('data-year', _YearE);
     YBeld.appendChild(YBbtn);
 }
+//---------------------------------------------------------------------------
+
+function LBprep()
+{
+    let active_language = i18n("ZZZZ");
+
+    let cLselmnt = document.getElementById("LANGsel");
+    cLselmnt.innerHTML = '';
+    let LANGSsAt = translate.LANGsAt;
+    for (const key in LANGSsAt) {
+        let _vals = LANGSsAt[key];
+        let cLsd = document.createElement("input");
+        cLsd.classList = "btn btn-sm btn-smb button__lang";
+        cLsd.type = "button";
+        cLsd.value = _vals[1];
+        if (active_language == _vals[1])
+            cLsd.classList += " active";
+        cLsd.title = i18n("lang_" + _vals[0]);
+        // cLsd.setAttribute('style', "border:1px solid gray");
+        let _id = "btn_l_" + _vals[1];
+        cLsd.id = _id;
+        cLselmnt.appendChild(cLsd);
+    }
+}
 
 //---------------------------------------------------------------------------
+function close_toggle(elemID) {
+    let _mt = document.getElementById(elemID);
+    _mt.checked = false;
+}
 function set_tamMENUBAR_actions()
 {
     let renderer = parms.oGET("RENDERER");
-
+    if (!renderer)
+        return;
     //  Load From IDB
     d3.select("#btnLoad").on("click", function(event) {
         showIDBstate(event);
+        close_toggle("toggle_os");
     });
     //  Load File
     d3.select("#browse").on("change", function(event) {
         onChangeFile(event);
+        close_toggle("toggle_os");
     });
     d3.select("#fakeBrowse").on("click", function(event) {
         document.getElementById('browse').click();
+        close_toggle("toggle_os");
     });
     //  Save
     d3.select("#btnSave").on("click", function (e) {
         renderer.saveData();
+        close_toggle("toggle_os");
     });        
     d3.select("#btnSaveF").on("click", function (e) {
         renderer.saveDataF();
+        close_toggle("toggle_os");
     });        
     d3.select("#btnSvgExport").on("click", function (e) {
         let _rkenn = renderer.svgKENN;
         let _elem = 's' + _rkenn;
-        let _fnSVG = _rkenn + '.svg';
-        createDownloadSVG(document.getElementById(_elem).outerHTML, _fnSVG);
+        let _fnSVG = _rkenn + '.html';
+        createDownloadSVG(document.getElementById(_elem).outerHTML, _fnSVG, _elem);
     });        
     //  Interaction
     d3.select("#bt_toggleMenu").on("click", function (e) {
-        toggleLINmenu();
+        toggleLINmenu(renderer.instance);
     });
 
     d3.select("#settings_freeze").on("click", function (e) {
@@ -1163,15 +1220,16 @@ function set_tamMENUBAR_actions()
     d3.selectAll("a[data-info]").on("click", function (e) {
         let valueInfo = this.getAttribute("data-info");
         e.stopPropagation();
+        let linObj = renderer.instance;
         if(valueInfo == "print") {
-            console.log(renderer.FORCE_SIMULATION);
-            console.log(renderer.NODES);
-            console.log(renderer.LINKS);
+            console.log("print Simulation", renderer.FORCE_SIMULATION);
+            console.log("print yNODES", renderer.yNODES);
+            console.log("print yLINKS", renderer.yLINKS);
         } else if(valueInfo == "export") {
             let _rkenn = renderer.svgKENN;
             let _elem = 's' + _rkenn;
-            let _fnSVG = _rkenn + '.svg';
-            createDownloadSVG(document.getElementById(_elem).outerHTML, _fnSVG);
+            let _fnSVG = _rkenn + '.html';
+            createDownloadSVG(document.getElementById(_elem).outerHTML, _fnSVG, _elem);
         } else if(valueInfo == "stop") {
             let _siMODE = parms.GET("SIMmode");
             if (_siMODE == "TREE") {
@@ -1196,7 +1254,6 @@ function set_tamMENUBAR_actions()
         } else if(valueInfo == "rerun") {
             rerunSIM(renderer);
         } else if(valueInfo == "center") { 
-            let linObj = renderer.instance;
             var _SVG = linObj.SVG;
             // let the_CANVAS = linObj.CANVAS._groups[0][0];
             // let _transform = the_CANVAS.getAttribute('transform');
@@ -1211,6 +1268,36 @@ function set_tamMENUBAR_actions()
             // let the_CANVASu = linObj.CANVAS._groups[0][0];
             // let _transformu = the_CANVASu.getAttribute('transform');
             // console.log("center pre:", _transform,"post:", _transformu);
+        } else if(valueInfo == "zoom-in") {
+            let _transform = linObj.s_transform;
+            let _scale = _transform.k * parms.ZOOMfactor;
+            _transform.k = _scale;
+            linObj.s_transform.k = _transform.k;
+            linObj.s_transform.x = _transform.x;
+            linObj.s_transform.y = _transform.y;
+            let _SVG = linObj.SVG;
+            _SVG.call(
+                linObj.zoomO.transform,
+                d3.zoomIdentity.translate(_transform.x, _transform.y).scale(_transform.k)
+            );
+            d3.select('#zoom_value').text(_transform.k*100);
+            d3.select('#x_value').text(_transform.x);
+            d3.select('#y_value').text(_transform.y);
+        } else if(valueInfo == "zoom-out") {
+            let _transform = linObj.s_transform;
+            let _scale = _transform.k / parms.ZOOMfactor;
+            _transform.k = _scale;
+            linObj.s_transform.k = _transform.k;
+            linObj.s_transform.x = _transform.x;
+            linObj.s_transform.y = _transform.y;
+            let _SVG = linObj.SVG;
+            _SVG.call(
+                linObj.zoomO.transform,
+                d3.zoomIdentity.translate(_transform.x, _transform.y).scale(_transform.k)
+            );
+            d3.select('#zoom_value').text(_transform.k*100);
+            d3.select('#x_value').text(_transform.x);
+            d3.select('#y_value').text(_transform.y);
         }
     });
     d3.select('#alpha_value').on("click", function(e) {
@@ -1227,17 +1314,17 @@ function set_tamMENUBAR_actions()
 export function rerunSIM(renderer) {
     parms.SET("ENERGIZE", true);
     let _aF = renderer.FORCE_SIMULATION.alpha();
-    _aF += 0.1;
+    _aF += 0.2;
     let _aFm = 1;
     let _aT = parms.GET("ALPHA_target");
     if (renderer.SIMmode == "TREE") {
         renderer.RENDERhelper.resetScalarField(renderer.instance);
-        renderer.forceRefresh = true;
+        // renderer.forceRefresh = true;
         parms.SET("SHOW_YEARVALUES", false);
         registertooltipYVeventhandler();
         _aFm = parms.GET("ALPHA_T");
         if (_aF > _aFm) { _aF = _aFm; }
-        renderer.FORCE_SIMULATION
+        renderer.instance.FORCE_SIMULATION
             .alpha(_aF)
             .alphaTarget(_aT)
             .restart()
@@ -1245,7 +1332,7 @@ export function rerunSIM(renderer) {
     } else {
         _aFm = parms.GET("ALPHA_x");
         if (_aF > 1) { _aF = 1; }
-        renderer.FORCE_SIMULATION
+        renderer.instance.FORCE_SIMULATION
             .alpha(_aF)
             .restart()
             ;
@@ -1480,159 +1567,6 @@ function registertooltipYVeventhandler(linObj)
         }
         d3.select("#tooltipYV").style("visibility", "hidden");
     }
-}
-
-export function closeModalIDB()
-{
-    document.querySelector("#overlay").style.display = "none";
-    let ovHTML = gui.FILE_MODAL();
-    let OVelmnt = document.getElementById("overlay");
-    OVelmnt.innerHTML = ovHTML;
-}
-
-export function showIDBstate() {
-    let ovHTML = gui.IDB_INDEX();
-    let OVelmnt = document.getElementById("overlay");
-    OVelmnt.innerHTML = ovHTML;
-    d3.select("#overlay").on("click", function(event) {
-        closeModalIDB(event);
-    });
-
-    const _liHead = document.getElementById("idbstores");
-    _liHead.innerHTML = "";
-    let db;
-    const mkeyList = new Map();
-    const DB = new Promise((resolve, reject) => {
-        const request = indexedDB.open("wtLIN");
-        request.onsuccess = () => resolve(request.result);
-    });
-    const idbSlist = new Promise((resolve, reject) => {
-        DB.then(idb => {
-            db = idb;
-            let dbos = idb.objectStoreNames;
-            let _dbos = Array.from(dbos);
-            resolve(_dbos);
-        });
-    });
-    idbSlist.then(snames => {
-            let _snames = snames;
-                snames.forEach(sname => {
-                    const liItem = document.createElement("li");
-                    liItem.classList = 'ulli';
-                    _liHead.appendChild(liItem);
-                    const param = document.createElement("p");
-                    param.innerHTML = sname;
-                    liItem.appendChild(param);
-                    const showButton = document.createElement('button');
-                    liItem.appendChild(showButton);
-                    showButton.innerHTML = '>';
-                    showButton.title = 'Click to Show Items';
-                    // here we are setting a data attribute on our show button to say what task we want shown if it is clicked!
-                    showButton.setAttribute('key-task', sname);
-                    showButton.onclick = function(event) {
-                      showIDBkeys(event);
-                    };
-                    // liItem itself will do nothing
-                    liItem.onclick = function(event) {
-                        event.stopPropagation();
-                    };
-                });
-                document.querySelector("#overlay").style.display = "inline";
-        });
-}
-
-function showFromIDB(event) {
-    let actNodeE = event.target;
-    let dstring = event.target.getAttribute("show-task");
-    event.stopPropagation();
-    closeModalIDB();
-    let dstrings = dstring.split("|");
-    let dbName = "wtLIN";
-    let dbStore = dstrings[0];
-    let dbKey = dstrings[1];
-    loadDataFromIDB(dbName, dbStore, dbKey);
-}
-
-export function showIDBkeys(event) {
-    let actNodeE = event.target;
-    let actNode = actNodeE.parentNode;
-    let sname = event.target.getAttribute("key-task");
-    event.stopPropagation();
-    let db;
-    const DB = new Promise((resolve, reject) => {
-        const request = indexedDB.open("wtLIN");
-        request.onsuccess = () => {
-            db = request.result;
-            showIDBkeysL(actNode, db, sname, actNodeE);
-            resolve(db);
-        };
-    });
-}
-
-function showIDBkeysL(actNode, db, sname, actNodeE) {
-    const DBtactn = new Promise((res, rej) => {
-        let taction = db.transaction(sname, "readonly");
-        let ostore = taction.objectStore(sname);
-        let req = ostore.openCursor();
-
-        let _keyList = [];
-        req.onsuccess = function(e) {
-            let curs = e.target.result;
-            if (curs) {
-                let _key = curs.primaryKey;
-                _keyList.push(_key);
-                curs.continue();
-            } else {
-                showIDBkeysLdo(actNode, sname, _keyList, actNodeE);
-            }
-        };
-        req.oncomplete = (ev) => {
-            res(_keyList);
-        };
-        req.onerror = (ev) => {
-            rej(ev);
-        };
-    });
-}
-
-function showIDBkeysLdo(actNode, sname, keyList, actNodeE) {
-    const oliHead = document.createElement("ol");
-    if (keyList.length > 0) {
-        keyList.forEach( idbKey => {
-            const oliItem = document.createElement("li");
-            // oliItem.innerHTML = ':';
-            oliItem.classList = 'olli';
-            oliHead.appendChild(oliItem);
-            oliItem.title = 'Load from Store';
-            const param = document.createElement("p");
-            param.innerHTML = idbKey;
-            oliItem.appendChild(param);
-            // here we are setting a data attribute on our param to say what task we want done if it is clicked!
-            param.setAttribute('show-task', sname+'|'+idbKey);
-            param.onclick = function(event) {
-                showFromIDB(event);
-            };
-            const delButton = document.createElement('button');
-            oliItem.appendChild(delButton);
-            delButton.innerHTML = 'E';
-            delButton.title = 'Erase from Store';
-            // here we are setting a data attribute on our del button to say what task we want done if it is clicked!
-            delButton.setAttribute('del-task', sname+'|'+idbKey);
-            delButton.onclick = function(event) {
-                delIDBkey(event);
-            };
-        });
-    } else {
-        const param = document.createElement("p");
-        // oliItem.innerHTML = ':';
-        oliHead.appendChild(param);
-        param.innerHTML = 'Number of entries in this Store: 0';
-    }
-    actNode.appendChild(oliHead);
-    actNodeE.innerHTML = '';       // show button will be set inactiv
-    actNodeE.onclick = function(event) {
-        event.stopPropagation();
-    };
 }
 
 export function updatencounter(linObj) {

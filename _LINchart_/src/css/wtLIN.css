@@ -30,7 +30,7 @@ h2 {
     font-size: 1em;
 }
 h3 {
-    font-size: 0.8em;
+    font-size: 1em;
 }
 
 label {
@@ -62,10 +62,12 @@ canvas {
     line-height: 1;
 }
 
+#bt_toggleMenu {
+    left: 282px;
+}
 .toggle__button {
   position: absolute;
   top: 0px;
-  left: 341px;
   z-index: 100;
   background-color: rgba(200,200,200,0.9);
   border: none;
@@ -74,13 +76,13 @@ canvas {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 32px;
 }
 .toggle__button:hover {
     color: #74818d;
     background: #13d7ae;
     text-decoration: none;
     color: white;
+    font-size: 1.5rem !important;
 }
 #lockSearch {
   height: 20px;
@@ -250,9 +252,16 @@ rect {
 
 .button__99 {
     display: block;
+    height: 24px;
+    width: auto;
+    margin: 3px;
+    font-size: 0.875rem !important;
+}
+.button__99.active {
     height: 36px;
     width: 99%;
-    margin: 3px;
+    font-size: 1rem !important;
+    padding: 0 !important;
 }
 .button__90 {
     display: block;
@@ -266,6 +275,22 @@ rect {
     width: 53%;
     margin: 3px;
 }
+.button__lang {
+    display: block;
+    height: 24px;
+    width: auto;
+    margin: 3px;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important; 
+}
+.button__lang.active {
+    display: block;
+    height: 36px;
+    width: 43%;
+    margin: 3px;
+    font-size: 1rem !important;
+    padding: 0 !important;
+} 
 .button__50 {
     display: block;
     height: 36px;
@@ -294,7 +319,7 @@ rect {
 }
 
 .time {
-  margin: 10px 0 10px 0;
+  margin: 6px 0 10px 24px;
   width: 80%;
   text-align: center;
   display: flex;
@@ -302,6 +327,15 @@ rect {
   justify-content: space-between;
 }
 
+.langs {
+    margin: -16px 0 0 10px;
+    width: 160px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+  
 .sounds {
   margin: 10px 0 10px 0;
   text-align: center;
@@ -315,6 +349,7 @@ rect {
     text-align: center;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 .views__B {
     display: block;
@@ -341,7 +376,7 @@ rect {
     justify-content: space-between;
     height: 33px;
     width: 34%;
-    margin: 2px;
+    margin: 2px 2px 2px 0px;
 }
 
 #viewportDim {
@@ -404,6 +439,18 @@ rect {
     padding: 0.4em 0.4em;
     margin: 2px;
     white-space: pre-line;
+}
+
+.perslist {
+    position: absolute;
+    top: 200px;
+    width: 400px;
+    display: block;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    z-index: 3;
 }
 
 .fvisible.off {
@@ -515,7 +562,7 @@ bullsEye {
     user-select: none;
     background-color: transparent;
     border: 1px solid transparent;
-    padding: .375rem .75rem;
+    padding: .375rem;
     font-size: 1rem;
     line-height: 1.5;
     border-radius: .25rem;
@@ -540,6 +587,18 @@ bullsEye {
     .btn:not(:disabled):not(.disabled) {
         cursor: pointer;
     }
+
+.btn-sm {
+    padding: 0 .25rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: .2rem;
+}
+
+.btn-smb {
+    border: 2px solid !important;
+    border-color: #cccccc !important;
+}
 
 .d3-zoom-controls {
     position: absolute;
@@ -629,4 +688,7 @@ bullsEye {
 #alpha_value:hover { font-size: 1.25em;  }
 .controls .alpha .alpha_bar:active #alpha_value { background-color: #222 }
 .controls .alpha .alpha_bar #zoom_value { background-color: #555; border-radius: 1px; flex-basis: 100% }
-.controls-btn { margin-left: 140px;}
+.controls-btn { 
+    display: flex;
+    margin-left: 80px;
+}

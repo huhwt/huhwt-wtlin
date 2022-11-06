@@ -1,6 +1,7 @@
 # IDE-files
 .vscode
-# 
+#
+*.bak 
 mix-manifest.json
 mix.js.map
 # working-directories

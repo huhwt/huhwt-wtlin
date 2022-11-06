@@ -9,10 +9,9 @@ Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-
 
 Die hier vorgestellte Version kombiniert die Konzepte der Originale mit Elementen aus TAM und eigenen Erweiterungen.
 
-Das Modul ist noch in laufender Entwicklung, noch nicht alle Aktionen führen zu den gewünschten Ergebnissen.  Die primären Funktionen sind jedoch stabil, so dass ich es für vertretbar halte, es als **Pre-Release** zu veröffentlichen.
+Das Modul ist im wesentlichen fertig entwickelt, wiewohl es sicher noch nicht allen Ansprüchen genügen wird ...
 
 Was noch zu erledigen ist:
-* Storage-Management - Lesen und Schreiben von/auf Datei funktioniert, in/aus IndexedDB funktioniert nicht
 * Gnitches - Einige Einstellungen wirken in allen Funktionen, andere nur lokal in ihrem Zweig, da muss noch nachgearbeitet werden
 * Feintuning und Review - es funktioniert ... aber elegant ist es nicht wirklich. Anregungen und Hinweise werden gerne entgegen genommen ... 
 
@@ -44,6 +43,10 @@ Mit dieser technischen Plattform ist die Darstellung hochdynamisch und kann unmi
 >> (Es gibt eine Kehrseite: Bei großen Knotenzahlen - in der Größenordnung von mehreren Tausend Personen - wird es (auch abhängig von der Leistung des lokalen Rechners) einigermaßen dauern, bis sich die Darstellung aufbaut und länger noch, bis sie relative Stabilität erlangt hat. Ein Trostpflaster: im Test wurden auch Knotenzahlen von 10.000+ mit mehr als 30.000 Verknüpfungen langfristig stabil gehandhabt.)
 
 Anders als [TAM](https://github.com/huhwt/huhwt-wttam), wo die Familien ein zentrales Element der Darstellung sind, stellt LIN die Verbindung von Eltern und Kindern jeweils einzeln dar und die Beziehung zwischen den Eltern als eigene optisch abgesetzte Verknüpfung.
+
+* Die Bezugszeit ist eine zentrale Stellgröße und kann verschieden eingestellt und verändert werden. Außerhalb des Bezugszeitraums liegende Knoten werden automatisch aus- und, wird der Bezugszeitraum erweitert, auch wieder eingeblendet.
+
+* Daneben hat man auch die Option, die Darstellung nach Familiennamen zu filtern, dergestalt, dass nur Knoten und Verbindungen von Personen mit ausgewählten Namen angezeigt werden. Die Auswahl kann man über eine ziemlich flexible Liste vornehmen, die Filterdefinitionen werden gespeichert und können beliebig aktiviert werden.
 
 Die primäre Darstellung ist die Baum-Ansicht mit den Verknüpfungen. Alternativ können die Personen auch in einer Zeitleiste oder nach Familiennamen gruppiert dargestellt werden.
 
@@ -85,7 +88,11 @@ Am unteren Rand des Bildschirms werden der aktuelle Bezugszeitpunkt sowie die An
 #### Allgemeine Steuerflächen
 Schließlich gibt es noch Aktions-Schaltflächen oben rechts auf dem Bildschirm:
 
-Mittels der obersten Schaltfläche - ein Drucker-Symbol - lässt sich die aktuelle Darstellung als SVG exportieren.
+Mittels der obersten Schaltfläche - ein Drucker-Symbol - lässt sich die aktuelle Darstellung exportieren.
+> Ursprünglich wurde hier nur der reine SVG-Inhalt exportiert, das hatte allerdings den Nachteil, dass die SVG-Ansicht nur noch über die globalen Browser-Features betrachten liess - bei großen Baum-Ansichten war damit z.B. keine sinnvolle Betrachtung am Bildschirm möglich, da Informationen selbst bei maximaler Zoom-Stufe nicht lesbar gewesen sind.
+
+Der Export erfolgt als eigenständige HTML-Ansicht, mit eigener Zoom-and-Pan Logik, so dass sich die Ansicht nach Bedarf verschieben und frei skalieren lässt. Somit ist auch bei großen Baum-Ansichten immer die Möglichkeit gegeben, einzelne Details in genügender Schärfe näher zu betrachten.
+* Exportiert wird nur die jeweilige grafische Darstellung ohne die unterliegenden Daten, es gibt keine Tooltips und die Knoten sind auch nicht mehr animiert.
 
 Die anderen Schaltflächen stehen im Zusammenhang mit der technischen Plattform, welche die Darstellung erzeugt. Wie erwähnt handelt sich um eine D3js-Force-Simulation.
 >Die Idee dahinter ist, dass sich eine Darstellung aus dem Wechselspiel von anziehenden und abstoßenden Kräften ergibt, welche iterativ in einer Vielzahl von Durchläufen auf die Nodes wirken. Anfangs ist der Energie-Level der Kräfte hoch und nimmt von Durchlauf zu Durchlauf ab. Die Anzeige wird nicht nach jedem Durchlauf erzeugt sondern nach einem festgelegten Zeitraum. Bei hohem Energie-Level können deshalb die Nodes sprunghaft von einer Bildschirm-Aktualisierung zur nächsten den Standort wechseln, ist der Level niedriger, sind die Standort-Wechsel wesentlich weniger ausgeprägt, so dass man unter Umständen nur noch ein gewisses "Zittern" wahrnimmt. Sobald der Energie-Level unter den Endwert sinkt wird die Iterations-Schleife beendet.
@@ -123,9 +130,9 @@ Demgegenüber legen die beiden anderen Ansichten ihren Schwerpunkt auf übergeor
 
 Im Zusammenhang mit der Behandlung der Familiennamen - verschiedene Kodierungen per SoundEx - wurde schon erwähnt, dass die Gruppen-Ansicht auf die Namen abhebt. Die Personen werden gemäß der Familiennamen gruppiert, die Namensgruppen sind das primäre Darstellungselement. Es gibt 2 Darstellungs-Varianten, die Ausgangsansicht ist die "Haufen-Ansicht", dabei werden die Namensgruppen als Force-Simulation gezeigt. Die Größe korrespondiert mit der Personenzahl, welche jeweils die gleiche Namens-Kodierung führen. Die Verteilung der Gruppen ergibt sich aus dem Force-Algorithmus. Alternativ lassen sich die Gruppen auch in der "Gitter-Ansicht" zeigen, sie sind dann mit festen Positionen in einem Raster dargestellt, die zugewiesenen Positionen ergeben sich aus dem 1. Buchstabens des Nachnamens - 'A' steht links oben, 'Z' rechts unten. Die Gittergröße korrespondiert in gewisser Weise mit der Anzahl von Gruppen, ist aber grundsätzlich recht großzügig dimennsioniert. Derzeit gehen die unterschiedlichen Gruppen-Radien nicht mit in die Positions-Festlegung ein, überdurchschnittlich große Gruppen können sich deshalb mit umgebenden Gruppen überschneiden - um diesen Effekt zu mindern, werden möglichst große Abstände zwischen den Gruppen angestrebt.
 
-Die Einzel-Personen einer Gruppe werden nach einem RECHTS-Klick eingeblendet. Diese Personen-Knoten unterliegen der Force-Simulation, die Darstellung wird deshalb anfangs turbulent sein. Ein erneuter RECHTS-Klick blendet die Personen-Knoten wieder aus. Ist die Personen-Knoten-Ansicht aktiv, wird der Gruppen-Knoten verriegelt und hervorgehoben.
+Die Einzel-Personen einer Gruppe werden nach einem STRG-Klick (bzw. CTRL-Klick) eingeblendet. Diese Personen-Knoten unterliegen der Force-Simulation, die Darstellung wird deshalb anfangs turbulent sein. Ein erneuter STRG-Klick blendet die Personen-Knoten wieder aus. Ist die Personen-Knoten-Ansicht aktiv, wird der Gruppen-Knoten verriegelt und hervorgehoben.
 
-Die Darstellung der Gruppen-Knoten ändert sich wie beim RECHTS-Klick auch beim DRAG-n-DROP, die Rand-Breite wird verdoppelt und die Farbe wechselt zu einem  kräftigen Lila. In der Baum-Ansicht beendet ein einfacher Maus-Klick den DRAG-n-DROP-Zustand, der Knoten wird dann durch die Force-Simulation mehr oder weniger automatisch auf seine relative Ausgangsposition zurück gebracht. Nicht so in der Gruppen-Gitter-Ansicht, hier bringt erst ein DOPPEL-Klick auf den Gruppen-Knoten diesen wieder auf seinen Gitter-Platz zurück. Die Gruppen-Haufen-Ansicht handhabt das anders, war es ein DRAG-n-DROP-Vorgang, entriegelt der Einfach-Klick den Knoten und er reiht sich wider in die Simulation ein. Ist die Personen-Ansicht aktiv, wechselt zwar erst einmal die Darstellung und der Knoten reagiert wieder auf die Simulation, am Ende des Force-Durchlaufs (spätestens nach einem ReHeat) treten dann aber wieder Verriegelung und Hervorhebung auf. Beendet man die Personen-Ansicht, bleiben Verriegelung und Hervorhebung vorerst noch bestehen und müssen explizit mit Einfach-Klick beendet werden.
+Die Darstellung der Gruppen-Knoten ändert sich wie beim STRG-Klick auch beim DRAG-n-DROP, die Rand-Breite wird verdoppelt und die Farbe wechselt zu einem  kräftigen Lila. In der Baum-Ansicht beendet ein einfacher Maus-Klick den DRAG-n-DROP-Zustand, der Knoten wird dann durch die Force-Simulation mehr oder weniger automatisch auf seine relative Ausgangsposition zurück gebracht. Nicht so in der Gruppen-Gitter-Ansicht, hier bringt erst ein DOPPEL-Klick auf den Gruppen-Knoten diesen wieder auf seinen Gitter-Platz zurück. Die Gruppen-Haufen-Ansicht handhabt das anders, war es ein DRAG-n-DROP-Vorgang, entriegelt der Einfach-Klick den Knoten und er reiht sich wider in die Simulation ein. Ist die Personen-Ansicht aktiv, wechselt zwar erst einmal die Darstellung und der Knoten reagiert wieder auf die Simulation, am Ende des Force-Durchlaufs (spätestens nach einem ReHeat) treten dann aber wieder Verriegelung und Hervorhebung auf. Beendet man die Personen-Ansicht, bleiben Verriegelung und Hervorhebung vorerst noch bestehen und müssen explizit mit Einfach-Klick beendet werden.
  > Grund: Jeder Zustandswechsel wirkt auf die unterliegende Simulation. Herausnahme der Personen-Knoten und gleichzeitiges Entriegeln des Gruppen-Knotens führt zu einer recht chaotischen Entwicklung; die Entkopplung vermindert spürbar die entstehenden Turbulenzen.
 
 Anders als in den beiden anderen Ansichten bewirkt 'Simulation Stop' nur den Abbruch der Force-Simulation, die Zeit-Karte wird nicht aktiviert.
@@ -136,6 +143,8 @@ Anders als in den beiden anderen Ansichten bewirkt 'Simulation Stop' nur den Abb
 <p><img src="_ASSETTS/wtlin-screen-TLINE.png" alt="Screenshot wtlin" align="right" width="50%"></p>
 
 Diese Ansicht fokussiert auf die zeitliche Ebene. Die Personen werden nach Geburtsjahr gruppiert, die Zeit-Gruppen werden über den Zeitstrahl verteilt dargestellt. Die Länge des Zeitstrahls entspricht dabei der Spannbreite der Geburtsjahre. Am unteren Bildschirmrand gibt es ein zusätzliches Steuerelement, mit dem man in der Darstellung navigieren kann. Im Ausgangszustand ist die Darstellung so angeordnet, dass der Mittelpunkt dem Mittelpunkt des Zeitstrahls entspricht. Mit den Schaltflächen des Steuerelements kann man sowohl auf die jeweiligen Extrem-Punkte (1. und letzte Gruppe) als auch auf die Zeitpunkte der jeweils nächstliegenden Gruppen links und rechts (-1 bzw. +1) positionieren bzw. wieder auf das Zentrum zurücksetzen. Die 'Links'- und 'Rechts'-1 Schritt-Schaltflächen sind mit Auto-Repeat ausgestattet, bei längerem Klick auf die Flächen werden die Gruppen fortlaufend gewechselt, hört der Klick auf, endet auch das automatische Weiterspringen.
+
+Auch der Zeitstrahl selbst kann zur Navidation in der Darstellung dienen: Bei einem Klick in den Zeitstrahl wird die nächstliegende Gruppe aktiviert.
 
 Beim Sprung auf eine konkrete Gruppe wird auf dem Zeitstrahl die entsprechnde relative Position mit der jeweiligen Jahreszahl markiert, die Gruppe selbst wird hervorgehoben und die gesamte Darstellung wird so verschoben, dass die Gruppe in der Bildschirm-Mitte dargestellt ist.
 

@@ -21,6 +21,7 @@ import { CLUSTERexec, CLUSTERtest } from "./lin-CLUSTER.js";
 import { initInteractions, setDragactions, set_tickCounter, makeTickCountInfo, updatencounter, toggleSVG, toggleLINmenu, toggleTLslider, togglePERSinfo } from "./interaction.js";
 import { TopoMap, NormalField, GradientField } from "./scalarfield.js";
 import { initCLUSTERs, makeCLUSTERs } from "./clusters.js";
+import { putDB } from "./dbman.js";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,6 +111,7 @@ export class LINEAGErenderer
         this.pNODESt = null;
         this.s_transform = {k: 1, x: 0, y:0};
         this.pInfoCnt = 0;
+        this.TLINElistP = false;
 
         dataman.initSVGLayers(this.instance);
 
@@ -118,6 +120,12 @@ export class LINEAGErenderer
         console.log("new RENDERER");
 
         this.tickCallback = null;
+
+        let _mb_width = d3.select('#menubar').style('width');
+        d3.select('#bt_toggleMenu').style('left', _mb_width);
+        this.mb_width = _mb_width;
+        d3.select('#sliderTimeline').style('left', _mb_width);
+
     }
 
     get_sKENN() {
@@ -162,6 +170,29 @@ export class LINEAGErenderer
         }
 
         return (this.SIMmode === this.SIMmode_old);
+    }
+    test_persList(doClose = "") {
+        let listPERSONs = d3.select("#perslist");       // ... remove and hide perslist
+        if (doClose == "OFF") {
+            if (this.TLINElistP) {                            // a perslist is active
+                listPERSONs.innerHTML = "";
+                listPERSONs.style("display", "none");
+                this.TLINElistP = false;
+            }
+            return;
+        }
+        if (doClose == "ON") {
+            if (this.TLINElistP) {                            // a perslist is active
+                listPERSONs.style("display", null);
+                let ysObj = this.DATAman.YEARscale;
+                let _gy = ysObj.gNact;
+                ysObj.clickedYear(linObj, _gy);
+        }
+            return;
+        }
+        if (this.TLINElistP) {
+            listPERSONs.style("display", "none");
+        }
     }
 
     // }
@@ -310,8 +341,8 @@ export class LINEAGErenderer
         };
         let ds_nodes = parms.oGET("Otext");
         let ds_namesJ = parms.oGET("OnamesJ");
-
         let ds_names = JSON.stringify(ds_namesJ);
+
         let content = [JSON.stringify(
             {
                 "metadata": getMetadata(),
@@ -323,16 +354,25 @@ export class LINEAGErenderer
             },
             removeInternalValuesFromJSON, 2)];
         let blob = new Blob(content, { type: "text/json" });
+
         let _fileName = parms.GET("FILENAME");
+        let _tfilename = document.getElementById("filename");
+        if (_tfilename) { _fileName = _tfilename.value; }
         if (_fileName == "") {
             let _fPerson = this.RENDERhelper.xNODES[0];
-            _fileName = _fPerson.id;
+            let _primID = _fPerson.id;
+            let _primName = _fPerson.givenname + '/' + _fPerson.surname + '/';
+            _fileName = _primName + "-" + _primID;
+        } else {
+            if (_fileName.includes('(')) {
+                _fileName = _fileName.slice(0, _fileName.IndexOf('('));
+            }
         }
         let filenameWithoutSuffix = _fileName;
         if (_fileName.includes('.')) {
             filenameWithoutSuffix = _fileName.slice(0, _fileName.lastIndexOf('.'));
         }
-
+        filenameWithoutSuffix += '(' + actYear + ')';
 
         createDownloadFromBlob(blob, filenameWithoutSuffix + ".tlin");
         // remove temporarily stored actual year
@@ -341,12 +381,62 @@ export class LINEAGErenderer
 
     saveData()
     {
+        let nodePositions = this.makeNodePositions();
+
+        // temporarily store actual year
+        let _TL = this.instance.DATAman.sliderTL;
+        let actYear = _TL.Year;
+        parms.SET("actYear", actYear);
+
+        let names_list = parms.oGET("names_list");
+        let names_lidx = parms.oGET("names_lidx");
+        let names_sSTD = parms.oGET("names_sSTD");
+        let names_sDM = parms.oGET("names_sDM");
+        let names_filterA = parms.oGET("names_filterA");
+        let Ofilterdata = {
+            "names_list": names_list,
+            "names_lidx": names_lidx,
+            "names_sSTD": names_sSTD,
+            "names_sDM": names_sDM,
+            "names_filterA": names_filterA
+        };
+        let ds_nodes = parms.oGET("Otext");
+        let ds_namesJ = parms.oGET("OnamesJ");
+
+        let ds_names = JSON.stringify(ds_namesJ);
+
+        let _fPerson = this.RENDERhelper.xNODES[0];
+        let _primID = _fPerson.id;
+        let _primName = _fPerson.givenname + '/' + _fPerson.surname + '/';
+        let _fileName = parms.GET("FILENAME");
+        let _tfilename = document.getElementById("filename");
+        if (_tfilename) { _fileName = _tfilename.value; }
+        let idb_key = _primName + "-" + _primID;
+        if (_fileName) { idb_key = _fileName; }
+        let dataset = 
+            {   "TLINdata": [
+                    {
+                        "storeID": idb_key + '(' + actYear + ')',
+                        "timestamp": uti.timestamp(),
+                        "metadata": getMetadata(),
+                        "parameters": getParameters(),
+                        "nodePositions": nodePositions,
+                        "nodeData": ds_nodes,
+                        "names": ds_names,
+                        "fOBJ": Ofilterdata,
+                    }
+                ]
+            };
+        putDB("wtLIN","TREEdata", dataset.TLINdata);
+        parms.delPARMS("PARMS", "actYEAR");
+    
         return;
     }
 
     showALPHA(linObj) {
-        d3.select('#alpha_value').text(linObj.FORCE_SIMULATION.alpha()*100);
-        d3.select('#alpha_value_bar').style('flex-basis', (linObj.FORCE_SIMULATION.alpha()*100) + '%');
+        let _aF = linObj.FORCE_SIMULATION.alpha();
+        d3.select('#alpha_value').text(_aF*100);
+        d3.select('#alpha_value_bar').style('flex-basis', (_aF*100) + '%');
     }
 
     createForceGraph(SIMmode, _objRef)
@@ -396,7 +486,7 @@ export class LINEAGErenderer
         //     linObj.FORCE_SIMULATION.alpha(0); // stop simulation
 
         dmanObj.toggleYearScale(false);
-        toggleLINmenu(true);
+        toggleLINmenu(linObj, true);
         toggleTLslider(true);
         togglePERSinfo(false);
         // if (DOrestart) reset(linObj);

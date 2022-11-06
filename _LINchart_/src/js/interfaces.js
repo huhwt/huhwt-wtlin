@@ -138,27 +138,7 @@ function readSingleFile(e)
             // linObj.sliderTL = linObj.DATAman.resetTslider();
         }
 
-        if (file.name.endsWith(".json") || file.name.endsWith(".tam")) {
-            if (_rendertype !== RENDERtype.TAM) {
-                renderer = new TAMRenderer();
-                toggleSVG(renderer);
-                renderer_new = true;
-                parms.oSET("RENDERER", renderer);
-            } else {
-                toggleSVG(renderer);
-                renderer.NODES = [];
-                renderer.LINKS = [];
-            }
-    
-            d3.json(url)
-                .then(
-                    function (json) { 
-                        processJSON(json, file.name); 
-                    });
-            renderer.tickCounterTotal = 0;
-            renderer.tickCounterCycles = 5;
-    }
-        else if (file.name.endsWith(".ged")) {
+        if (file.name.endsWith(".ged")) {
 
             if (_rendertype !== RENDERtype.LINEAGE) {
                 renderer = new LINEAGErenderer();
@@ -304,16 +284,7 @@ export function loadFileFromDisk(folder)
     let renderer_new = true;
     let _state = parms.GET("STATE");
 
-    if ((_fileName).endsWith(".json") || _fileName.endsWith(".tam"))
-    {
-        d3.json(folder + "/" + _fileName).then(
-            function(json) { 
-                processJSON(json, _fileName); 
-                renderer.tickCounterTotal = 0;
-                renderer.tickCounterCycles = 5;
-            });
-    }
-    else if (_fileName.endsWith(".ged"))
+    if (_fileName.endsWith(".ged"))
     {
         if (_rendertype !== RENDERtype.LINEAGE) {
             renderer = new LINEAGErenderer();
@@ -340,7 +311,7 @@ export function loadFileFromDisk(folder)
         d3.json(folder + "/" + _fileName)
             .then(
                 function(json) {
-                    processTLIN(json, folder);
+                    processTLIN(json);
                 }
             );
     }
@@ -373,7 +344,7 @@ export function loadDataFromIDB(storeName, key) {
 
     if ( storeName == "TREEdata")
     {
-        if (_rendertype == RENDERtype.LINEAGE) {
+        if (renderer) {
             renderer = null;
         }
 
@@ -384,7 +355,7 @@ export function loadDataFromIDB(storeName, key) {
 
         const dbaction = readFromDB("wtLIN", "TREEdata", key);
         dbaction.then( value => { 
-                        console.log(value);
+                        console.log("loadDataFromIDB - wtLIN-TREEdata", key , value);
                         let content = [JSON.stringify(
                             {
                                 "metadata": value.metadata,
@@ -393,7 +364,7 @@ export function loadDataFromIDB(storeName, key) {
                                 "nodeData": value.nodeData
                             },
                             null, 2)];
-                        processIDBtree(value);
+                        processTLIN(value);
                         renderer.tickCounterTotal = 0;
                         renderer.tickCounterCycles = 5;
                      } )
