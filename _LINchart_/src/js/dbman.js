@@ -226,12 +226,14 @@ export function showIDBstate() {
     let ovHTML = gui.IDB_INDEX();
     let OVelmnt = document.getElementById("overlay");
     OVelmnt.innerHTML = ovHTML;
+    const _liHead = document.getElementById("idbstores");
+    _liHead.innerHTML = "";
+
     d3.select("#overlay").on("click", function(event) {
         closeModalIDB(event);
     });
 
-    const _liHead = document.getElementById("idbstores");
-    _liHead.innerHTML = "";
+    // read IDB step by step -> because of promise/resolve it is not possible to display the whole stock in one go.
     let db;
     const mkeyList = new Map();
     const DB = new Promise((resolve, reject) => {
@@ -246,43 +248,33 @@ export function showIDBstate() {
             resolve(_dbos);
         });
     });
+    // display the stores - we need only "TREEdata"
     idbSlist.then(snames => {
-            let _snames = snames;
-                snames.forEach(sname => {
-                    const liItem = document.createElement("li");
-                    liItem.classList = 'ulli';
-                    _liHead.appendChild(liItem);
-                    const param = document.createElement("p");
-                    param.innerHTML = sname;
-                    liItem.appendChild(param);
-                    const showButton = document.createElement('button');
-                    liItem.appendChild(showButton);
-                    showButton.innerHTML = '>';
-                    showButton.title = 'Click to Show Items';
-                    // here we are setting a data attribute on our show button to say what task we want shown if it is clicked!
-                    showButton.setAttribute('key-task', sname);
-                    showButton.onclick = function(event) {
-                      showIDBkeys(event);
-                    };
-                    // liItem itself will do nothing
-                    liItem.onclick = function(event) {
-                        event.stopPropagation();
-                    };
-                });
-                document.querySelector("#overlay").style.display = "inline";
+        snames.forEach(sname => {
+            if(sname == "TREEdata") {
+                const liItem = document.createElement("li");
+                liItem.classList = 'ulli';
+                _liHead.appendChild(liItem);
+                const param = document.createElement("p");
+                param.innerHTML = i18n("idb_" + sname);
+                liItem.appendChild(param);
+                const showButton = document.createElement('button');
+                liItem.appendChild(showButton);
+                showButton.innerHTML = '>';
+                showButton.title = i18n('idb_clickStore');
+                // here we are setting a data attribute on our show button to say what task we want shown if it is clicked!
+                showButton.setAttribute('key-task', sname);
+                showButton.onclick = function(event) {
+                    showIDBkeys(event);
+                };
+                // liItem itself will do nothing
+                liItem.onclick = function(event) {
+                    event.stopPropagation();
+                };
+            }
         });
-}
-
-function showFromIDB(event) {
-    let actNodeE = event.target;
-    let dstring = event.target.getAttribute("show-task");
-    event.stopPropagation();
-    closeModalIDB();
-    let dstrings = dstring.split("|");
-    let dbName = "wtLIN";
-    let dbStore = dstrings[0];
-    let dbKey = dstrings[1];
-    loadDataFromIDB(dbStore, dbKey);
+        document.querySelector("#overlay").style.display = "inline";
+    });
 }
 
 function showIDBkeys(event) {
@@ -295,6 +287,7 @@ function showIDBkeys(event) {
         const request = indexedDB.open("wtLIN");
         request.onsuccess = () => {
             db = request.result;
+            parms.oSET("IDBdb", db);
             showIDBkeysL(actNode, db, sname, actNodeE);
             resolve(db);
         };
@@ -335,19 +328,19 @@ function showIDBkeysLdo(actNode, sname, keyList, actNodeE) {
             // oliItem.innerHTML = ':';
             oliItem.classList = 'olli';
             oliHead.appendChild(oliItem);
-            oliItem.title = 'Load from Store';
+            oliItem.title = i18n('idb_clickItem');
             const param = document.createElement("p");
             param.innerHTML = idbKey;
             oliItem.appendChild(param);
             // here we are setting a data attribute on our param to say what task we want done if it is clicked!
             param.setAttribute('show-task', sname+'|'+idbKey);
             param.onclick = function(event) {
-                showFromIDB(event);
+                loadIDBkey(event);
             };
             const delButton = document.createElement('button');
             oliItem.appendChild(delButton);
-            delButton.innerHTML = 'E';
-            delButton.title = 'Erase from Store';
+            delButton.innerHTML = i18n('idb_delFlag');
+            delButton.title = i18n('idb_delItem');
             // here we are setting a data attribute on our del button to say what task we want done if it is clicked!
             delButton.setAttribute('del-task', sname+'|'+idbKey);
             delButton.onclick = function(event) {
@@ -358,11 +351,49 @@ function showIDBkeysLdo(actNode, sname, keyList, actNodeE) {
         const param = document.createElement("p");
         // oliItem.innerHTML = ':';
         oliHead.appendChild(param);
-        param.innerHTML = 'Number of entries in this Store: 0';
+        param.innerHTML = i18n('idb_noEntries');
     }
     actNode.appendChild(oliHead);
     actNodeE.innerHTML = '';       // show button will be set inactiv
     actNodeE.onclick = function(event) {
         event.stopPropagation();
     };
+}
+
+function loadIDBkey(event) {
+    let actNodeE = event.target;
+    let dstring = event.target.getAttribute("show-task");
+    event.stopPropagation();
+    closeModalIDB();
+    let dstrings = dstring.split("|");
+    let dbName = "wtLIN";
+    let dbStore = dstrings[0];
+    let dbKey = dstrings[1];
+    loadDataFromIDB(dbStore, dbKey);
+}
+
+function delIDBkey(event) {
+    let delem = event.target;                       // this element has been clicked
+    let delemP = delem.parentNode;                  // this element will be removed on success
+    let delemGP = delemP.parentNode;                      // ... and its parent will be checked if empty
+    let dstring = delem.getAttribute("del-task");
+    event.stopPropagation();
+    let dstrings = dstring.split("|");
+    let dbStore = dstrings[0];
+    let dbKey = dstrings[1];
+    let db = parms.oGET("IDBdb");
+    const DBtactn = new Promise((res, rej) => {
+        let taction = db.transaction(dbStore, "readwrite");
+        let ostore = taction.objectStore(dbStore);
+        let req = ostore.delete(dbKey);
+        req.onsuccess = function(e) {
+            delemP.remove();
+            if (delemGP.children.length == 0) {
+                delemGP.innerHTML = i18n('idb_noEntries');
+            }
+        };
+        req.onerror = (ev) => {
+            rej(ev);
+        };
+    });
 }

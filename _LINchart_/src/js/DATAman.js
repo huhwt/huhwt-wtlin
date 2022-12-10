@@ -399,7 +399,12 @@ export class DATAman
         }
 
         let _guidelayerID = "guidelayer" + sKENN;
-        linObj.GUIDE_LAYER = linObj.CANVAS.append("g").attr("id", "guidelayer" + sKENN);
+        let _lOgl = document.getElementById(_guidelayerID);
+        if (!_lOgl) {
+            linObj.GUIDE_LAYER = linObj.CANVAS.append("g").attr("id", "guidelayer" + sKENN);
+        } else {
+            linObj.GUIDE_LAYER = d3.select("#" + _guidelayerID);
+        }
         linObj.GUIDE_LAYERid = _guidelayerID;
 
         linObj.TOPO_LAYER = linObj.CANVAS.append("g").attr("id", "topolayer" + sKENN);

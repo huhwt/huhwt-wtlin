@@ -86,6 +86,7 @@ export class LINEAGErenderer
         this.checkElements = false;
 
         this.yNODES = [];
+        this.yNODEScnt = 0;
         this.yLINKS = [];
 
         this.FilteredData = this.DATAman.makeFilteredData();
@@ -355,9 +356,9 @@ export class LINEAGErenderer
             removeInternalValuesFromJSON, 2)];
         let blob = new Blob(content, { type: "text/json" });
 
-        let _fileName = parms.GET("FILENAME");
+        let _fileName = String(parms.GET("FILENAME"));
         let _tfilename = document.getElementById("filename");
-        if (_tfilename) { _fileName = _tfilename.value; }
+        if (_tfilename) { _fileName = String(_tfilename.value); }
         if (_fileName == "") {
             let _fPerson = this.RENDERhelper.xNODES[0];
             let _primID = _fPerson.id;
@@ -365,7 +366,7 @@ export class LINEAGErenderer
             _fileName = _primName + "-" + _primID;
         } else {
             if (_fileName.includes('(')) {
-                _fileName = _fileName.slice(0, _fileName.IndexOf('('));
+                _fileName = _fileName.slice(0, _fileName.indexOf('('));
             }
         }
         let filenameWithoutSuffix = _fileName;
@@ -439,7 +440,7 @@ export class LINEAGErenderer
         d3.select('#alpha_value_bar').style('flex-basis', (_aF*100) + '%');
     }
 
-    createForceGraph(SIMmode, _objRef)
+    createForceGraph(SIMmode, _objRef=null)
     {
         console.log('go', SIMmode);
         if (this.interval != null) {
@@ -692,6 +693,9 @@ function LINrestart(linObj, doSIM=true) {
     if ( doSIM ) {
         if (linObj.SIMmode == 'TREE') {
             linObj.RENDERhelper.set_xNODES(linObj.yNODES);
+            linObj.LINK_FORCE
+                .links(linObj.yLINKS)
+                ;
             linObj.FORCE_SIMULATION
                 .nodes(linObj.yNODES)
                 .force("link", linObj.LINK_FORCE)

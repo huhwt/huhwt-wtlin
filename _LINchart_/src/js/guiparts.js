@@ -41,7 +41,7 @@ function html_title() {
 <!-------------------------------------------------------------------------------------->
 <div class="options title">
 	LINEAGE -ℍ&ℍwt-
-    <span id="version" class="version">&nbsp;v2.1.7.1</span>
+    <span id="version" class="version">&nbsp;v2.1.12</span>
 </div>
 <!-------------------------------------------------------------------------------------->`;
 }
@@ -330,9 +330,9 @@ export function IDB_INDEX() {
 	let html_idbi = `
 	<div id="overlaybg"></div>
 	<div class="modal">
-		<button type="button" class="close" title="close">×</button>
-		<h1>Current state IndexedDB</h1>
-		<ul id="idbstores">
+        <button type="button" class="close" title="${i18n('idb_close')}">×</button>
+        <h1>${i18n("idb_Header")}</h1>
+        <ul id="idbstores">
 		</ul>
 	</div>`;
 

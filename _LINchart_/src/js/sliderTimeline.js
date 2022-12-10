@@ -392,6 +392,8 @@ export class TLslider
             _year = year - yStep + 10;
         }
         let _TL = this.instance;        // parms.oGET('TLslider');
+        _TL.Year = year;
+        parms.yearMod(true);
         let _TLssy = _TL.sSYear;
         _TLssy.silentValue(_year, _TL.sSYear_cntxt);
     }

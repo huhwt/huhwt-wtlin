@@ -510,6 +510,7 @@ function prepareODATA(gedcom, nodePositions = null)
             if (nodePositions[p.id].fixed) { // restore fixed state
                 p.fx = p.x;
                 p.fy = p.y;
+                p.sr = 2;
             }
         } else {
             // p.vis = {'x': 0, 'y': 0};
@@ -593,7 +594,7 @@ function renderAction(renderMode) {
                 .on("mouseout", null)
                 ;
         }
-        }
+    }
 
     switch (renderMode)
     {

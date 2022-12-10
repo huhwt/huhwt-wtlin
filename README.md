@@ -64,7 +64,23 @@ In the group display, the display can be switched by changing the order criterio
 
 A comprehensive menu is displayed on the left side of the screen (click on the 'Menu' button to hide it). Here you can start read and write operations, switch between the views, activate/deactivate and change various options of the displays and set the reference time of the display.
 
+##### Read/Write - 'Open/Store'.
+
+The current tree view can be written to and read from an external file as well as from IndexedDB (IDB).
+When writing to an external file, the usual file dialog is opened; the file name is given by the record identifier, supplemented by the reference time, and can be customized as desired. When reading from an external file, the file name is used as the record identifier.
+
+The dataset identifier is predefined by wtCCE during the download, it consists of the family tree abbreviation and the identifier of the last CCE action. In the screen view it can be overwritten as desired. The respective content is taken over by the write operations.
+
+When reading, the respective file name(external) or the key expression (IDB) is taken over as data set identifier.
+
+Writing to IDB is executed immediately, there is no explicit feedback.
+When reading IDB, an overview of the existing entries is shown, in this overview entries can also be removed to clean up the database.
+
+When writing away, the respective state is documented completely and restored accordingly when reading. So you could prepare a view in the initial view by setting the reference time and dragging and fixing nodes to analyze and document a specific issue, and can then conserve this state by writing away for later resubmission, without having to meticulously repeat all the individual steps later ...
+
+
 #### Time control
+
 An important addition to the Lineage origin is the possibility to set the reference time of the display. The display period defaults to the time span from 1500 to the last relevant person date rounded up to even 10's. If a person date before 1500 is found, the time span is extended accordingly by smooth 100s of years forward. In the menu now appropriate jump marks are inserted, so that one can set the reference time to the respective century marks.
 
 A finer adjustment down to 1-year steps is allowed by a special control complex:

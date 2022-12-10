@@ -112,6 +112,13 @@ const TAMtext_de = `{"values":{
     "mb_UT": "Hintergrund Schwellw.:",
     "kc_Y": "J",
     "kc_M": "K",
+    "idb_Header": "Aktueller Zustand IndexedDB",
+    "idb_clickStore": "Anklicken, um Einträge anzuzeigen",
+    "idb_clickItem": "Aus IDB laden",
+    "idb_close": "Schließen",
+    "idb_delFlag": "E",
+    "idb_delItem": "Eintrag aus IDB entfernen",
+    "idb_noEntries": "Keine Einträge in dieser Abteilung",
     "lang_German": "Deutsch",
     "lang_English": "Englisch",
     "lang_Dutch": "Niederländisch",
@@ -315,6 +322,16 @@ const TAMtext_en = `{"values":{
     "mb_UT": "Underground Thresh:",
     "kc_Y": "Y",
     "kc_M": "M",
+    "idb_Header": "Current state IndexedDB",
+    "idb_clickStore": "Click to show entries",
+    "idb_clickItem": "Load from Store",
+    "idb_close": "Close",
+    "idb_delFlag": "D",
+    "idb_delItem": "Delete entry from store",
+    "idb_noEntries": "No entries in this store",
+    "lang_German": "German",
+    "lang_English": "English",
+    "lang_Dutch": "Dutch",
     "ZZZZ": "en"
 }}`;
 
@@ -383,6 +400,7 @@ const LINtext_de = `{"values":{
     "zoom_in": "Ansicht vergrößern",
     "cntrl_center": "Ansicht zentrieren",
     "zoom_out": "Ansicht verkleinern",
+    "idb_TREEdata": "Gespeicherte Baum-Ansichten",
     "svg_Export_h1": "Klick und Ziehen: Verschieben | Maus-Rad: Zoom | Doppel-Klick: Reset",
     "ZZZL": "de"
 }}`;
@@ -426,6 +444,7 @@ const LINtext_en = `{"values":{
     "zoom_in": "Zoom in",
     "cntrl_center": "Center the view",
     "zoom_out": "Zoom out",
+    "idb_TREEdata": "Stored Tree views",
     "svg_Export_h1": "Click and drag: Move | Mouse wheel: Zoom | Double-click: Reset",
     "ZZZL": "en"
 }}`;

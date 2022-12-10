@@ -223,7 +223,7 @@ function dragStartNode(event, d)
     d.fx = d.x;
     d.fy = d.y;
     d.sr = 2;
-    console.log(event, event.active, d);
+    // console.log(event, event.active, d);
 
     if (parms.GET("SHOW_TOOLTIPS"))
         d3.select("#tooltip").style("opacity", parms.GET("TOOLTIP_DRAG_OPACITY"));
@@ -242,7 +242,7 @@ function dragNode(event, d)
 //---------------------------------------------------------------------------
 function dragEndNode(event, d)
 {
-    console.log(event, event.active, d);
+    // console.log(event, event.active, d);
 
     if (!parms.GET("ENERGIZE"))
         parms.oGET("RENDERER").FORCE_SIMULATION.velocityDecay(parms.GET("FRICTION")).alpha(0);    // reset friction

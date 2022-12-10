@@ -67,7 +67,22 @@ In der Gruppendarstellung kann man durch Wechsel des Ordnungskriteriums die Dars
 
 Am linken Bildschirm-Rand ist ein umfängliches Menü eingeblendet (Klick auf die 'Menü'-Schaltfläche blendet es aus). Man kann hierüber Lese- und Schreiboperationen anstossen, zwischen den Ansichten umschalten, diverse Optionen der Darstellungen aktivieren/abschalten und verändern und den Bezugs-Zeitpunkt der Darstellung einstellen.
 
-#### Zeitsteuerung
+##### Lesen/Schreiben - 'Öffnen/Speichern'
+
+Die jeweils aktuelle Baum-Ansicht kann sowohl auf eine externe Datei wie auch in IndexedDB (IDB)geschrieben wie auch daraus wieder gelesen werden.
+Beim Schreiben auf externe Datei wird der übliche Datei-Dialog geöffnet; als Dateinamen wird die Datensatz-Kennung ergänzt um den Bezugszeitpunkt vorgegeben und kann nach Belieben angepasst werden. Beim Lesen von externer Datei wird der Dateinamen als Datensatz-Kennung übernommen.
+
+Die Datensatz-Kennung wird beim Download von wtCCE vorgegeben, sie besteht aus Stammbaum-Kürzel und der Kennung der letzten CCE-Aktion. In der Bildschirm-Ansicht kann man sie nach Belieben überschreiben. Der jeweilige Inhalt wird von den Schreib-Operationen übernommen.
+
+Beim Lesen wird der jeweilige Dateinamen(extern) bzw. die Schlüsselausprägung (IDB) als Datensatz-Kennung übernommen.
+
+Das Schreiben auf IDB wird unmittelbar ausgeführt, es gibt keine explizite Rückmeldung.
+Beim Lesen von IDB wird eine Übersicht der vorhandenen Einträge gezeigt, in dieser Übersicht können auch Einträge entfernt werden, um die Datenbank zu bereinigen.
+
+Beim Wegschreiben wird der jeweilige Zustand komplett dokumentiert und beim Lesen entsprechend wieder hergestellt. Man könnte also in der Ausgangsansicht durch Einstellen des Bezugs-Zeitpunkts und Ziehen und Fixieren von Knoten eine Ansicht aufbereiten, um einen speziellen Sachverhalt zu analysieren und zu dokumentieren, und kann diesen Zustand dann durch Wegschreiben für spätere Wiedervorlage konservieren, ohne dass man später alle einzelnen Schritte akribisch wiederholem müsste ...
+
+
+##### Zeitsteuerung
 Eine wesentliche Ergänzung des Lineage-Ursprungs besteht in der Möglichkeit, den Bezugs-Zeitpunkt der Darstellung einzustellen. Der Darstellungszeitraum ist auf die Zeitspanne von 1500 bis zum letzten relevanten Personendatum aufgerundet auf glatte 10-er Jahre voreingestellt. Sollte ein Personendatum vor 1500 gefunden werden, erweitert sich die Zeitspanne entsprechend um glatte 100-er Jahre nach vorne. Im Menü werden nun entsprechende Sprungmarken eingefügt, so dass man den Bezugszeitpunkt auf die jeweiligen Jahrhundert-Marken einstellen kann.
 
 Eine feinere Einstellung bis hinunter zu 1-Jahres-Schritten erlaubt ein spezieller Steuerelemente-Komplex:
@@ -78,7 +93,7 @@ Im oberen Bereich des Bildschirms befindet sich ein Doppel-Slider und ein Start-
 
 Beim Wechsel des Bezugszeitpunkts werden solche Knoten deren Bezugsjahr außerhalb des Zeitraums liegen automatisch entfernt und auch wieder eingefügt, wenn die Grenzwerte (Startjahr des Darstellungszeitraums - aktueller Bezugszeitpunkt) das Bezugsjahr mit einschliessen.
 
-#### Namen-Steuerung
+##### Namen-Steuerung
 Eine weitere Ergänzung des Lineage-Ursprungs betrifft die Ausgestaltung der Option, Teilmengen der Nodes nach Familiennamen abzugrenzen. Man kann eine umfassende Liste der Familiennamen aufrufen, wahlweise sortiert nach Häufigkeit oder alphabetisch und innerhalb der Gesamtmenge auch noch abgrenzbar nach Anfangs-Buchstaben. Mittels Checkboxen können nun Namen ausgewählt und als Filter-Kriterium hinterlegt werden. Dabei können auch mehrere Filter-Definitionen gebildet und im weiteren Verlauf zwischen diesen gewechselt werden. Wie beim Bezugsjahr werden alle Nodes, deren Namenskriterium nicht dem aktiven Filter entsprechen, aus der Darstellung entfernt. Das relevante Namenskriterium ergibt sich gemäß der Vorgabe des Names-Schemas (siehe oben), ist z.B. SoundDM gesetzt, werden alle dem SoundDM-Wert eines Namens im Filter entsprechenden Nodes mit angezeigt, auch wenn deren Klarnamen davon abweicht (Man wählt 'Mayer' und erhält 'Meier','Meyer','Meir' usw. dazu).
 
 Durch Klick auf die Checkbox "mit Partnern" werden zusätzlich zu den über den aktiven Filter selektierten Personen auch die jeweils zugeordneten Ehepartner mit in die Darstellung einbezogen. Die repräsentierenden Nodes werden dann mit verringerter Größe dargestellt.

@@ -34,6 +34,7 @@ use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Soundex;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Services\TreeService;
+use Fisharebest\Webtrees\Validator;
 // use Illuminate\Database\Capsule\Manager as DB;
 // use Illuminate\Database\Query\Builder;
 // use Illuminate\Database\Query\Expression;
@@ -102,7 +103,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '2.1.7.1';
+        return '2.1.12.0';
     }
 
     /**
@@ -240,11 +241,9 @@ class LINaction extends AbstractModule
      */
     public function getLINAction(ServerRequestInterface $request): ResponseInterface
     {
-        $tree = $request->getAttribute('tree');
-        assert($tree instanceof Tree);
+        $tree = Validator::attributes($request)->tree();
 
-        $params = (array) $request->getQueryParams();
-        $actKey = $params['actKey'] ?? '';
+        $actKey = Validator::queryParams($request)->string('actKey', '');
 
         $title = I18N::translate('LINEAGE Launch');
         $label = I18N::translate('Key to retrieve data');
@@ -302,8 +301,7 @@ class LINaction extends AbstractModule
      */
     public function getGedcomAction(ServerRequestInterface $request): ResponseInterface
     {
-        $params = (array) $request->getQueryParams();
-        $actKey = $params['actKey'] ?? '';
+        $actKey = Validator::queryParams($request)->string('actKey', '');
 
         $treeName = Session::get('wt2LINtree');
         $tree  = $this->tree_service->all()->get($treeName);

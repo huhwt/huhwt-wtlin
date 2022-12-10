@@ -41,13 +41,18 @@ export function TREEexec(linObj, dmanObj) {
     linObj.REPULSION_FORCE = d3.forceManyBody()
         .strength(-parms.GET("REPULSION_STRENGTH"));
 
-    linObj.LINK_FORCE = d3.forceLink(linObj.yLINKS).distance(function(d){ return d.distance; }).strength(parms.GET("LINK_STRENGTH"));
+    linObj.LINK_FORCE = d3.forceLink()
+        .links(linObj.yLINKS)
+        .distance(function(d){ return d.distance; })
+        .strength(parms.GET("LINK_STRENGTH"))
+        ;
 
     let _alpha = parms.GET("ALPHA_T"); 
 
     linObj.tickCallback = TREEtick;
 
-    linObj.FORCE_SIMULATION = d3.forceSimulation(linObj.yNODES)
+    linObj.FORCE_SIMULATION = d3.forceSimulation()
+        .nodes(linObj.yNODES)
         .force("charge", linObj.REPULSION_FORCE)
         .force("x", d3.forceX(0).strength(parms.GET("GRAVITY_X"))) 
         .force("y", d3.forceY(0).strength(parms.GET("GRAVITY_Y"))) 
@@ -121,7 +126,7 @@ export function TREEdraw(linObj, dmanObj)
     // console.log(linObj.SVG_NODES);
     linObj.SVG_DRAGABLE_NODES = linObj.SVG_NODES;
     setDragactions(linObj);
-    initTooltip(linObj);
+    if (linObj.isInitialized) initTooltip(linObj);
     dmanObj.makeGuideLines(linObj);
 
     parms.dataMod(false);
