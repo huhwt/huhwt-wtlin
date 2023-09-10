@@ -110,7 +110,9 @@ export class LINEAGErenderer
         this.TLINEmapPI = new Map();
         this.gNODESt = null;
         this.pNODESt = null;
+
         this.s_transform = {k: 1, x: 0, y:0};
+
         this.pInfoCnt = 0;
         this.TLINElistP = false;
 
@@ -409,11 +411,17 @@ export class LINEAGErenderer
         let _fPerson = this.RENDERhelper.xNODES[0];
         let _primID = _fPerson.id;
         let _primName = _fPerson.givenname + '/' + _fPerson.surname + '/';
+        let idb_key = _primName + "-" + _primID;
         let _fileName = parms.GET("FILENAME");
         let _tfilename = document.getElementById("filename");
         if (_tfilename) { _fileName = _tfilename.value; }
-        let idb_key = _primName + "-" + _primID;
-        if (_fileName) { idb_key = _fileName; }
+        if (_fileName) {
+            if (_fileName.includes('('))
+                _fileName = _fileName.slice(0, _fileName.indexOf('('));
+            if (_fileName.includes('.'))
+                _fileName = _fileName.slice(0, _fileName.lastIndexOf('.'));
+            idb_key = _fileName;
+        }
         let dataset = 
             {   "TLINdata": [
                     {

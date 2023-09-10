@@ -200,7 +200,7 @@ Um die neueste Version zu erhalten, ersetzen Sie einfach die vorhandenen huhwt-w
 Sie können bei der Übersetzung dieses Moduls helfen. Das po/mo-System wird im PHP-Teil verwendet. Die Javascript-Funktionen haben ihre eigene unabhängige i18n-Implementierung.
 Aktualisierte Übersetzungen werden mit der nächsten Version des Moduls verteilt.
 
-Alle Texte und Meldungen stehen in Englisch, Deutsch und Niederländisch zur Verfügung.
+Alle Texte und Meldungen stehen in Englisch, Deutsch, Niederländisch, Catalanisch und Spanisch zur Verfügung.
 
 <a name="support"></a>
 ## Support
@@ -215,6 +215,7 @@ Alle Texte und Meldungen stehen in Englisch, Deutsch und Niederländisch zur Ver
 * **Slider**  : John Walley und Mitgestalter https://github.com/johnwalley/d3-simple-slider
 * **i18n**    : Simon Rodwell und Mitgestalter https://github.com/roddeh/i18njs
 * **Übersetzung NL** : [TheDutchJewel](https://github.com/TheDutchJewel)
+* **Übersetzung CA/ES** [Bernatbanyuls](https://github.com/BernatBanyuls)
 * **D3.js** : [D3js.org](https://d3js.org/) - [D3](https://github.com/d3) auf Github - [Observable](https://observablehq.com/explore) Massen an Beispielen
 
 <a name="license"></a>

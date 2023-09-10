@@ -1,0 +1,29 @@
+msgid "back to ClippingsCart-Show"
+msgstr "Volver a recortes"
+
+msgid "Please wait - transfer in progress"
+msgstr "Por favor, espere... -transferencia en curso-"
+
+msgid "Start LINEAGE in new tab"
+msgstr "Iniciar LINEAGE en nueva pestaña"
+
+msgid "Transfer completed"
+msgstr "Transferencia completada"
+
+msgid "LINEAGE Launch"
+msgstr "Iniciando LINEAGE"
+
+msgid "Key to retrieve data"
+msgstr "Clave para recuperar datos"
+
+msgid "IDB key"
+msgstr "Clave IDB"
+
+msgid "Clippings identifier"
+msgstr "Identificador de recortes"
+
+msgid "(Own identifier)"
+msgstr "(Identificador propio)"
+
+msgid "Optional: Set own identifier"
+msgstr "Opcional: Establecer identificador propio"

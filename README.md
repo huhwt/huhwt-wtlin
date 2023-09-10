@@ -192,7 +192,7 @@ For the latest version, simply replace the existing huhwt-wtlin files with those
 You can help with the translation of this module. The po/mo system is used in the PHP part. The javascript functions have their own independent i18n implementation.
 Updated translations will be distributed with the next version of the module.
 
-All texts and messages are available in English, German and Dutch.
+All texts and messages are available in English, German, Dutch, Catalan and Spanish.
 
 <a name="support"></a>
 ## Support
@@ -207,6 +207,7 @@ All texts and messages are available in English, German and Dutch.
 * **Slider**    John Walley and contributors https://github.com/johnwalley/d3-simple-slider
 * **i18n**      Simon Rodwell and contributors https://github.com/roddeh/i18njs
 * **Translation NL** : [TheDutchJewel](https://github.com/TheDutchJewel)
+* **Translation CA/ES** [Bernatbanyuls](https://github.com/BernatBanyuls)
 * **D3.js** : [D3js.org](https://d3js.org/) - [D3](https://github.com/d3) on Github - [Observable](https://observablehq.com/explore) masses of examples
 
 <a name="license"></a>

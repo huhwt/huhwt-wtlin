@@ -41,7 +41,7 @@ function html_title() {
 <!-------------------------------------------------------------------------------------->
 <div class="options title">
 	LINEAGE -ℍ&ℍwt-
-    <span id="version" class="version">&nbsp;v2.1.12</span>
+    <span id="version" class="version">&nbsp;v2.1.17.0</span>
 </div>
 <!-------------------------------------------------------------------------------------->`;
 }
@@ -111,6 +111,7 @@ function html_fo() {
 	</fieldset>
 	<!-------------------------------------------------------------------------------------->`;
 }
+
 function html_ga() {
 	return `
 	<fieldset>
@@ -162,7 +163,7 @@ function html_linm() {
             <div id="viewportDim" title="${i18n("Viewport - Basic setting")}">
     			<button class="vbutton vbutton__1" data-vbdim="2x2" value="2x2" title="${i18n('Viewport - Basic setting') + ' 2x2'}">&nbsp;</button>
     			<button class="vbutton vbutton__2" data-vbdim="4x4" value="4x4" title="${i18n('Viewport - Basic setting') + ' 4x4'}">&nbsp;</button>
-    			<button class="vbutton vbutton__3 vb_active" data-vbdim="6x6" value="6x6" title="${i18n('Viewport -Basic setting') + ' 6x6'}">&nbsp;</button>
+    			<button class="vbutton vbutton__3 vb_active" data-vbdim="6x6" value="6x6" title="${i18n('Viewport - Basic setting') + ' 6x6'}">&nbsp;</button>
     			<button class="vbutton vbutton__4" data-vbdim="8x8" value="9x9" title="${i18n('Viewport - Basic setting') + ' 9x9'}">&nbsp;</button>
     			<button class="vbutton vbutton__5" data-vbdim="10x10" value="12x12" title="${i18n('Viewport - Basic setting') + ' 12x12'}">&nbsp;</button>
             </div>

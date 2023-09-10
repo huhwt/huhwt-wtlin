@@ -73,8 +73,9 @@ export function initInteractions(linObj)
     setTAMInteractions(linObj);
 
     // define interaction possibilities for menu bar
-    set_linMENUBAR_actions(linObj);
-    set_tamMENUBAR_actions(linObj);
+    set_linMENUBAR_actions();
+    set_tamMENUBAR_actions();
+    set_CONTROLS_actions();
 
     // reset tickCounterInfo
     initTickCountInfo();
@@ -560,6 +561,7 @@ export function Wswitch_locale(_locale) {
         parms.SET("ACTIVE_LOCALE", _locale);
         initMenubar();
         set_tamMENUBAR_actions();
+        set_CONTROLS_actions();
         set_linMENUBAR_actions();
     }
 }
@@ -1001,6 +1003,7 @@ function close_toggle(elemID) {
     let _mt = document.getElementById(elemID);
     _mt.checked = false;
 }
+
 function set_tamMENUBAR_actions()
 {
     let renderer = parms.oGET("RENDERER");
@@ -1210,95 +1213,31 @@ function set_tamMENUBAR_actions()
     d3.select("#btn_l_nl").on("click", function (e) {
         Wswitch_locale('nl');
     });
+    d3.select("#btn_l_ca").on("click", function (e) {
+        Wswitch_locale('ca');
+    });
+    d3.select("#btn_l_es").on("click", function (e) {
+        Wswitch_locale('es');
+    });
 
     // tickcount-Info
     d3.select("#btn_tcIreset").on("click", function (e) {
         setTickCountInfo(renderer.instance, 'min');
     });
 
+}
+
+function set_CONTROLS_actions()
+{
+    let renderer = parms.oGET("RENDERER");
+    if (!renderer)
+        return;
+
     // Force Info
     d3.selectAll("a[data-info]").on("click", function (e) {
         let valueInfo = this.getAttribute("data-info");
         e.stopPropagation();
-        let linObj = renderer.instance;
-        if(valueInfo == "print") {
-            console.log("print Simulation", renderer.FORCE_SIMULATION);
-            console.log("print yNODES", renderer.yNODES);
-            console.log("print yLINKS", renderer.yLINKS);
-        } else if(valueInfo == "export") {
-            let _rkenn = renderer.svgKENN;
-            let _elem = 's' + _rkenn;
-            let _fnSVG = _rkenn + '.html';
-            createDownloadSVG(document.getElementById(_elem).outerHTML, _fnSVG, _elem);
-        } else if(valueInfo == "stop") {
-            let _siMODE = parms.GET("SIMmode");
-            if (_siMODE == "TREE") {
-                toggleEnergizeSimulation("ALPHA_T");
-                // parms.SET("ENERGIZE", false);
-                // renderer.forceRefresh = false;
-                // renderer.simLoop = 90;
-                // renderer.FORCE_SIMULATION.alpha(0);
-                // parms.SET("SHOW_YEARVALUES", true);
-                registertooltipYVeventhandler();
-            } else if (_siMODE == "TLINE") {
-                    toggleEnergizeSimulation("ALPHA_T");
-                    // parms.SET("ENERGIZE", false);
-                    // renderer.forceRefresh = false;
-                    // renderer.simLoop = 90;
-                    // renderer.FORCE_SIMULATION.alpha(0);
-                    // parms.SET("SHOW_YEARVALUES", true);
-                    registertooltipYVeventhandler();
-                } else {
-                toggleEnergizeSimulation("ALPHA_x");
-            }
-        } else if(valueInfo == "rerun") {
-            rerunSIM(renderer);
-        } else if(valueInfo == "center") { 
-            var _SVG = linObj.SVG;
-            // let the_CANVAS = linObj.CANVAS._groups[0][0];
-            // let _transform = the_CANVAS.getAttribute('transform');
-            _SVG.call(
-                linObj.zoomO.transform,
-                d3.zoomIdentity.translate(0, 0).scale(1)
-            );
-            linObj.s_transform.x = 0;
-            linObj.s_transform.y = 0;
-            linObj.s_transform.k = 1;
-            shiftRuler(0);
-            // let the_CANVASu = linObj.CANVAS._groups[0][0];
-            // let _transformu = the_CANVASu.getAttribute('transform');
-            // console.log("center pre:", _transform,"post:", _transformu);
-        } else if(valueInfo == "zoom-in") {
-            let _transform = linObj.s_transform;
-            let _scale = _transform.k * parms.ZOOMfactor;
-            _transform.k = _scale;
-            linObj.s_transform.k = _transform.k;
-            linObj.s_transform.x = _transform.x;
-            linObj.s_transform.y = _transform.y;
-            let _SVG = linObj.SVG;
-            _SVG.call(
-                linObj.zoomO.transform,
-                d3.zoomIdentity.translate(_transform.x, _transform.y).scale(_transform.k)
-            );
-            d3.select('#zoom_value').text(_transform.k*100);
-            d3.select('#x_value').text(_transform.x);
-            d3.select('#y_value').text(_transform.y);
-        } else if(valueInfo == "zoom-out") {
-            let _transform = linObj.s_transform;
-            let _scale = _transform.k / parms.ZOOMfactor;
-            _transform.k = _scale;
-            linObj.s_transform.k = _transform.k;
-            linObj.s_transform.x = _transform.x;
-            linObj.s_transform.y = _transform.y;
-            let _SVG = linObj.SVG;
-            _SVG.call(
-                linObj.zoomO.transform,
-                d3.zoomIdentity.translate(_transform.x, _transform.y).scale(_transform.k)
-            );
-            d3.select('#zoom_value').text(_transform.k*100);
-            d3.select('#x_value').text(_transform.x);
-            d3.select('#y_value').text(_transform.y);
-        }
+        check_CONTROLS(renderer, valueInfo);
     });
     d3.select('#alpha_value').on("click", function(e) {
         e.stopPropagation();
@@ -1308,6 +1247,89 @@ function set_tamMENUBAR_actions()
         renderer.simLoop = 90;
         renderer.FORCE_SIMULATION.alpha(1).restart();
     });
+
+}
+
+function check_CONTROLS(renderer, valueInfo) {
+    let rendObj = renderer.instance;
+    if(valueInfo == "print") {
+        console.log("print Simulation", renderer.FORCE_SIMULATION);
+        console.log("print yNODES", renderer.yNODES);
+        console.log("print yLINKS", renderer.yLINKS);
+    } else if(valueInfo == "export") {
+        let _rkenn = renderer.svgKENN;
+        let _elem = 's' + _rkenn;
+        let _fnSVG = _rkenn + '.html';
+        createDownloadSVG(document.getElementById(_elem).outerHTML, _fnSVG, _elem);
+    } else if(valueInfo == "stop") {
+        let _siMODE = parms.GET("SIMmode");
+        if (_siMODE == "TREE") {
+            toggleEnergizeSimulation("ALPHA_T");
+            // parms.SET("ENERGIZE", false);
+            // renderer.forceRefresh = false;
+            // renderer.simLoop = 90;
+            // renderer.FORCE_SIMULATION.alpha(0);
+            // parms.SET("SHOW_YEARVALUES", true);
+            registertooltipYVeventhandler();
+        } else if (_siMODE == "TLINE") {
+                toggleEnergizeSimulation("ALPHA_T");
+                // parms.SET("ENERGIZE", false);
+                // renderer.forceRefresh = false;
+                // renderer.simLoop = 90;
+                // renderer.FORCE_SIMULATION.alpha(0);
+                // parms.SET("SHOW_YEARVALUES", true);
+                registertooltipYVeventhandler();
+            } else {
+            toggleEnergizeSimulation("ALPHA_x");
+        }
+    } else if(valueInfo == "rerun") {
+        rerunSIM(renderer);
+    } else if(valueInfo == "center") { 
+        var _SVG = rendObj.SVG;
+        // let the_CANVAS = linObj.CANVAS._groups[0][0];
+        // let _transform = the_CANVAS.getAttribute('transform');
+        _SVG.call(
+            rendObj.zoomO.transform,
+            d3.zoomIdentity.translate(0, 0).scale(1)
+        );
+        rendObj.s_transform.x = 0;
+        rendObj.s_transform.y = 0;
+        rendObj.s_transform.k = 1;
+        shiftRuler(0);
+        // let the_CANVASu = linObj.CANVAS._groups[0][0];
+        // let _transformu = the_CANVASu.getAttribute('transform');
+        // console.log("center pre:", _transform,"post:", _transformu);
+    } else if(valueInfo == "zoom-in") {
+        let _transform = rendObj.s_transform;
+        let _scale = _transform.k * parms.ZOOMfactor;
+        _transform.k = _scale;
+        rendObj.s_transform.k = _transform.k;
+        rendObj.s_transform.x = _transform.x;
+        rendObj.s_transform.y = _transform.y;
+        let _SVG = rendObj.SVG;
+        _SVG.call(
+            rendObj.zoomO.transform,
+            d3.zoomIdentity.translate(_transform.x, _transform.y).scale(_transform.k)
+        );
+        d3.select('#zoom_value').text(_transform.k*100);
+        d3.select('#x_value').text(_transform.x);
+        d3.select('#y_value').text(_transform.y);
+    } else if(valueInfo == "zoom-out") {
+        let _transform = rendObj.s_transform;
+        let _scale = _transform.k / parms.ZOOMfactor;
+        _transform.k = _scale;
+        rendObj.s_transform.k = _transform.k;
+        rendObj.s_transform.x = _transform.x;
+        rendObj.s_transform.y = _transform.y;
+        let _SVG = rendObj.SVG;
+        _SVG.call(
+            rendObj.zoomO.transform,
+            d3.zoomIdentity.translate(_transform.x, _transform.y).scale(_transform.k)
+        );
+        d3.select('#zoom_value').text(_transform.k*100);
+        d3.select('#x_value').text(_transform.x);
+        d3.select('#y_value').text(_transform.y);
+    }
 
 }
 

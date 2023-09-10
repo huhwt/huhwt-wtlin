@@ -103,7 +103,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '2.1.12.0';
+        return '2.1.17.0';
     }
 
     /**
@@ -113,7 +113,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleLatestVersionUrl(): string {
-        return 'https://github.com/huhwt/huhwt-wtlin/master/latest-version.txt';
+        return 'https://github.com/huhwt/huhwt-wtlin/blob/master/latest-version.txt';
     }
 
     /**

@@ -1,0 +1,29 @@
+msgid "back to ClippingsCart-Show"
+msgstr "Tornar a retallades"
+
+msgid "Please wait - transfer in progress"
+msgstr "Per favor, espere... -transferéncia en curs-"
+
+msgid "Start LINEAGE in new tab"
+msgstr "Iniciar LINEAGE a una nova pestanya"
+
+msgid "Transfer completed"
+msgstr "Transferéncia completada"
+
+msgid "LINEAGE Launch"
+msgstr "Iniciant LINEAGE"
+
+msgid "Key to retrieve data"
+msgstr "Clau per a recuperar dades"
+
+msgid "IDB key"
+msgstr "Clau IDB"
+
+msgid "Clippings identifier"
+msgstr "Identificador de retallades"
+
+msgid "(Own identifier)"
+msgstr "(Identificador propi)"
+
+msgid "Optional: Set own identifier"
+msgstr "Opcional: Establir identificador propi"
