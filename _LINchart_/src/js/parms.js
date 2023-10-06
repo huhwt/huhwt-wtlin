@@ -24,6 +24,9 @@ export const VIEW_PORT_DIMS = {
 };
 export const ZOOMfactor = 1.1486983549970351;
 
+const YEARrangeMIN = 1500;
+const YEARshowMIN = 1500;
+
 const NODE_RADIUS = 10;
 
 /**
@@ -124,9 +127,12 @@ const PARMSarr = [
     [ "YEAReO", 0],                         // end year OriginalData
     [ "YEARdelta", 0],                      // count year up/down
     [ "actYear", 0],                        // holds YEAR in case of exporting/importing data
+
 ];
 
 const PARMS = new Map(PARMSarr);
+PARMS.set("YEARrangeMIN", YEARrangeMIN);
+PARMS.set("YEARshowMIN", YEARshowMIN);
 
 /**
  * Parameter-Array - Object parameters -> not serializable objects
@@ -197,6 +203,14 @@ export function GET(key) {
         return oPARMS.get(key);
     }
     return null;
+}
+export function dGET(key, defaultValue=null) {
+    if (PARMS.has(key)) {
+        return PARMS.get(key);
+    } else if (oPARMS.has(key)) {
+        return oPARMS.get(key);
+    }
+    return defaultValue;
 }
 export function SET(key, value) {
     PARMS.set(key, value);

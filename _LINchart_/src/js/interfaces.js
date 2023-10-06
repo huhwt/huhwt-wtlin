@@ -31,15 +31,19 @@ export function setRange(nodes, CurrentYear)
 {
     let _rangeMin = 1e8;
     let _rangeMax = -1e8;
+    let _YEARrangeMIN = parms.GET("YEARrangeMIN");
+    let _YEARshowMIN = parms.GET("YEARshowMIN");
+    if ( _YEARshowMIN < _YEARrangeMIN )
+        _YEARrangeMIN = _YEARshowMIN;
 
     nodes.forEach(node => 
     {
-        // automatically adjust TAM height range to min and max values
+        // automatically adjust TAM height range to min and max values 
         if (node.Yvalue)
         {
             let _nvalue = node.Yvalue;
-            if ( _nvalue < 1500 ) {
-                _nvalue = 1500;
+            if ( _nvalue < _YEARshowMIN ) {
+                _nvalue = _YEARshowMIN;
             } else {
                 if ( _nvalue > CurrentYear ) {
                 _nvalue = CurrentYear;
@@ -49,8 +53,8 @@ export function setRange(nodes, CurrentYear)
             _rangeMax = Math.max(_rangeMax, _nvalue);
             if ( node.valueD ) {
                 _nvalue = node.valueD;
-                if ( _nvalue < 1500 ) {
-                    _nvalue = 1500;
+                if ( _nvalue < _YEARshowMIN ) {
+                    _nvalue = _YEARshowMIN;
                 } else {
                     if ( _nvalue > CurrentYear ) {
                     _nvalue = CurrentYear;
@@ -64,8 +68,8 @@ export function setRange(nodes, CurrentYear)
     // Range-Hack: avoid too dark shades of blue
     let _yearS = _rangeMin;
     _yearS -= (_yearS % 10);
-    if (_rangeMin > 1500)
-        _rangeMin = 1500;
+    if (_rangeMin > _YEARrangeMIN)
+        _rangeMin = _YEARrangeMIN;
     let range = _rangeMax - _rangeMin;
     // _rangeMin = Math.floor(_rangeMin - range / 7);
     _rangeMin -= (_rangeMin % 10);
@@ -594,7 +598,7 @@ function renderAction(renderMode) {
                 .on("mouseout", null)
                 ;
         }
-    }
+        }
 
     switch (renderMode)
     {

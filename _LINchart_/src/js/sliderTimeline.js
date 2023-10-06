@@ -8,6 +8,8 @@
 
 import * as parms from "./parms.js";
 
+const maxWidth = 1300;
+
 export function TLslider_html() {
 	let html_tl = `
     <div class="column" >
@@ -42,6 +44,7 @@ export function TLslider_html() {
 
 export class TLslider
 {
+
     constructor(rendRef) 
     {
         this.rendRef = rendRef;
@@ -50,6 +53,8 @@ export class TLslider
         const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
         let width = window.innerWidth - margin.left - margin.right - 490;
+        if (width > maxWidth)
+            width = maxWidth;
 
         this.YearS = parms.GET("YEARs");
         this.YearE = parms.GET("YEARe");
@@ -68,6 +73,8 @@ export class TLslider
         const tRange = d3.range(0, yCount, 10)
                     .map(function(d) { return _yearS + d; });
         let yCountL = yCount * 2.4;
+        if (yCountL > maxWidth)
+            yCountL = maxWidth;
         const scale = d3.scaleLinear()
                     .domain(tRange)
                     .range([0, width])

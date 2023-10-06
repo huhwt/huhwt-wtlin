@@ -41,7 +41,7 @@ function html_title() {
 <!-------------------------------------------------------------------------------------->
 <div class="options title">
 	LINEAGE -ℍ&ℍwt-
-    <span id="version" class="version">&nbsp;v2.1.17.0</span>
+    <span id="version" class="version">&nbsp;v2.1.17.1</span>
 </div>
 <!-------------------------------------------------------------------------------------->`;
 }
@@ -111,7 +111,6 @@ function html_fo() {
 	</fieldset>
 	<!-------------------------------------------------------------------------------------->`;
 }
-
 function html_ga() {
 	return `
 	<fieldset>
@@ -333,7 +332,7 @@ export function IDB_INDEX() {
 	<div class="modal">
         <button type="button" class="close" title="${i18n('idb_close')}">×</button>
         <h1>${i18n("idb_Header")}</h1>
-        <ul id="idbstores">
+		<ul id="idbstores">
 		</ul>
 	</div>`;
 
