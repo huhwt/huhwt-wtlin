@@ -4,7 +4,7 @@
 ![Latest Release](https://img.shields.io/github/v/release/huhwt/huhwt-wtlin)
 [![Downloads](https://img.shields.io/github/downloads/huhwt/huhwt-wtlin/total)]()
 
-This [webtrees](https://www.webtrees.net/) module hosts Lineage, a node-link diagram that visualizes genealogical relationships. Lineage was originally developed by Ben Garvey, I came across it at the time in an adapted version on Horst Stern's homepage.
+This [webtrees](https://www.webtrees.net/) module hosts Lineage, a node-link diagram that visualizes genealogical relationships. Lineage was originally developed by Ben Garvey, I came across it at the time in an adapted version on Jens-Peter Stern's homepage.
 
 * Copyright (C) 2022/2023 huhwt - EW.H
 
@@ -82,21 +82,13 @@ When writing away, the respective state is documented completely and restored ac
 
 #### Time control
 
-An important addition to the Lineage origin is the possibility to set the reference time of the display. The display period is preset to the time span from 1500 to the last relevant person date rounded up to smooth 10s of years. In the menu now appropriate jump marks are inserted in 50-year intervals, so that one can set the reference time on respective decade marks.
-
----
-> Remark: If a person date before 1500 should be needed, one can/must create hand. The preparation is controlled over 2 parameters - YEARshowMIN -> is converted as earliest permissible person date - YEARrangeMIN -> is converted as starting year of the representation. The values are defined as constants in the header of the JavaSript coding parms.js and would have to be adjusted once according to the requirements.
----
+An important addition to the Lineage origin is the possibility to set the reference time of the display. The display period defaults to the time span from 1500 to the last relevant person date rounded up to even 10's. If a person date before 1500 is found, the time span is extended accordingly by smooth 100s of years forward. In the menu now appropriate jump marks are inserted, so that one can set the reference time to the respective century marks.
 
 A finer adjustment down to 1-year steps is allowed by a special control complex:
 
 In the upper part of the screen there is a double slider and a start-stop block.
 * The lower slider allows to influence the start and end value of the display period in 10-year steps. The upper slider allows to change the display period freely in 10-year steps.
 * The start-stop block contains buttons to change the reference year in 1-year steps (bottom) and elements to automatically scroll the display period forward or backward (1-year steps) or to stop the automatic scroll (top). The frequency of the automatic run-through can finally be influenced by 5 further buttons "Year runner - dwell time" below between the 1-year buttons, from quite fast (is the default, 400ms) to quite slow (2400ms).
-
----
-> Note: If you want to adjust the dwell time to your own time requirements, you can also overwrite the values once as described above in the JavaScript coding parms.js - LINloop_Speed.
----
 
 When changing the reference time, such nodes whose reference year is outside the period are automatically removed and also inserted again, if the limits (start year of the display period - current reference time) include the reference year.
 

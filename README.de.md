@@ -3,7 +3,7 @@
 ![webtrees major version](https://img.shields.io/badge/webtrees-v2.1-green)
 ![Latest Release](https://img.shields.io/github/v/release/huhwt/huhwt-wtlin)
 
-Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-Link-Diagramm, das genealogische Beziehungen visualisiert. Lineage wurde ursprünglich von [Ben Garvey](https://github.com/bengarvey/lineage) entwickelt, ich habe es seinerzeit in einer angepassten Version auf der Homepage von [Horst Stern](https://knoten.familie-stern.de/) entdeckt.
+Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-Link-Diagramm, das genealogische Beziehungen visualisiert. Lineage wurde ursprünglich von [Ben Garvey](https://github.com/bengarvey/lineage) entwickelt, ich habe es seinerzeit in einer angepassten Version auf der Homepage von [Jens-Peter Stern](https://knoten.familie-stern.de/) entdeckt.
 
 * Copyright (C) 2022 huhwt - EW.H
 
@@ -83,21 +83,13 @@ Beim Wegschreiben wird der jeweilige Zustand komplett dokumentiert und beim Lese
 
 
 ##### Zeitsteuerung
-Eine wesentliche Ergänzung des Lineage-Ursprungs besteht in der Möglichkeit, den Bezugs-Zeitpunkt der Darstellung einzustellen. Der Darstellungszeitraum ist auf die Zeitspanne von 1500 bis zum letzten relevanten Personendatum aufgerundet auf glatte 10-er Jahre voreingestellt. Im Menü werden nun entsprechende Sprungmarken im 50-Jahre-Abstand eingefügt, so dass man den Bezugszeitpunkt auf jeweilige Jahrzehnt-Marken einstellen kann.
-
----
-> Anmerkung: Sollte ein Personendatum vor 1500 benötigt werden, kann/muss man selbst Hand anlegen. Die Aufbereitung wird über 2 Parameter gesteuert - YEARshowMIN -> wird umgesetzt als frühestes zulässiges Personendatum - YEARrangeMIN -> wird umgesetzt als Anfangsjahr der Darstellung. Die Werte sind als Konstanten im Kopfbereich des JavaSript-Codings parms.js definiert und müssten einmalig den Anforderungen entsprechend angepasst werden.
----
+Eine wesentliche Ergänzung des Lineage-Ursprungs besteht in der Möglichkeit, den Bezugs-Zeitpunkt der Darstellung einzustellen. Der Darstellungszeitraum ist auf die Zeitspanne von 1500 bis zum letzten relevanten Personendatum aufgerundet auf glatte 10-er Jahre voreingestellt. Sollte ein Personendatum vor 1500 gefunden werden, erweitert sich die Zeitspanne entsprechend um glatte 100-er Jahre nach vorne. Im Menü werden nun entsprechende Sprungmarken eingefügt, so dass man den Bezugszeitpunkt auf die jeweiligen Jahrhundert-Marken einstellen kann.
 
 Eine feinere Einstellung bis hinunter zu 1-Jahres-Schritten erlaubt ein spezieller Steuerelemente-Komplex:
 
 Im oberen Bereich des Bildschirms befindet sich ein Doppel-Slider und ein Start-Stop-Block.
 * Mit dem unteren Slider kann man Anfangs- und Endwert des Darstellungszeitraums in 10-Jahres-Schritten beeinflussen. Der obere Slider erlaubt es, im Darstellungszeitraum frei in 10-Jahres-Schritten zu wechseln.
 * Im Start-Stop-Block finden sich Schaltflächen, mit denen man das Bezugsjahr in 1-Jahres-Schritten verändern kann (unten) sowie Elemente, mit denen man automatisch den Darstellungszeitraum nach vorne bzw. hinten durchlaufen (1-Jahres-Schritte) bzw. den automatischen Durchlauf stoppen kann (oben). Die Frequenz des Automatik-Durchlaufs lässt sich schließlich durch 5 weitere Schaltflächen "Jahrläufer - Verweildauer" unten zwischen den 1-Jahres-Schaltern beeinflussen, von recht schnell (ist der Default, 400ms) bis recht langsam (2400ms).
-
----
-> Anmerkung: Möchte man die Verweildauer dem eigenen Zeitansprüchen anpassen, kann man die Werte ebenfalls wie vorstehend beschrieben im JavaScript-Coding parms.js - LINloop_Speed - einmalig überschreiben.
----
 
 Beim Wechsel des Bezugszeitpunkts werden solche Knoten deren Bezugsjahr außerhalb des Zeitraums liegen automatisch entfernt und auch wieder eingefügt, wenn die Grenzwerte (Startjahr des Darstellungszeitraums - aktueller Bezugszeitpunkt) das Bezugsjahr mit einschliessen.
 
@@ -167,7 +159,7 @@ Anders als in den beiden anderen Ansichten bewirkt 'Simulation Stop' nur den Abb
 
 Diese Ansicht fokussiert auf die zeitliche Ebene. Die Personen werden nach Geburtsjahr gruppiert, die Zeit-Gruppen werden über den Zeitstrahl verteilt dargestellt. Die Länge des Zeitstrahls entspricht dabei der Spannbreite der Geburtsjahre. Am unteren Bildschirmrand gibt es ein zusätzliches Steuerelement, mit dem man in der Darstellung navigieren kann. Im Ausgangszustand ist die Darstellung so angeordnet, dass der Mittelpunkt dem Mittelpunkt des Zeitstrahls entspricht. Mit den Schaltflächen des Steuerelements kann man sowohl auf die jeweiligen Extrem-Punkte (1. und letzte Gruppe) als auch auf die Zeitpunkte der jeweils nächstliegenden Gruppen links und rechts (-1 bzw. +1) positionieren bzw. wieder auf das Zentrum zurücksetzen. Die 'Links'- und 'Rechts'-1 Schritt-Schaltflächen sind mit Auto-Repeat ausgestattet, bei längerem Klick auf die Flächen werden die Gruppen fortlaufend gewechselt, hört der Klick auf, endet auch das automatische Weiterspringen.
 
-Auch der Zeitstrahl selbst kann zur Navigation in der Darstellung dienen: Bei einem Klick in den Zeitstrahl wird die nächstliegende Gruppe aktiviert.
+Auch der Zeitstrahl selbst kann zur Navidation in der Darstellung dienen: Bei einem Klick in den Zeitstrahl wird die nächstliegende Gruppe aktiviert.
 
 Beim Sprung auf eine konkrete Gruppe wird auf dem Zeitstrahl die entsprechnde relative Position mit der jeweiligen Jahreszahl markiert, die Gruppe selbst wird hervorgehoben und die gesamte Darstellung wird so verschoben, dass die Gruppe in der Bildschirm-Mitte dargestellt ist.
 
