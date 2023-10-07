@@ -83,13 +83,21 @@ Beim Wegschreiben wird der jeweilige Zustand komplett dokumentiert und beim Lese
 
 
 ##### Zeitsteuerung
-Eine wesentliche Ergänzung des Lineage-Ursprungs besteht in der Möglichkeit, den Bezugs-Zeitpunkt der Darstellung einzustellen. Der Darstellungszeitraum ist auf die Zeitspanne von 1500 bis zum letzten relevanten Personendatum aufgerundet auf glatte 10-er Jahre voreingestellt. Sollte ein Personendatum vor 1500 gefunden werden, erweitert sich die Zeitspanne entsprechend um glatte 100-er Jahre nach vorne. Im Menü werden nun entsprechende Sprungmarken eingefügt, so dass man den Bezugszeitpunkt auf die jeweiligen Jahrhundert-Marken einstellen kann.
+Eine wesentliche Ergänzung des Lineage-Ursprungs besteht in der Möglichkeit, den Bezugs-Zeitpunkt der Darstellung einzustellen. Der Darstellungszeitraum ist auf die Zeitspanne von 1500 bis zum letzten relevanten Personendatum aufgerundet auf glatte 10-er Jahre voreingestellt. Im Menü werden nun entsprechende Sprungmarken im 50-Jahre-Abstand eingefügt, so dass man den Bezugszeitpunkt auf jeweilige Jahrzehnt-Marken einstellen kann.
+
+---
+> Anmerkung: Sollte ein Personendatum vor 1500 benötigt werden, kann/muss man selbst Hand anlegen. Die Aufbereitung wird über 2 Parameter gesteuert - YEARshowMIN -> wird umgesetzt als frühestes zulässiges Personendatum - YEARrangeMIN -> wird umgesetzt als Anfangsjahr der Darstellung. Die Werte sind als Konstanten im Kopfbereich des JavaSript-Codings parms.js definiert und müssten einmalig den Anforderungen entsprechend angepasst werden.
+---
 
 Eine feinere Einstellung bis hinunter zu 1-Jahres-Schritten erlaubt ein spezieller Steuerelemente-Komplex:
 
 Im oberen Bereich des Bildschirms befindet sich ein Doppel-Slider und ein Start-Stop-Block.
 * Mit dem unteren Slider kann man Anfangs- und Endwert des Darstellungszeitraums in 10-Jahres-Schritten beeinflussen. Der obere Slider erlaubt es, im Darstellungszeitraum frei in 10-Jahres-Schritten zu wechseln.
 * Im Start-Stop-Block finden sich Schaltflächen, mit denen man das Bezugsjahr in 1-Jahres-Schritten verändern kann (unten) sowie Elemente, mit denen man automatisch den Darstellungszeitraum nach vorne bzw. hinten durchlaufen (1-Jahres-Schritte) bzw. den automatischen Durchlauf stoppen kann (oben). Die Frequenz des Automatik-Durchlaufs lässt sich schließlich durch 5 weitere Schaltflächen "Jahrläufer - Verweildauer" unten zwischen den 1-Jahres-Schaltern beeinflussen, von recht schnell (ist der Default, 400ms) bis recht langsam (2400ms).
+
+---
+> Anmerkung: Möchte man die Verweildauer dem eigenen Zeitansprüchen anpassen, kann man die Werte ebenfalls wie vorstehend beschrieben im JavaScript-Coding parms.js - LINloop_Speed - einmalig überschreiben.
+---
 
 Beim Wechsel des Bezugszeitpunkts werden solche Knoten deren Bezugsjahr außerhalb des Zeitraums liegen automatisch entfernt und auch wieder eingefügt, wenn die Grenzwerte (Startjahr des Darstellungszeitraums - aktueller Bezugszeitpunkt) das Bezugsjahr mit einschliessen.
 
