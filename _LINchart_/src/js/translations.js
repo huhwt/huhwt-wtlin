@@ -630,7 +630,7 @@ const LINtext_de = `{"values":{
     "with spouse": "mit Partnern",
     "Separate several names by ';'!": "Mehrere Namen durch ';' trennen!",
     "Edit filters": "Filter bearbeiten",
-    "Navigation / Animation:": "Navigation / Animation:",
+    "Navigation:": "Navigation:",
     "Design:": "Design:",
     "Set active year": "Bezugsjahr einstellen",
     "slideButtonB": "Jahrläufer - Runterzählen",
@@ -744,7 +744,7 @@ const LINtext_nl = `{"values":{
     "with spouse": "met partner",
     "Separate several names by ';'!": "Scheid meerdere namen met ';'!",
     "Edit filters": "Filters bewerken",
-    "Navigation / Animation:": "Navigatie / Animatie:",
+    "Navigation:": "Navigatie:",
     "Design:": "Ontwerp:",
     "Set active year": "Referentiejaar instellen",
     "slideButtonB": "Schuifregelaar voor jaartal - aftellen",
@@ -906,7 +906,7 @@ function load_LINtext(_locale) {
             _text = LINtext_ca;
             break;
         case 'es':
-            _text = LINtext_es;
+        _text = LINtext_es;
             break;
         default:
             _text = LINtext_de;

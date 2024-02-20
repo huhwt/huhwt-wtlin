@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * webtrees - clippings vizualisation - LIN
+ *
+ * Copyright (C) 2023-2024 huhwt. All rights reserved.
+ *
+ */
+
 declare(strict_types=1);
 
 namespace HuHwt\WebtreesMods\LINchart;
@@ -44,7 +51,7 @@ use Psr\Http\Message\ServerRequestInterface;
 // use Psr\Http\Server\RequestHandlerInterface;
 
 
-// use HuHwt\WebtreesMods\Http\RequestHandlers\LINchartRH;
+use HuHwt\WebtreesMods\TaggingServiceManager\TaggingServiceManagerAdapter;
 
 use function app;
 use function array_keys;
@@ -77,6 +84,8 @@ class LINaction extends AbstractModule
     /** @var TreeService */
     private $tree_service;
 
+    private bool $TSMok = false;
+
     /**
      * @param TreeService $tree_service
      */
@@ -103,7 +112,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '2.1.17.1';
+        return '2.1.18.0';
     }
 
     /**
@@ -228,6 +237,9 @@ class LINaction extends AbstractModule
         // This command allows the module to use: view($this->name() . '::', 'fish')
         // to access the file ./resources/views/fish.phtml
         View::registerNamespace($this->name(), $this->resourcesFolder() . 'views/');
+
+        $this->TSMok = class_exists(TaggingServiceManagerAdapter::class, true);
+
     }
 
     /**
@@ -307,14 +319,18 @@ class LINaction extends AbstractModule
         $tree  = $this->tree_service->all()->get($treeName);
         assert($tree instanceof Tree);
 
-        $gedKey = Session::get($actKey);
-        $theGedcom = Session::get($gedKey);
-        $LINdname = Session::get('LIN_DSname');
+        $gedKey     = Session::get($actKey);
+        $theGedcom  = Session::get($gedKey);
+        $LINdname   = Session::get('LIN_DSname');
+        $INFOdata   = Session::get('INFOdata');
 
         $arr_string = array();
         $decodedstring = json_decode($theGedcom);
-        $arr_string["gedcom"] = $decodedstring->gedcom;
-        $arr_string["dsname"] = $LINdname;
+        $arr_string['gedcom'] = $decodedstring->gedcom;
+        $arr_string['dsname'] = $LINdname;
+        if ($INFOdata) {
+            $arr_string['infodata']  = json_decode($INFOdata);
+        }
 
         $Txrefs = Session::get('wt2LINxrefsI');
         $arr_string = $this->getSoundex($tree, @$arr_string, $Txrefs);

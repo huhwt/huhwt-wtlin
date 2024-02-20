@@ -40,12 +40,16 @@ function doAJAX(LINkey, btnID, getID, doneID, LINpath, textCompleted, nextText) 
             let names_lidx = response.names_lidx;
             let names_sSTD = response.names_sSTD;
             let names_sDM = response.names_sDM;
+            let infodata = {};
+            if (response.infodata)
+                infodata = response.infodata;
             let dataset = {
                 "gedData":  [{
                     "storeID": "download",
                     "nodeData": gedcom,
                     "nameData": names,
-                    "dsname": dsname
+                    "dsname": dsname,
+                    "infoData": infodata
                 }],
                 "gedFILTERs":  [{
                     "storeID": "download",

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * webtrees - clippings vizualisation - LIN
+ *
+ * Copyright (C) 2023-2024 huhwt. All rights reserved.
+ *
+ */
+
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\View;
 use Fisharebest\Webtrees\Tree;
@@ -61,7 +68,7 @@ use function Sabre\Uri\split;
         <a id="btn_LINstart" href="<?= $start_path ?>" target="#" class="btn btn-primary cce_disabled">
             <?= $start_text ?>
         </a>
-        <a href="<?= e(route('module', ['module' => $module_cce, 'action' => 'Show', 'tree' => $tree->name()])) ?>" class="btn btn-secondary">
+        <a href="<?= e(route('module', ['module' => $module_cce, 'action' => 'ShowCart', 'tree' => $tree->name()])) ?>" class="btn btn-secondary">
             <?= view('icons/cancel') ?>
             <?= I18N::translate('back to ClippingsCart-Show') ?>
         </a>

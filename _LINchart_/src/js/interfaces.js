@@ -33,7 +33,7 @@ export function setRange(nodes, CurrentYear)
     let _rangeMax = -1e8;
     let _YEARrangeMIN = parms.GET("YEARrangeMIN");
     let _YEARshowMIN = parms.GET("YEARshowMIN");
-    if ( _YEARshowMIN < _YEARrangeMIN )
+    if (_YEARshowMIN < _YEARrangeMIN)
         _YEARrangeMIN = _YEARshowMIN;
 
     nodes.forEach(node => 
@@ -455,8 +455,12 @@ function processIDBgedcom(dataset)
     }
     let ds_text = dataset.nodeData;
     let ds_names = dataset.nameData;
+    let ds_infodata = dataset.infoData;
+    if ( ds_infodata.length == 0) {
+        ds_infodata = null;
+    }
     let dsname = processFILENAME(dataset.dsname);
-    processGedcomN(ds_text, ds_names, function(gedcom) {
+    processGedcomN(ds_text, ds_names, ds_infodata, function(gedcom) {
         estimateMissingDates(gedcom, parms.GET("PROCREATION_AGE"));
         prepareODATA(gedcom);
     });

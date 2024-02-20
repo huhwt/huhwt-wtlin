@@ -337,12 +337,25 @@ function _getNodeAttributesAsString(linObj, node)
             _text += "\n" + i18n("Gruppe") + ": " + nodedata.group;
             return _text;
         }
+        function snotes(node) {
+            let _snotes = '';
+            if (node.snotes.length > 0) {
+                for(let i=0; i < node.snotes.length; i++) {
+                    if (node.snotes[i]) {
+                        let _t = node.snotes[i];
+                        _snotes += "\n - " + _t + " -";
+                    }
+                }
+            }
+            return _snotes;
+        }
         function nodePERSON(node) {
             const age = node.bdate && node.ddate
                 ? Math.floor((node.ddate - node.bdate) / 31536000000) // 1000ms * 60s * 60min * 24h * 365d
                 : _unknown;
             const mother = node.getMother();
             const father = node.getFather();
+            let _snotes = node.snotes ? snotes(node) : '';
 
             return node.getFullName() + (node.id ? " (" + node.id + ")" : "")
                     + "\n\n" + i18n("birth") + (node.bdate ? node.bdate.toLocaleDateString() : _unknown)
@@ -350,12 +363,14 @@ function _getNodeAttributesAsString(linObj, node)
                     + "\n" + i18n("age") + age
                     + "\n" + i18n("mother") + (mother ? mother.getFullName() + " (" +  mother.id + ")" : _unknown)
                     + "\n" + i18n("father") + (father ? father.getFullName() + " (" +  father.id + ")" : _unknown)
+                    + _snotes
                     ;
         }
         function nodeFAMILIY(node) {
             const wife = node.wife;
             const husband = node.husband;
             const mdate = node.mdate;
+            let _snotes = node.snotes ? snotes(node) : '';
 
             return node.familyname + (node.id ? " (" + node.id + ")" : "")
                     + "\n\n" + i18n("wife") + (wife ? wife.getFullName() + " (" + wife.id + ")" : _unknown)
@@ -363,6 +378,7 @@ function _getNodeAttributesAsString(linObj, node)
                     + "\n" + i18n("marriage") + (mdate ? node.mdate.toLocaleDateString() : _unknown)
                     + "\n" + i18n("children") + (node.children ? node.children.length : _unknown)
                     + "\n" + i18n("Fchild") + (node.Yvalue ? node.Yvalue : _unknown)
+                    + _snotes
                     ;
 
         }

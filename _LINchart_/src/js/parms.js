@@ -165,7 +165,9 @@ const lPARMSarr = [
     // oploopspeed - 0.. ..4 - 2400...1600...1000...600...400 - d3.interval LINloop_Speed
     [ "oploopspeed", 4],
     // viewboxdim - 0.. ..4 - 2x2...4x4...6x6...8x8...10x10 - viewport dimensions
-    [ "viewboxdim", '6x6']
+    [ "viewboxdim", '6x6'],
+    // hasTags    - false: keine TAGs-Zuordnungen im Datenbestand - true: da sind TAGs-Zuordnungen ...
+    [ "hasTags", false],
 ];
 
 const lPARMS = new Map(lPARMSarr);
