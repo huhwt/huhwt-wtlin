@@ -502,6 +502,14 @@ function prepareODATA(gedcom, nodePositions = null)
         p.r0 = _noderadius;
         p.r = p.r0 * p.sr;
         p.cr = p.sex == parms.Sex.FEMALE ? p.r0 : 0;
+        p.crx = 0;
+        p.cry = 0;
+        switch (p.sex) {
+            case parms.Sex.MALE: break;
+            case parms.Sex.FEMALE:  p.crx = p.r0; p.cry = p.r0; break;
+            case parms.Sex.DIVERS:  p.crx = p.r0*1.2; p.cry = p.r0*0.4; break;
+            default: p.crx = 0.1; p.cry = p.r0;
+        }
         p.Yvalue = p.bdate ? p.bdate.getFullYear() : defYear;
         if ( p.Yvalue && p.Yvalue > CurrentYear) {
             p.Yvalue = CurrentYear;
@@ -538,8 +546,10 @@ function prepareODATA(gedcom, nodePositions = null)
     let _linkDistance = parms.GET("LINK_DISTANCE");
     gedcom.families.forEach(f =>
     {
-        let _swife = f.wife;
-        let _shusband = f.husband;
+        let _swife      = f.wife;
+        let _shusband   = f.husband;
+        let _mdate      = f.mdate;
+        let _lwidth     = 1.4;
 
         if (_swife == undefined)
             // ("Source " + link.source + " is undefined!");
@@ -549,20 +559,31 @@ function prepareODATA(gedcom, nodePositions = null)
             console.log(i18n("LT_i_u", { plt: _shusband } ));
 
         if ( _swife && _shusband ) {
-            let _link = {"source": _swife, "target": _shusband, "directed": false, "distance": _linkDistance, "relation": "spouse", color: "#CC0", type: "dashed" };
+            if (_mdate)
+                _lwidth = 3;
+            let _link = {"source": _swife, "target": _shusband, "directed": false, "distance": _linkDistance, "relation": "spouse", color: "#CC0", type: "dashed", width: _lwidth };
             LINKS.push(_link);
         }
+
+        let f_id = f.f_id;
+        let current_adop = gedcom.adoptions.get(f_id);
 
         f.children.forEach(c => 
         {
             let _child = c;
             if ( _swife ) {
-                let _link = {"source": _swife, "target": _child, "directed": true, "distance": _linkDistance, "relation": "mother", color: "#F39", type: "stroke" };
-                LINKS.push(_link);
+                let _type = test_adoption(current_adop, 'WIFE', _child.id);
+                if (_type) {
+                    let _link = {"source": _swife, "target": _child, "directed": true, "distance": _linkDistance, "relation": 'mother', color: "#F39", type: _type, width: 1 };
+                    LINKS.push(_link);
+                }
             }
             if ( _shusband ) {
-                let _link = {"source": _shusband, "target": _child, "directed": true, "distance": _linkDistance, "relation": "father", color: "#39F", type: "stroke" };
-                LINKS.push(_link);
+                let _type = test_adoption(current_adop, 'HUSB', _child.id);
+                if (_type) {
+                    let _link = {"source": _shusband, "target": _child, "directed": true, "distance": _linkDistance, "relation": 'father', color: "#39F", type: _type, width: 1 };
+                    LINKS.push(_link);
+                }
             }
         });
     });
@@ -575,6 +596,24 @@ function prepareODATA(gedcom, nodePositions = null)
     parms.oSET("Olinks", LINKS);
 }
 
+function test_adoption(_current_adop, _test_adop, _child) {
+    let type     = 'stroke';
+    if (_current_adop) {
+        let _cl = _current_adop.children.length;
+        for (let i = 0; i < _cl; i++) {
+            let adop_child = _current_adop.children[i];
+            if (adop_child.child == _child) {
+                if ( _test_adop == adop_child.adop || adop_child.adop == 'BOTH') {
+                    type = 'dashed';
+                } else {
+                    type = null;
+                }
+                break;
+            }
+        }
+    }
+    return type;
+}
 
 function initLINEAGE() {
     // let LINEAGE = new LINEAGErenderer();

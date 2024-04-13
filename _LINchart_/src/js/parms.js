@@ -10,7 +10,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 export const InterpolationType = {'MIN': 1, 'AVG': 2, 'MAX': 3};
-export const Sex = {'MALE': 1, 'FEMALE': 2};
+export const Sex = {'MALE': 1, 'FEMALE': 2, 'DIVERS': 3, 'UNKNOWN': 4};
+export const Scolor = ['#000', '#39F', '#F39', '#FCEAA1', '#CCEECC'];               // bordercolor  -> similar to links (male/female)
 export const Mode = [ 'TREE', 'TIME', 'CLUSTER'];
 export const LINloop_Speed = [ 2400, 1600, 1000, 600, 400];   // -> lPARMS oploopspeed
 // -> lPARMS viewboxdim

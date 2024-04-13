@@ -95,8 +95,8 @@ export function TREEdraw(linObj, dmanObj)
         .data(linObj.yLINKS).join(
             enter => enter.append("line")
                 .attr("stroke", function(link) { return link.color; })
-                .attr("stroke-width", function(link) { return link.directed ? _linkwidth + "px" : _linkwidth * 3 + "px"; })
-                .attr("stroke-dasharray", function(link) { return link.directed ? "" : "3,9"; })
+                .attr("stroke-width", function(link) { return setLinkWidth(link, _linkwidth); })
+                .attr("stroke-dasharray", function(link) { return link.directed ? setDash_d(link) : setDash_w(link); })
                 .attr("stroke-linecap", "round")
                 .attr("opacity", _linkopacity)
                 .attr("marker-end", function(link) { return setArrow(link); }),
@@ -108,13 +108,13 @@ export function TREEdraw(linObj, dmanObj)
     linObj.SVG_NODES = linObj.GRAPH_LAYER.selectAll(".nodes")
         .data(linObj.yNODES).join(
             enter => enter.append("rect")
-                .style("stroke", function(node) { return node.fx == null ? "#222" : dmanObj.PARM_NODE_BORDER_COLOR_FIXED; })
+                .style("stroke", function(node) { return node.fx == null ? setBorderColor(node) : dmanObj.PARM_NODE_BORDER_COLOR_FIXED; })
                 .style("fill", function(node) { return getColor(node.sortname); })
                 .attr("stroke-width", _nodeRadius + "px")
                 .attr("width", function (n) { return 2 * n.r; })
                 .attr("height", function (n) { return 2 * n.r; })
-                .attr("rx", function (n) { return n.cr; })
-                .attr("ry", function (n) { return n.cr; })
+                .attr("rx", function (n) { return n.crx; })
+                .attr("ry", function (n) { return n.cry; })
                 .attr("x", function (n) { return n.x; })
                 .attr("y", function (n) { return n.y; }),
             exit => exit
@@ -138,6 +138,32 @@ export function TREEdraw(linObj, dmanObj)
         }
     }
 
+}
+
+function setBorderColor(node) {
+    let _bcolor = parms.Scolor[node.sex];
+    return _bcolor;
+}
+
+function setLinkWidth(link, _linkwidth) {
+    let _lwidth  = _linkwidth;
+    if (!link.directed) { 
+        _lwidth = _linkwidth * link.width;
+    }
+    return _lwidth + "px";
+}
+
+function setDash_d(link) {
+    let _dasharray = "";
+    if (link.type == "dashed")
+        _dasharray = "2,4";
+    return _dasharray;
+}
+function setDash_w(link) {
+    let _dasharray = "3,9";
+    if (link.width < 2)
+        _dasharray = "6,4";
+    return _dasharray;
 }
 
 function TREEtick(linObj)
@@ -184,8 +210,8 @@ function TREEtick(linObj)
         linObj.SVG_NODES
             .attr("width", function (n) { return 2 * n.r * n.sr; })
             .attr("height", function (n) { return 2 * n.r * n.sr; })
-            .attr("rx", function (n) { return n.cr * n.sr; })
-            .attr("ry", function (n) { return n.cr * n.sr; })
+            .attr("rx", function (n) { return n.crx * n.sr; })
+            .attr("ry", function (n) { return n.cry * n.sr; })
             .attr("x", function (n) { return n.x - n.r; })
             .attr("y", function (n) { return n.y - n.r; })
             ;
@@ -225,7 +251,7 @@ function TREEtick(linObj)
                 var y = d.source.y * (1-t) + d.target.y * t;
                 return isNaN(y) ? d.target.y : y;
             })
-            .attr("stroke-width", function(d) { return d.directed ? _linkwidth + "px" : _lw3 + "px"; })
+            .attr("stroke-width", function(link) { return setLinkWidth(link, _linkwidth); })
             ;
 
         // set labels

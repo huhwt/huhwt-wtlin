@@ -25,6 +25,7 @@ class Person
         this.bdate = bdate;
         this.bplace = null;
         this.ddate = null;
+        this.bcolor = "#000";   // bordercolor  -> copied from webtrees-theme
         this.sn_scR = 0;     // surname -> soundex code - Russell
         this.sn_scDM = 0;    // surname -> soundex code - daitchMokotoff
         this.sortname = 0;   // surname -> for sorting -> spread names in alphabetical order in colorspace
@@ -210,15 +211,19 @@ function build_gedcom(lines)
 {
     var gedcom = {
         "persons" : new Map(),
-        "families" : new Map()
+        "families" : new Map(),
+        "adoptions" : new Map()
     };
-    var current_pers = null;
-    var current_fam = null;
-    var current_parentType = null;
+    var current_pers        = null;
+    var current_fam         = null;
+    var current_adop        = null;
+    var current_parentType  = null;
+    var adop_child          = null;
 
     var nodeType = "";
 
     let p_id = '';
+    let f_id = '';
     for (let i = 0; i < lines.length; i++)
     {
         var tokens = lines[i].split(" ");
@@ -238,9 +243,11 @@ function build_gedcom(lines)
                 let id = tokens[1];
                 p_id = '';
                 current_fam = {
+                    f_id : id,
                     husband : null,
                     wife : null,
                     mdate : null,
+                    mtype : null,
                     children : [],
                     snotes: []
                 };
@@ -254,7 +261,7 @@ function build_gedcom(lines)
             }
         }
         //-------------------------------------------------------------
-        else if (tokens[0] == 1)
+        else if (tokens[0] == "1")
         {
             nodeType = tokens[1].trim();
             current_parentType = nodeType;
@@ -305,8 +312,13 @@ function build_gedcom(lines)
             }
             else if (nodeType == "SEX" && current_pers)
             {
-                let sex = tokens[2].trim();
-                current_pers.sex = sex == "M" ? parms.Sex.MALE : parms.Sex.FEMALE;
+                let _sex = tokens[2].trim();
+                switch (_sex) {
+                    case "M": current_pers.sex = parms.Sex.MALE; break;
+                    case "F": current_pers.sex = parms.Sex.FEMALE; break;
+                    case "X": current_pers.sex = parms.Sex.DIVERS; break;
+                    default:  current_pers.sex = parms.Sex.UNKNOWN;
+                }
             }
             //-------------------------- encounterd while parsing FAMILIES
             else if (nodeType == "HUSB")
@@ -354,7 +366,7 @@ function build_gedcom(lines)
             }
         }
         //-------------------------------------------------------------
-        else if (tokens[0] == 2)
+        else if (tokens[0] == "2")
         {
             if (tokens[1] == "DATE" && tokens.length > 2)
             {
@@ -413,6 +425,41 @@ function build_gedcom(lines)
                 if (current_parentType == "BIRT") current_pers.bdate = date;
                 else if (current_parentType == "DEAT") current_pers.ddate = date;
                 else if (current_parentType == "MARR") current_fam.mdate = date;
+            }
+            //-------------------------- encounterd while parsing FAMILIES
+            else if (tokens[1] == "TYPE" && current_fam)
+            {
+                let type = tokens[2].trim();
+                current_fam.mtype = type;
+            }
+            //-------------------------- encounterd while parsing PERSONS
+            else if (tokens[1] == "FAMC")
+            {
+                if (current_parentType == "ADOP") {
+                    f_id = tokens[2].trim();
+                    current_adop = {
+                        family : f_id,
+                        children : []
+                    };
+                    if (!gedcom.adoptions.get(f_id))
+                        gedcom.adoptions.set(f_id, current_adop);
+                    adop_child = {
+                        child : p_id,
+                        adop  : null
+                    };
+                }
+            }
+        }
+        //-------------------------------------------------------------
+        else if (tokens[0] == "3")
+        {
+            //-------------------------- encounterd while parsing PERSONS
+            if (tokens[1] == "ADOP") {
+                let adop_type   = tokens[2].trim();
+                adop_child.adop = adop_type;
+                current_adop    = gedcom.adoptions.get(f_id);
+                current_adop.children.push(adop_child);
+                gedcom.adoptions.set(f_id, current_adop);
             }
         }
     }
