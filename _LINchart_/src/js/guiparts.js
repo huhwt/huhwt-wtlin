@@ -41,7 +41,7 @@ function html_title() {
 <!-------------------------------------------------------------------------------------->
 <div class="options title">
 	LINEAGE -ℍ&ℍwt-
-    <span id="version" class="version">&nbsp;v2.1.18.0</span>
+    <span id="version" class="version">&nbsp;v2.1.20.0</span>
 </div>
 <!-------------------------------------------------------------------------------------->`;
 }
