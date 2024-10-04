@@ -1,11 +1,15 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
-![webtrees major version](https://img.shields.io/badge/webtrees-v2.1-green)
+![webtrees major version](https://img.shields.io/badge/webtrees-v2.2-green)
 ![Latest Release](https://img.shields.io/github/v/release/huhwt/huhwt-wtlin)
 
 Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-Link-Diagramm, das genealogische Beziehungen visualisiert. Lineage wurde ursprünglich von [Ben Garvey](https://github.com/bengarvey/lineage) entwickelt, ich habe es seinerzeit in einer angepassten Version auf der Homepage von [Jens-Peter Stern](https://knoten.familie-stern.de/) entdeckt.
 
 * Copyright (C) 2022-2024 huhwt - EW.H
+
+Dies ist ein webtrees 2.2 Modul - kann nicht mit webtrees 2.1 benutzt werden.
+
+Für Systeme mit webtrees 2.1 bitte huhwt-wtlin Release v2.1.20.0 bzw. huhwt-wtlin Branch 2.1 verwenden.
 
 Die hier vorgestellte Version kombiniert die Konzepte der Originale mit Elementen aus TAM und eigenen Erweiterungen (TAM: [Topographic Attribute Maps](https://github.com/rpreiner/tam)).
 

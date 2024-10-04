@@ -53,7 +53,6 @@ use Psr\Http\Message\ServerRequestInterface;
 
 use HuHwt\WebtreesMods\TaggingServiceManager\TaggingServiceManagerAdapter;
 
-use function app;
 use function array_keys;
 use function assert;
 use function e;
@@ -112,7 +111,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '2.1.20.0';
+        return '2.2.0.0';
     }
 
     /**
@@ -219,7 +218,7 @@ class LINaction extends AbstractModule
      */
     public function boot(): void 
     {
-        $router_container = app(RouterContainer::class);
+        $router_container = Registry::container()->get(RouterContainer::class);
         assert($router_container instanceof RouterContainer);
         $router = $router_container->getMap();
         // echo(json_encode($router->getRoutes()));

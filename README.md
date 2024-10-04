@@ -1,5 +1,5 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
-![webtrees major version](https://img.shields.io/badge/webtrees-v2.1-green)
+![webtrees major version](https://img.shields.io/badge/webtrees-v2.2-green)
 
 ![Latest Release](https://img.shields.io/github/v/release/huhwt/huhwt-wtlin)
 [![Downloads](https://img.shields.io/github/downloads/huhwt/huhwt-wtlin/total)]()
@@ -10,12 +10,9 @@ This [webtrees](https://www.webtrees.net/) module hosts Lineage, a node-link dia
 
 The version presented here combines the concepts of the originals with elements from TAM and own extensions.
 
-The module is still under development, not all actions lead to the desired results yet.  However, the primary functions are stable, so I think it is reasonable to publish it as **pre-release**.
+This is a webtrees 2.2 module - It cannot be used with webtrees 2.1.
 
-What still needs to be done:
-* Memory management - read and write to/from file works, to/from IndexedDB does not.
-* Gnitches - some settings work in all functions, others only locally in their branch, still need to be reworked.
-* Fine tuning and verification - it works ... but it's not really elegant. Suggestions and hints are welcome ...
+For webtrees 2.1 use the huhwt-wtlin Release v2.1.20.0 respectively the huhwt-wtlin Branch 2.1.
 
 ## Contents
 This readme contains the following main sections

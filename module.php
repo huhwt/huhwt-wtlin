@@ -9,8 +9,7 @@ declare(strict_types=1);
 namespace HuHwt\WebtreesMods\LINchart;
 
 use Fisharebest\Webtrees\Webtrees;
-
-use function app;
+use Fisharebest\Webtrees\Registry;
 
 //webtrees major version switch
 if (defined("WT_VERSION"))
@@ -23,8 +22,6 @@ if (defined("WT_VERSION"))
 
 // Register our namespace
 require_once __DIR__ . '/autoload.php';
-  
-require __DIR__ . '/LINaction.php';
 
 // Create and return instance of the module
-return app(LINaction::class);
+return Registry::container()->get(LINaction::class);
