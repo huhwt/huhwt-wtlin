@@ -41,7 +41,7 @@ function html_title() {
 <!-------------------------------------------------------------------------------------->
 <div class="options title">
 	LINEAGE -ℍ&ℍwt-
-    <span id="version" class="version">&nbsp;v2.1.20.0</span>
+    <span id="version" class="version">&nbsp;v2.1.20.1</span>
 </div>
 <!-------------------------------------------------------------------------------------->`;
 }
@@ -216,6 +216,42 @@ function html_linm() {
 `;
 }
 
+function html_ma() {
+	return `
+    <fieldset>
+    <legend><label class="toggler" for="toggle_ma">${i18n("mb_MA")}</label></legend>
+    <input class="menu_toggler" type="checkbox" id="toggle_ma" hidden="" />
+    <table class="menu" border="0" cellpadding="0" cellspacing="1">
+        <tr>
+            <td class="paramlabel">${i18n("mb_SM")}</td>
+            <td class="param"><label class="switch"><input id="settings_show_contours" type="checkbox"><span class="slider"></span></label></td>
+        </tr>
+        <tr>
+            <td class="paramlabel">${i18n("mb_RC")}</td>
+            <td class="param"><label class="switch"><input id="settings_reversecolor" type="checkbox"><span class="slider"></span></label></td>
+        </tr>
+        <tr>
+            <td class="paramlabel">${i18n("mb_INN")}</td>
+            <td class="param"><label class="switch"><input id="settings_interpolation_type" type="checkbox"><span class="slider"></span></label></td>
+        </tr>
+        <tr>
+            <td class="paramlabel">${i18n("mb_EL")}</td>
+            <td class="param"><label class="switch"><input id="settings_embed_links" type="checkbox"><span class="slider"></span></label></td>
+        </tr>
+        <tr>
+            <td class="paramlabel">${i18n("mb_ST")}</td>
+            <td class="param"><label class="switch"><input id="settings_show_tunnels" type="checkbox"><span class="slider"></span></label></td>
+        </tr>
+        <tr>
+            <td class="paramlabel">${i18n("mb_ES")}</td>
+            <td class="param"><label class="switch"><input id="settings_shading" type="checkbox"><span class="slider"></span></label></td>
+        </tr>
+    </table>
+</fieldset>
+<!-------------------------------------------------------------------------------------->`;
+}
+
+
 function html_lang() {
 	return `
 <fieldset>
@@ -229,84 +265,6 @@ function html_lang() {
 		</tr>
 	</table>
 </fieldset>`;
-}
-
-export function tamMENUBAR_html() {
-	let html_ma = `
-	<fieldset>
-		<legend><label class="toggler" for="toggle_ma">${i18n("mb_MA")}</label></legend>
-		<input class="menu_toggler" type="checkbox" id="toggle_ma" hidden="" />
-		<table class="menu" border="0" cellpadding="0" cellspacing="1">
-			<tr>
-				<td class="paramlabel">${i18n("mb_SM")}</td>
-				<td class="param"><label class="switch"><input id="settings_show_contours" type="checkbox"><span class="slider"></span></label></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_RC")}</td>
-				<td class="param"><label class="switch"><input id="settings_reversecolor" type="checkbox"><span class="slider"></span></label></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_INN")}</td>
-				<td class="param"><label class="switch"><input id="settings_interpolation_type" type="checkbox"><span class="slider"></span></label></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_EL")}</td>
-				<td class="param"><label class="switch"><input id="settings_embed_links" type="checkbox"><span class="slider"></span></label></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_ST")}</td>
-				<td class="param"><label class="switch"><input id="settings_show_tunnels" type="checkbox"><span class="slider"></span></label></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_ES")}</td>
-				<td class="param"><label class="switch"><input id="settings_shading" type="checkbox"><span class="slider"></span></label></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_DD")}</td>
-				<td class="param"><input type="number" id="settings_dilation_degree" min="0" max="100" step="1" value="1" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_MinRV")}</td>
-				<td class="param"><input type="number" id="settings_range_min" value="1750" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_MaxRV")}</td>
-				<td class="param"><input type="number" id="settings_range_max" value="2020" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_CS")}</td>
-				<td class="param"><input type="number" id="settings_contour_step" min="0" step="1" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_CSb")}</td>
-				<td class="param"><input type="number" id="settings_contour_big_step" min="0" step="10" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_IS")}</td>
-				<td class="param"><input type="number" id="settings_indicator_size" min="0" step="1" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_HScl")}</td>
-				<td class="param"><input type="number" id="settings_height_scale" min="0" max="100" value="80" step="1" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_Res")}</td>
-				<td class="param"><input type="number" id="settings_resolution" min="10" max="5000" value="500" step="1" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_LSS")}</td>
-				<td class="param"><input type="number" id="settings_link_sample_step" min="1" step="1" class="paramspinbox"></td>
-			</tr>
-			<tr>
-				<td class="paramlabel">${i18n("mb_UT")}</td>
-				<td class="param"><input type="number" id="settings_underground_threshold" min="0" step="5" class="paramspinbox"></td>
-			</tr>
-		</table>
-	</fieldset>
-	<!-------------------------------------------------------------------------------------->`;
-
-	let html_mb = html_os() + html_title() + html_is() + html_fo() + html_ga() + html_ma + html_lang();
-	return html_mb;
 }
 
 export function FILE_MODAL() {
@@ -344,7 +302,7 @@ export function linMENUBAR_html() {
 	<button id="bt_toggleMenu" class="toggle__button" title="${i18n('Show / hide menu')}">${i18n("Menu")}</button>
 	`;
 
-	return html_os() + html_mb + html_title() + html_linm() + html_is() + html_fo() + html_ga() + html_lang();
+	return html_os() + html_mb + html_title() + html_linm() + html_is() + html_fo() + html_ga() + html_ma() + html_lang();
 
 }
 

@@ -215,7 +215,12 @@ function processTLIN(json)
     parms.oSET("names_filterA", fOBJ.names_filterA);
     let ds_text = json.nodeData;
     let ds_names = json.names;
-    processGedcomN(ds_text, ds_names, function(gedcom) {
+    let ds_infodata = json.infoData ? json.infoData : null;
+    if ( ds_infodata && ds_infodata.length == 0) {
+        ds_infodata = null;
+    }
+    parms.oSET("ds_infodata", ds_infodata);
+    processGedcomN(ds_text, ds_names, ds_infodata, function(gedcom) {
         estimateMissingDates(gedcom, parms.GET("PROCREATION_AGE"));
         prepareODATA(gedcom, json.nodePositions);
     });
@@ -330,12 +335,14 @@ export function loadDataFromIDB(storeName, key) {
     if (renderer) {
         toggleSVG(renderer);
         let linObj = renderer.instance;
-        linObj.SVG_DRAGABLE_NODES
-            .on("mouseover", null)
-            .on("mouseenter", null)
-            .on("mousemove", null)
-            .on("mouseout", null)
-            ;
+        if ( linObj.SVG_DRAGABLE_NODES ) {
+            linObj.SVG_DRAGABLE_NODES
+                .on("mouseover", null)
+                .on("mouseenter", null)
+                .on("mousemove", null)
+                .on("mouseout", null)
+                ;
+        }
         if ( linObj.SVG_DRAGABLE_OTHERS ) {
             linObj.SVG_DRAGABLE_OTHERS
                 .on("mouseover", null)
@@ -365,7 +372,8 @@ export function loadDataFromIDB(storeName, key) {
                                 "metadata": value.metadata,
                                 "parameters": value.parameters,
                                 "nodePositions": value.nodePositions,
-                                "nodeData": value.nodeData
+                                "nodeData": value.nodeData,
+                                "infoData": value.infoData,
                             },
                             null, 2)];
                         processTLIN(value);
@@ -455,10 +463,13 @@ function processIDBgedcom(dataset)
     }
     let ds_text = dataset.nodeData;
     let ds_names = dataset.nameData;
+
     let ds_infodata = dataset.infoData;
     if ( ds_infodata.length == 0) {
         ds_infodata = null;
     }
+    parms.oSET("ds_infodata", ds_infodata);
+
     let dsname = processFILENAME(dataset.dsname);
     processGedcomN(ds_text, ds_names, ds_infodata, function(gedcom) {
         estimateMissingDates(gedcom, parms.GET("PROCREATION_AGE"));

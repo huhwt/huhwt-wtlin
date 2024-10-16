@@ -110,9 +110,7 @@ export class LINEAGErenderer
         this.TLINEmapPI = new Map();
         this.gNODESt = null;
         this.pNODESt = null;
-
         this.s_transform = {k: 1, x: 0, y:0};
-
         this.pInfoCnt = 0;
         this.TLINElistP = false;
 
@@ -346,6 +344,11 @@ export class LINEAGErenderer
         let ds_namesJ = parms.oGET("OnamesJ");
         let ds_names = JSON.stringify(ds_namesJ);
 
+        let ds_infodata = parms.oGET("ds_infodata");
+        if ( ds_infodata && ds_infodata.length == 0) {
+            ds_infodata = null;
+        }
+    
         let content = [JSON.stringify(
             {
                 "metadata": getMetadata(),
@@ -354,6 +357,7 @@ export class LINEAGErenderer
                 "nodeData": ds_nodes,
                 "names": ds_names,
                 "fOBJ": Ofilterdata,
+                "infoData": ds_infodata,
             },
             removeInternalValuesFromJSON, 2)];
         let blob = new Blob(content, { type: "text/json" });
@@ -406,12 +410,15 @@ export class LINEAGErenderer
         let ds_nodes = parms.oGET("Otext");
         let ds_namesJ = parms.oGET("OnamesJ");
 
+        let ds_infodata = parms.oGET("ds_infodata");
+
         let ds_names = JSON.stringify(ds_namesJ);
 
         let _fPerson = this.RENDERhelper.xNODES[0];
         let _primID = _fPerson.id;
         let _primName = _fPerson.givenname + '/' + _fPerson.surname + '/';
         let idb_key = _primName + "-" + _primID;
+
         let _fileName = parms.GET("FILENAME");
         let _tfilename = document.getElementById("filename");
         if (_tfilename) { _fileName = _tfilename.value; }
@@ -433,6 +440,7 @@ export class LINEAGErenderer
                         "nodeData": ds_nodes,
                         "names": ds_names,
                         "fOBJ": Ofilterdata,
+                        "infoData": ds_infodata,
                     }
                 ]
             };
