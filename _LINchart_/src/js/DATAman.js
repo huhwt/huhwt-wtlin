@@ -120,6 +120,10 @@ export class DATAman
             nodes: [],
             links: []
         };
+        let Remainders = {
+            nodes: [],
+            links: []
+        }
         FilteredData.nodes = this.filterNodes(this.originalData.nodes, this.originalData.links);
 
         FilteredData.links = this.filterLinks(this.originalData.links, FilteredData.nodes);

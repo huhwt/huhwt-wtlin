@@ -932,15 +932,15 @@ function onMouseClick(event, d)
         }
         return;
     }
-    // if (event.button == 2) {
-    //     if (d.type == "PNODE") {
-    //         d.fx = d.fy = null;
-    //         d.sr = 1;
-    //         return;
-    //     }
-    //     d.chShow = !d.chShow;
-    //     switchVis(d);
-    // }
+    if (event.button == 2) {
+        if (d.type == "PNODE") {
+            d.fx = d.fy = null;
+            d.sr = 1;
+            return;
+        }
+        d.chShow = !d.chShow;
+        switchVis(d);
+    }
 }
 function switchVis(g) {
     var linObj = parms.oGET("RENDERER").instance;

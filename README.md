@@ -12,7 +12,7 @@ The version presented here combines the concepts of the originals with elements 
 
 This is a webtrees 2.2 module - It cannot be used with webtrees 2.1.
 
-For webtrees 2.1 use the huhwt-wtlin Release v2.1.20.0 respectively the huhwt-wtlin Branch 2.1.
+For webtrees 2.1 use the latest release of the huhwt-wtlin Branch 2.1.
 
 ## Contents
 This readme contains the following main sections
@@ -175,7 +175,7 @@ The time group bars also have an additional property:
 <a name="requirements"></a>
 ## Requirements
 
-This module requires **webtrees** version 2.1.x.
+This module requires **webtrees** version 2.2.x.
 This module has the same general requirements as named for **Webtrees** overall [webtrees#system-requirements](https://github.com/fisharebest/webtrees#system-requirements).
 
 <a name="installation"></a>

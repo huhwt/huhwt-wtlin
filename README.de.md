@@ -9,7 +9,7 @@ Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-
 
 Dies ist ein webtrees 2.2 Modul - kann nicht mit webtrees 2.1 benutzt werden.
 
-Für Systeme mit webtrees 2.1 bitte huhwt-wtlin Release v2.1.20.0 bzw. huhwt-wtlin Branch 2.1 verwenden.
+Für Systeme mit webtrees 2.1 bitte das letzte Release aus huhwt-wtlin Branch 2.1 verwenden.
 
 Die hier vorgestellte Version kombiniert die Konzepte der Originale mit Elementen aus TAM und eigenen Erweiterungen (TAM: [Topographic Attribute Maps](https://github.com/rpreiner/tam)).
 
