@@ -241,9 +241,11 @@ export class RENDERhelper
         linObj.SVG_GROUP_LABELS.attr("transform", this.placeLabelGL);
 
     }
+
     nodeName(node) {
         return node.showname;
     }
+
     hideNames(linObj)
     {
         if (linObj.SVG_NODE_LABELS)  linObj.SVG_NODE_LABELS.remove();
@@ -252,16 +254,13 @@ export class RENDERhelper
 
     placeLabel(node)
     {
-        if (parms.GET("PERSON_LABELS_BELOW_NODE"))
-        {
+        if (parms.GET("PERSON_LABELS_BELOW_NODE")) {
             // below the node
             let _dist = parms.GET("PERSON_LABELS_BELOW_DIST");
             let x = node.x - node.labelwidth * 0.5;
             let y = node.y + node.r + _dist;
             return "translate(" + x + ", " + y + ")";
-        }
-        else
-        {
+        } else {
             // right beside the node
             let x = node.x + 1.5 * node.r;
             let y = node.y + parms.GET("FONT_SIZE")/4;
@@ -288,7 +287,6 @@ export class RENDERhelper
             console.log("placeLabelGL", node);
         }
         return _return;
-
     }
 
 
@@ -324,105 +322,104 @@ export class RENDERhelper
         let _info = _getNodeAttributesAsString(linObj, node);
         return _info;
     }
-
 }
 
     // Returns a string representation of the node to be used in tooltips
-function _getNodeAttributesAsString(linObj, node)
-    {
-        let _unknown = i18n("unknown");
+function _getNodeAttributesAsString(linObj, node) {
+    
+    let _unknown = i18n("unknown");
 
-        function nodePERSONg(nodedata) {
-            let _text = nodePERSON(nodedata.ynode);
-            _text += "\n" + i18n("Gruppe") + ": " + nodedata.group;
-            return _text;
-        }
-        function snotes(node) {
-            let _snotes = '';
-            if (node.snotes.length > 0) {
-                for(let i=0; i < node.snotes.length; i++) {
-                    if (node.snotes[i]) {
-                        let _t = node.snotes[i];
-                        _snotes += "\n - " + _t + " -";
-                    }
+    function nodePERSONg(nodedata) {
+        let _text = nodePERSON(nodedata.ynode);
+        _text += "\n" + i18n("Gruppe") + ": " + nodedata.group;
+        return _text;
+    }
+    function snotes(node) {
+        let _snotes = '';
+        if (node.snotes.length > 0) {
+            for(let i=0; i < node.snotes.length; i++) {
+                if (node.snotes[i]) {
+                    let _t = node.snotes[i];
+                    _snotes += "\n - " + _t + " -";
                 }
             }
-            return _snotes;
         }
-        function nodePERSON(node) {
-            const age = node.bdate && node.ddate
-                ? Math.floor((node.ddate - node.bdate) / 31536000000) // 1000ms * 60s * 60min * 24h * 365d
-                : _unknown;
-            const mother = node.getMother();
-            const father = node.getFather();
-            let _snotes = node.snotes ? snotes(node) : '';
+        return _snotes;
+    }
+    function nodePERSON(node) {
+        const age = node.bdate && node.ddate
+            ? Math.floor((node.ddate - node.bdate) / 31536000000) // 1000ms * 60s * 60min * 24h * 365d
+            : _unknown;
+        const mother = node.getMother();
+        const father = node.getFather();
+        let _snotes = node.snotes ? snotes(node) : '';
 
-            return node.getFullName() + (node.id ? " (" + node.id + ")" : "")
-                    + "\n\n" + i18n("birth") + (node.bdate ? node.bdate.toLocaleDateString() : _unknown)
-                    + "\n" + i18n("death") + (node.ddate ? node.ddate.toLocaleDateString() : _unknown)
-                    + "\n" + i18n("age") + age
-                    + "\n" + i18n("mother") + (mother ? mother.getFullName() + " (" +  mother.id + ")" : _unknown)
-                    + "\n" + i18n("father") + (father ? father.getFullName() + " (" +  father.id + ")" : _unknown)
-                    + _snotes
-                    ;
-        }
-        function nodeFAMILIY(node) {
-            const wife = node.wife;
-            const husband = node.husband;
-            const mdate = node.mdate;
-            let _snotes = node.snotes ? snotes(node) : '';
+        return node.getFullName() + (node.id ? " (" + node.id + ")" : "")
+                + "\n\n" + i18n("birth") + (node.bdate ? node.bdate.toLocaleDateString() : _unknown)
+                + "\n" + i18n("death") + (node.ddate ? node.ddate.toLocaleDateString() : _unknown)
+                + "\n" + i18n("age") + age
+                + "\n" + i18n("mother") + (mother ? mother.getFullName() + " (" +  mother.id + ")" : _unknown)
+                + "\n" + i18n("father") + (father ? father.getFullName() + " (" +  father.id + ")" : _unknown)
+                + _snotes
+                ;
+    }
+    function nodeFAMILIY(node) {
+        const wife = node.wife;
+        const husband = node.husband;
+        const mdate = node.mdate;
+        let _snotes = node.snotes ? snotes(node) : '';
 
-            return node.familyname + (node.id ? " (" + node.id + ")" : "")
-                    + "\n\n" + i18n("wife") + (wife ? wife.getFullName() + " (" + wife.id + ")" : _unknown)
-                    + "\n" + i18n("husband") + (husband ? husband.getFullName() + " (" + husband.id + ")" : _unknown)
-                    + "\n" + i18n("marriage") + (mdate ? node.mdate.toLocaleDateString() : _unknown)
-                    + "\n" + i18n("children") + (node.children ? node.children.length : _unknown)
-                    + "\n" + i18n("Fchild") + (node.Yvalue ? node.Yvalue : _unknown)
-                    + _snotes
-                    ;
+        return node.familyname + (node.id ? " (" + node.id + ")" : "")
+                + "\n\n" + i18n("wife") + (wife ? wife.getFullName() + " (" + wife.id + ")" : _unknown)
+                + "\n" + i18n("husband") + (husband ? husband.getFullName() + " (" + husband.id + ")" : _unknown)
+                + "\n" + i18n("marriage") + (mdate ? node.mdate.toLocaleDateString() : _unknown)
+                + "\n" + i18n("children") + (node.children ? node.children.length : _unknown)
+                + "\n" + i18n("Fchild") + (node.Yvalue ? node.Yvalue : _unknown)
+                + _snotes
+                ;
 
-        }
-        function nodeGNODEc(data) {
-            return  data.names
-                    + "\n\n" + i18n("Gruppe") + ": "  + data.group
-                    + "\n" + i18n("Anzahl") + ": " + data.pvalue
-                    ;
-        }
-        function nodeGNODEt(data) {
-            return  i18n("Marke") + ": "  + data.group
-                    + "\n" + i18n("Anzahl") + ": " + data.pvalue
-                    ;
-        }
-
-        if (linObj.SIMmode == "TREE") {
-            if (node.type == "PERSON") { 
-                return nodePERSON(node); 
-            } else if (node.type == "FAMILY") { 
-                return nodeFAMILIY(node); 
-            } else { 
-                return _unknown; 
-            }
-        } else if (linObj.SIMmode == "CLUSTER"){
-            if (node.type == "PNODE") {
-                return nodePERSONg(node);
-            } else if (node.type == "GNODE") {
-                return nodeGNODEc(node.data);
-            } else { 
-                return _unknown; 
-            }
-        } else if (linObj.SIMmode == "TLINE"){
-            if (node.type == "PNODE") {
-                return nodePERSONg(node);
-            } else if (node.type == "GNODE") {
-                return nodeGNODEt(node.data);
-            } else { 
-                return _unknown; 
-            }
-        }
+    }
+    function nodeGNODEc(data) {
+        return  data.names
+                + "\n\n" + i18n("Gruppe") + ": "  + data.group
+                + "\n" + i18n("Anzahl") + ": " + data.pvalue
+                ;
+    }
+    function nodeGNODEt(data) {
+        return  i18n("Marke") + ": "  + data.group
+                + "\n" + i18n("Anzahl") + ": " + data.pvalue
+                ;
     }
 
-function setContourColor(path, colormap) 
-{
+    if (linObj.SIMmode == "TREE") {
+        if (node.type == "PERSON") { 
+            return nodePERSON(node); 
+        } else if (node.type == "FAMILY") { 
+            return nodeFAMILIY(node); 
+        } else { 
+            return _unknown; 
+        }
+    } else if (linObj.SIMmode == "CLUSTER"){
+        if (node.type == "PNODE") {
+            return nodePERSONg(node);
+        } else if (node.type == "GNODE") {
+            return nodeGNODEc(node.data);
+        } else { 
+            return _unknown; 
+        }
+    } else if (linObj.SIMmode == "TLINE"){
+        if (node.type == "PNODE") {
+            return nodePERSONg(node);
+        } else if (node.type == "GNODE") {
+            return nodeGNODEt(node.data);
+        } else { 
+            return _unknown; 
+        }
+    }
+}
+
+function setContourColor(path, colormap) {
+
     let _pv = path.value;
     let c_pv = colormap(_pv);
     // let dc_pv = darken(c_pv);
@@ -432,13 +429,13 @@ function setContourColor(path, colormap)
     // return darken( colormap(path.value) );
 }
 
-function setContourWidth(path) 
-{
+function setContourWidth(path) {
+
     return path.value % parms.GET("CONTOUR_BIG_STEP") ?  1 * parms.GET("CONTOUR_WIDTH")  :  4 * parms.GET("CONTOUR_WIDTH");
 }
 
-function createTunnels(linObj, SCALARFIELD, SEGMENTS)
-{
+function createTunnels(linObj, SCALARFIELD, SEGMENTS) {
+
     // let renderer = parms.oGET("RENDERER");
     let INTERVALS = {'streets': [], 'tunnels': [] };
 
@@ -566,8 +563,8 @@ function createTunnels(linObj, SCALARFIELD, SEGMENTS)
         ;
 }
 
-function placeTunnelEntry(tunnel, invert)
-{
+function placeTunnelEntry(tunnel, invert) {
+
     let len = 6;
     let pv0 = tunnel[invert ? 0 : 1];
     let pv1 = tunnel[invert ? 1 : 0];
@@ -587,8 +584,8 @@ function placeTunnelEntry(tunnel, invert)
     return [ [p1.x, p1.y], [p0.x, p0.y], [q0.x, q0.y], [q1.x, q1.y] ];
 }
 
-function addHeightfieldOverlays(SCALARFIELD, linObj)
-{
+function addHeightfieldOverlays(SCALARFIELD, linObj) {
+
     let _rangeMax = parms.GET("RANGE_MAX");
     let _rangeMin = parms.GET("RANGE_MIN");
     var thresholds = d3.range(_rangeMin, _rangeMax, parms.GET("CONTOUR_STEP")); 
@@ -645,8 +642,8 @@ function addHeightfieldOverlays(SCALARFIELD, linObj)
     }
 }
 
-function sampleIndicators(scalarfield, gradientField, p, dir, indicators) 
-{
+function sampleIndicators(scalarfield, gradientField, p, dir, indicators) {
+
     const stepSize = 1;
     const minDist = parms.GET("INDICATOR_FONTSIZE");
 
@@ -685,8 +682,8 @@ function sampleIndicators(scalarfield, gradientField, p, dir, indicators)
     }     
 }
 
-function computeHeightFieldIndicators(scalarfield, paths, colormap, linObj)
-{
+function computeHeightFieldIndicators(scalarfield, paths, colormap, linObj) {
+
     let uvSeeds;
     
     if (parms.GET("MANY_SEEDS")) {
@@ -735,8 +732,8 @@ function computeHeightFieldIndicators(scalarfield, paths, colormap, linObj)
         ;
 }
 
-function placeIndicator(indicator) 
-{
+function placeIndicator(indicator) {
+
     let _labelHeight = parms.GET("INDICATOR_FONTSIZE");
     let _labelWidth = _labelHeight * 4.5;
 
@@ -859,8 +856,8 @@ export function reset(linObj) {
     linObj.SVG = null;
 }
 
-export function toggleLinks(showLinks)
-{
+export function toggleLinks(showLinks) {
+
     let renderer = parms.oGET("RENDERER");
     let linObj = renderer.instance;
 

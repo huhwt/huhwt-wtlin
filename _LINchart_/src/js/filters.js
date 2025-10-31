@@ -5,7 +5,7 @@
 // i18n functionality added by huhwt
 // Web storage functionality added by huhwt
 // 
-// Parameters Management
+// Filter chart by selected names
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -58,6 +58,7 @@ export function close_namelist()
     document.querySelector("#namelist").style.display = "none";
     let OVelmnt = document.getElementById("namelist");
     OVelmnt.innerHTML = '';
+    parms.SET("DO_FILTER_SHOW", false);
 }
 
 export function showNameList(event) {
@@ -288,28 +289,29 @@ function save_namefilter() {
  * Namens-Liste zu gewähltem Filter anzeigen
  * 'names_list' -> Liste als Map - sortiert nach Anzahl
  * '_liHead'    -> Listenkopf
- *                 - wird nur gezeigt, wenn mehr als 30 Namen in Liste
+ *                 - wird nur gezeigt, wenn mehr als X Namen in Liste -> parm FILTER_LIST_size
  * '_liLines'   -> Listen-Einträge
  *                  Checkbox
  *                  Namen
  *                  Anzahl
  */
 function showFILTERs_nl(menu_names) {
-    nlShow = parms.oGETmap("names_list");                                  // get the list of names in data
-    parms.lSET("nlSort", "count");                          // default: sort by count
-    parms.lSET("nlFill", i18n('nl_all'));                     // default: full namelist
+    nlShow = parms.oGETmap("names_list");                                       // get the list of names in data
+    parms.lSET("nlSort", "count");                              // default: sort by count
+    parms.lSET("nlFill", i18n('nl_all'));                       // default: full namelist
 
     const _names = document.getElementById("names_sel").children[0];            // target HTML-element
     if (menu_names.value) _names.value = menu_names.value;                      // show already selected names
     nlNames = _names.value;
 
-    const _liHead = document.getElementById("names_liHead");                      // reset names_list
+    const _liHead = document.getElementById("names_liHead");                    // reset names_list
     _liHead.innerHTML = "";
 
-    const _liLines = document.getElementById("names_liLines");                    // reset names_list
+    const _liLines = document.getElementById("names_liLines");                  // reset names_list
     _liLines.innerHTML = "";
 
-    if (nlShow.size > 30) {
+    let _nls = parms.lGET("FILTER_LIST_size");
+    if (nlShow.size > _nls) {
         make_liHead(_liHead);
     }
 

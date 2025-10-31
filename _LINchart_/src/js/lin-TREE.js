@@ -58,7 +58,7 @@ export function TREEexec(linObj, dmanObj) {
         .force("y", d3.forceY(0).strength(parms.GET("GRAVITY_Y"))) 
         .force("link", linObj.LINK_FORCE)
         .force("similarity", function(alpha){ dmanObj.similarityForceY(linObj.yNODES, _alpha); })
-        .force("collide", d3.forceCollide().radius(function(d){ return 2 * d.r; }))
+        .force("collide", d3.forceCollide().radius(function(d){ return 2 * d.r * d.sr; }))
         .alpha(_alpha)
         // .alphaDecay(0.228)
         .alphaTarget(0.05)

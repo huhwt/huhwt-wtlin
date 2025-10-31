@@ -6,9 +6,9 @@
 
 This [webtrees](https://www.webtrees.net/) module hosts Lineage, a node-link diagram that visualizes genealogical relationships. Lineage was originally developed by [Ben Garvey](https://github.com/bengarvey/lineage), I came across it at the time in an adapted version on [Jens-Peter Stern's](https://knoten.familie-stern.de/) homepage.
 
-* Copyright (C) 2022/2024 huhwt - EW.H
+* Copyright (C) 2022/2025 huhwt - EW.H
 
-The version presented here combines the concepts of the originals with elements from TAM and own extensions.
+The version presented here combines the concepts of the originals with elements from TAM and own extensions (TAM: [Topographic Attribute Maps](https://github.com/rpreiner/tam)).
 
 This is a webtrees 2.2 module - It cannot be used with webtrees 2.1.
 
@@ -18,6 +18,12 @@ For webtrees 2.1 use the latest release of the huhwt-wtlin Branch 2.1.
 This readme contains the following main sections
 
 * [Description](#description)
+  * [Introduction](#introduction)
+  * [Controls](#controls)
+    * [Actions menu](#actions-menu)
+    * [Time control](#time-control)
+    * [General control buttons](#general-control-buttons)
+* [Views](#views)
   * [General - Tree View](#linTREE)
   * [Cluster View](#linCLUSTER)
   * [Timeline View](#linTLINE)
@@ -36,31 +42,79 @@ This readme contains the following main sections
 
   ### Introduction
 
-Lineage or **LIN** is a node-link diagram based on a D3.js force simulation. The nodes stand for people, the links show the relationships (parent-child(ren)/partnership).
-> After data transfer, the representation runs exclusively locally in the browser of the user's computer.
-With this technical platform, the display is highly dynamic and can react immediately to a wide variety of settings.
->> (There is a downside: with large numbers of nodes - on the order of several thousand people - it will take some time (also depending on the performance of the local computer) for the display to build up and even longer for it to achieve relative stability. One consolation: in testing, node counts of 10,000+ with more than 30,000 links were handled stably in the long run).
+Lineage or **LIN** is a node-link diagram based on a D3.js force simulation. The nodes represent people, while the links show relationships (parent-child(ren)/partnership).
+> After data transfer, the display runs exclusively locally in the user's browser.
+With this technical platform, the display is highly dynamic and can respond immediately to a wide variety of settings.
+>> (There is a downside: with large numbers of nodes—in the order of several thousand people—it will take some time (also depending on the performance of the local computer) for the display to build up and even longer for it to reach relative stability. One consolation: in tests, node numbers of 10,000+ with more than 30,000 links were handled stably over the long term.)
 
-Unlike [TAM](https://github.com/huhwt/huhwt-wttam), where families are a central element of the representation, LIN represents the linkage of parents and children one at a time, and the relationship between parents as a separate visually distinct linkage.
+The data is extracted from Webtrees, with [huhwt-cce](https://github.com/huhwt/huhwt-cce) serving as the interface. The data stored there in a session variable is rewritten to IndexedDB by the PHP part of this module. The actual LIN components access the information in IndexedDB and are therefore independent of the server side.
 
-The primary representation is the Tree View with the links. Alternatively, the individuals can be displayed in a timeline or grouped by family name.
+There is a fundamental content link to Webtrees in terms of the color scheme of the person nodes. In addition to the surname in plain text, Webtrees also offers implementation according to [Soundex](https://en.wikipedia.org/wiki/Soundex) in both the standard and Daitch–Mokotoff variants (SoundDM). All three variants are adopted in LIN. The SoundDM variant serves as an index feature for the D3js color space [interpolateSinebow](https://github.com/d3/d3-scale-chromatic/blob/main/README.md#interpolateSinebow). Family names that differ in upper and lower case or alternative umlaut spellings, for example, are displayed in the same color, unlike when the name is used in plain text. 
 
-<a name="linTREE"></a>
-### General - Tree View
+* The reference time is a central control variable and can be set and changed in various ways. Nodes outside the reference period are automatically hidden and, if the reference period is extended, they are displayed again. For details, see below - [Time control](#time control).
 
-The nodes are differentiated by gender - women as circles, men as squares. The colors vary with the family names.
+* You can display a list of the persons shown in the view. For details, see below - [Person list](#person-list).
 
-Links between parents and children are directed, to male descendants light blue, to female pink ... ('sorry). Links between parents are undirected, broken and in a yellow-green color variation.
+* You also have the option of filtering the display by family name so that only nodes and connections of persons with selected names are displayed. The selection can be made using a fairly flexible list; the filter definitions are saved and can be activated as desired. For details, see below - [Name control](#name-control).
 
-The data is extracted from webtrees, using [huhwt-cce](https://github.com/huhwt/huhwt-cce) as the interface. The data stored there in a session variable is rewritten to IndexedDB by the PHP portion of this module. The actual LIN components access the information in IndexedDB and as such are independent of the server side.
+The primary display is the tree view with the links. Alternatively, persons can also be displayed in a timeline or a group view grouped by family name.
 
-However, there is a basic content coupling to Webtrees with respect to the color scheme of the person nodes. Webtrees offers not only the surname in plain text but also the conversion according to [Soundex](https://en.wikipedia.org/wiki/Soundex) both in the standard and in the Daitch-Mokotoff variant. All 3 expressions are taken over in LIN. The SoundDM expression serves thereby as index characteristic for the D3js color space [interpolateSinebow](https://github.com/d3/d3-scale-chromatic/blob/main/README.md#interpolateSinebow). Family names, which differ e.g. in upper and lower case or alternative umlaut spellings, are represented in such a way in the same color, differently than if one uses the name in the plain text. 
+In the tree view, persons and relationships / nodes and their links / nodes and links are the central element, and the display focuses on the individual level. Unlike [TAM](https://github.com/huhwt/huhwt-wttam), where families are a central element of the display, LIN displays the connection between parents and children individually and the relationship between the parents as a separate, visually distinct link.
 
-In the group display, the display can be switched by changing the order criterion; depending on the criterion, different distributions result.
+The other two views focus on higher-level aspects.
+
+In the group view, individuals are grouped according to their family names; relationships are not shown. The groups can be arranged in two different ways, and you can switch between Soundex variants for assigning individuals to groups.
+
+In the timeline view, individuals are arranged on a timeline according to their date of birth; relationships are only displayed after an individual has been selected.
+
+The complete Gedcom is imported from Webtrees, and all data contained therein is generally available. The relationships form the framework of the tree view, the date of birth is the reference for time control, and the name properties define the color scheme and are the reference for the group display.
+
+However, the relevant information about a person is not only displayed graphically, but also textually in a tooltip when you hover over a person node with the mouse. If available, the assigned ‘shared notes’ are also displayed.
+
+#### General features of the display
+
+The display supports zoom and pan. By clicking on the display and then dragging, the entire display can be moved - PAN. The mouse wheel can be used to change the size of the view - ZOOM. ZOOM also takes the position of the mouse pointer into account; a ZOOM point outside the center of the display causes the entire image to shift. For easier orientation, a crosshair is superimposed on the entire display. Further options are described below.
+
+This is an SVG construct, which means that the display can be enlarged or reduced as desired without any loss of sharpness or the need for complex conversions.
+
+When the mouse pointer hovers over a node, the underlying information is displayed as a tooltip. Some of this information is included as accompanying text directly in the display, such as the name in the tree view or the classification criteria and numbers in the other views.
+
+Clicking on a node doubles its size. If you drag it to another position in this state (DRAG-n-DROP), it will be fixed there, will no longer be subject to the iteration process, and will also stabilize the positions of the other nodes connected to it via links as a side effect. Clicking on the node again releases the fixation, the size is reset to its regular value, and the node follows the simulation effects again.
+
+You can also fix a node by double-clicking it without dragging it to another position; it is highlighted as described and released again with a single click.
+
+### Controls
+
+The display can be influenced and controlled in many areas. The instruments for this are divided into three areas:
+
+* Left: [Settings menu](#settings-menu)
+* Top: [Time control](#time-control)
+* Right: [General control surfaces](#general-control-surfaces)
+
+The rule of thumb for the various elements is: “If it turns green when you hover over it, click on it and something will happen.”
 
 #### Actions menu
 
 A comprehensive menu is displayed on the left side of the screen (click on the 'Menu' button to hide it). Here you can start read and write operations, switch between the views, activate/deactivate and change various options of the displays and set the reference time of the display.
+
+he menu groups its options into different category boxes, some of which are always open, while others are opened by clicking on the box heading.
+
+* [Open/Store](#readwrite---openstore)
+* [Nodal Views](#nodal-views)
+* [Individuals List](#individuals-list)
+* [Surname filter](#surname-filter)
+* [Navigation]
+  A time control element that offers jump marks at specific points in time — see there for more details.
+* [Interaction]
+  Controls aspects of TAM underlay—activation, underlay with contours, and additional display of year numbers.
+* [Force.Layout]
+  Controls aspects of the D3js force simulation. Changes here affect the density and agility of the graphical presentation. Details can be found in D3js itself – the rule is: ‘You can, but you shouldn't’ ...
+* [Graph.Appearance]
+  Controls aspects of the node connection display
+* [Map.Appearance]
+  Controls aspects of TAM processing
+* [Language]
+  Switches the label texts
 
 ##### Read/Write - 'Open/Store'.
 
@@ -76,6 +130,33 @@ When reading IDB, an overview of the existing entries is shown, in this overview
 
 When writing away, the respective state is documented completely and restored accordingly when reading. So you could prepare a view in the initial view by setting the reference time and dragging and fixing nodes to analyze and document a specific issue, and can then conserve this state by writing away for later resubmission, without having to meticulously repeat all the individual steps later ...
 
+##### Nodal views
+
+The ZOOM limits are set very wide so that you can control the display using this alone. In addition, however, the size of the viewbox (the technical screen element in which the display is anchored) can also be adjusted in several stages. In the default state, the viewbox size is set to 6x6 (6000x6000 pixels), which allows trees with up to 250 nodes to be displayed quite clearly. If the number of nodes is higher, it is likely that you will only get the full view by zooming in intensively. To make things easier, you can enlarge and reduce the viewbox in increments of 2 – if the viewbox is set to 9x9 or 12x12, the nodes are displayed smaller, but the overall view is possible without ZOOM. Alternatively, you can also set 4x4 and 2x2, in which case the nodes are significantly larger and the accompanying text in the display is also clearly visible.
+
+##### Individuals list
+
+It can be difficult to find specific persons in larger representations. This is due to the procedure: the positions result from the calculation of the attractive forces of the connections with mutual repulsion between the nodes, where a person is then positioned after the forces have been balanced, which is hardly predictable. It also has to do with the order in which the persons are arranged in the database. This is basically unordered; the sequence results from the sequence of collection actions, whereby the position of a person is determined by their first appearance in an action. The order of the persons during collection determines how they are entered into the process.
+
+###### Options
+
+The overview of persons in the diagram is sorted by name (last name, first name). The sorting can be done in ascending or descending order. 
+
+There is a purely alphabetical view. In this view, subgroups can be selected according to the first letter of the last name (only if ‘A’-'Z'; undefined last names are ignored). Alternatively, the list of persons can also be displayed grouped by year, divided into decades (in this case, the additional selection by initial letter does not apply).
+
+When hovering over the list entries, both these and the corresponding nodes in the diagram are briefly highlighted. Clicking on a list entry permanently marks both the list entry and the node.
+
+Clicking on a marked entry again removes the highlighting of both the entry and the node. A button can also be used to remove all existing highlights at once.
+
+Double-clicking on an entry forces a person to be placed in the center (internally, they are moved to the top of the order), and the display is rebuilt with this changed boundary condition. The person is highlighted as the “person in focus” both in the form header and in the list, and the node is displayed prominently in the diagram. The focus on the person is removed by double-clicking on the relevant entry again, by clicking a button next to the text field in the form header, or indirectly by focusing on another person.
+
+##### Surname filter
+
+Another addition to the Lineage Origin feature is the option to filter subsets of nodes by family name. You can call up a comprehensive list of family names, sorted either by frequency or alphabetically, and within the total set you can also filter by initial letter. Checkboxes can now be used to select names and save them as filter criteria. Multiple filter definitions can also be created and switched between as you proceed. As with the reference year, all nodes whose name criteria do not match the active filter are removed from the display. The relevant name criterion is determined according to the name scheme specification (see above). If, for example, SoundDM is set, all nodes corresponding to the SoundDM value of a name in the filter are displayed, even if their real names differ (if you select ‘Mayer’, you will also get ‘Meier’, ‘Meyer’, ‘Meir’, etc.).
+
+By clicking on the “with partners” checkbox, the spouses assigned to each person selected via the active filter are also included in the display. The representative nodes are then displayed in reduced size.
+
+The current reference time and the number of active and hidden nodes are displayed at the bottom of the screen. No further distinction is made with regard to the hidden nodes, i.e., no distinction is made as to whether the name or time period filter has been applied.
 
 #### Time control
 
@@ -130,9 +211,18 @@ When clicking on a node, its size is doubled. If you drag it to another position
 
 You can also fix a node by double-clicking on it without dragging it to a different position; it will be highlighted as described and released with a single click.
 
+## Views
+
 In the Tree View, people and relationships / nodes and their links / nodes and links are the central element, the display focuses on the individual level.
 
 In contrast, the other two views focus on higher-level aspects.
+
+<a name="linTREE"></a>
+### Tree view
+
+The nodes are differentiated by gender—women as circles, men as squares. The colors vary according to family name.
+
+The links between parents and children are directed, light blue for male descendants, pink for female descendants ... (sorry). The links between the parents are undirected, interrupted, and kept in a yellow-green color variation.
 
 <a name="linCLUSTER"></a>
 ### Clusters View

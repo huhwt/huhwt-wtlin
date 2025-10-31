@@ -14,14 +14,14 @@ export const Sex = {'MALE': 1, 'FEMALE': 2, 'DIVERS': 3, 'UNKNOWN': 4};
 export const Scolor = ['#000', '#39F', '#F39', '#FCEAA1', '#CCEECC'];               // bordercolor  -> similar to links (male/female)
 export const Mode = [ 'TREE', 'TIME', 'CLUSTER'];
 export const LINloop_Speed = [ 2400, 1600, 1000, 600, 400];   // -> lPARMS oploopspeed
-// -> lPARMS viewboxdim
-//          lfd   X-0    Y-0  Width Height
+// -> lPARMS viewboxdim                    NM: Node magnifier -> factor to enlarge node when clicked an dragged
+//          lfd   X-0    Y-0  Width Height NM
 export const VIEW_PORT_DIMS = {
-    '2x2': ['1', -1000, -533, 2000, 2000],
-    '4x4': ['2', -2000, -1066, 4000, 4000],
-    '6x6': ['3', -3000, -1600, 6000, 6000],
-    '9x9': ['4', -4500, -2400, 9000, 9000],
-    '12x12': ['5', -6000, -3200, 12000, 12000]
+    '2x2': ['1', -1000, -533, 2000, 2000, 2],
+    '4x4': ['2', -2000, -1066, 4000, 4000, 2],
+    '6x6': ['3', -3000, -1600, 6000, 6000, 2.1],
+    '9x9': ['4', -4500, -2400, 9000, 9000, 2.4],
+    '12x12': ['5', -6000, -3200, 12000, 12000, 2.75]
 };
 export const ZOOMfactor = 1.1486983549970351;
 
@@ -29,6 +29,20 @@ const YEARrangeMIN = 1500;
 const YEARshowMIN = 1500;
 
 const NODE_RADIUS = 10;
+
+const CENTER_NODE_val = 2.5;
+
+///////////////////////////////////////////////////////////////////////////////
+// there are 3 types of Parameter-Arrays with associated Maps:
+//  parameters controlling the simulation and the visualization
+//      PARMSarr        ->          PARMS
+//  parameters that make objects generally available
+//      oPARMSarr       ->          oPARMS       
+//  parameters that are specifically necessary for running and controlling this
+//  process
+//      lPARMSarr       ->          lPARMS
+//  oPARMS + lPARMS :   there may be some added while during the process.
+///////////////////////////////////////////////////////////////////////////////
 
 /**
  *  Parameter-Array - basic Parameters
@@ -128,6 +142,10 @@ const PARMSarr = [
     [ "YEAReO", 0],                         // end year OriginalData
     [ "YEARdelta", 0],                      // count year up/down
     [ "actYear", 0],                        // holds YEAR in case of exporting/importing data
+
+    [ "CENTER_NODE_val", CENTER_NODE_val],  // factor to enlarge/highlight focus_node
+    [ "FILTER_LIST_size", 20],              // when more than this names in list -> show header/criteria
+    [ "NODES_LIST_size", 20],               // when more than this individuals in list -> show header/criteria
 
 ];
 

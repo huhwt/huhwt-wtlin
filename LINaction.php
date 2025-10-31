@@ -3,7 +3,7 @@
 /**
  * webtrees - clippings vizualisation - LIN
  *
- * Copyright (C) 2023-2024 huhwt. All rights reserved.
+ * Copyright (C) 2023-2025 huhwt. All rights reserved.
  *
  */
 
@@ -80,6 +80,8 @@ class LINaction extends AbstractModule
 
     private $huh;
 
+    private $huh_short;
+
     /** @var TreeService */
     private $tree_service;
 
@@ -90,7 +92,8 @@ class LINaction extends AbstractModule
      */
     public function __construct(TreeService $tree_service) {
         $this->tree_service = $tree_service;
-        $this->huh = json_decode('"\u210D"') . "&" . json_decode('"\u210D"') . "wt";
+        $this->huh = '-' . json_decode('"\u210D"') . "&" . json_decode('"\u210D"') . "wt-";
+        $this->huh_short = json_decode('"\u210D"');
     }
 
     /**
@@ -111,7 +114,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '2.2.1.0';
+        return '2.4.1.0';
     }
 
     /**
@@ -170,6 +173,15 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function title(): string 
+    {
+        $title = I18N::translate('LINchart');
+        return $this->huh_short . ' ' . $title;
+    }
+
+    /**
+     * @return string
+     */
+    public function ptitle(): string 
     {
         $title = I18N::translate('LINchart');
         return $this->huh . ' ' . $title;
@@ -412,6 +424,6 @@ class LINaction extends AbstractModule
 
     public function appName(): string
     {
-        return $this->name;
+        return $this->name();
     }
 }

@@ -18,6 +18,7 @@ import * as DBman from "./dbman.js";
 import { onChangeFile, openNewTab, loadDataFromIDB } from "./interfaces.js";
 import { createDownloadSVG, dump_Htree } from "./export.js";
 import * as sliderTL from "./sliderTimeline.js";
+import { showNodesList, close_nodeslist } from "./nodeslist.js";
 import { showNameList, close_namelist } from "./filters.js";
 import * as Rhelper from "./RENDERhelpers.js";
 import { getCLUSTERsAt } from "./clusters.js";
@@ -25,6 +26,8 @@ import { CLUSTERexec, CLUSTERexec_DO } from "./lin-CLUSTER.js";
 import { TREEexec } from "./lin-TREE.js";
 import * as uti from "./utils.js";
 import { shiftRuler } from "./yearScale.js";
+
+var nodeMagnifier = 2;
 
 export function initInteractions(linObj) 
 {
@@ -216,6 +219,7 @@ function dragStartNode(event, d)
     event.sourceEvent.stopPropagation();
     // console.log(event, event.active, d);
     let renderer = parms.oGET("RENDERER");
+    nodeMagnifier = renderer.nodeMagnifier;
 
     renderer.RENDERhelper.resetScalarField(renderer.instance);
     if (!parms.GET("ENERGIZE"))
@@ -223,7 +227,7 @@ function dragStartNode(event, d)
     renderer.FORCE_SIMULATION.alpha(0.1).restart();
     d.fx = d.x;
     d.fy = d.y;
-    d.sr = 2;
+    d.sr = nodeMagnifier;
     // console.log(event, event.active, d);
 
     if (parms.GET("SHOW_TOOLTIPS"))
@@ -257,14 +261,25 @@ function dragEndNode(event, d)
 function onMouseClick(event, d)
 {
     d.fx = d.fy = null;
-    if (d.sr == 2)
-        d.sr = 1;
+    if (d.is_focus) {
+        make_Focus_Node(d);
+    } else {
+        if (d.sr == nodeMagnifier)
+            d.sr = 1;
+    }
+}
+export function make_Focus_Node(d) {
+    let _focus_node_val = parms.GET("CENTER_NODE_val");
+    let _noderadius = parms.GET("NODE_RADIUS");
+    d.sr = _focus_node_val;
+    d.fx = -_noderadius * _focus_node_val * 0.5;
+    d.fy = -_noderadius * _focus_node_val * 0.5;
 }
 //---------------------------------------------------------------------------
 function onDblClick(event, d)
 {
     if (d.type == "PERSON" ) {
-        d.sr = 2;
+        d.sr = nodeMagnifier;
         d.fx = d.x;
         d.fy = d.y;
     } else {
@@ -548,6 +563,7 @@ export function set_tamDefaultParameters()
     parms.SET("ACTIVE_LOCALE", "de");
 
     parms.SET("DO_FILTER_SHOW", false);
+    parms.SET("DO_NODELIST_SHOW", false);
 
     initMenubar(); // update visuals based on parameter values
 }
@@ -568,6 +584,8 @@ export function Wswitch_locale(_locale) {
 
 export function initMenubar()
 {
+    let renderer = parms.oGET("RENDERER");
+
     let active_language = i18n("ZZZZ");
     if (active_language != parms.GET("ACTIVE_LOCALE")) {
         translate.switch_locale(parms.GET("ACTIVE_LOCALE"));
@@ -583,7 +601,6 @@ export function initMenubar()
         let ctHTML = gui.CONTROLS_html();
         let FIelmnt = document.getElementById("forceInfo");
         FIelmnt.innerHTML = ctHTML;
-        let renderer = parms.oGET("RENDERER");
         if (renderer)
             updatencounter(renderer.instance);
     }
@@ -686,7 +703,7 @@ function set_linMENUBAR_actions()
     });
 
     //  toggle show names_list
-    d3.select("a[data-filter]").on("click", function(e) {
+    d3.selectAll("a[data-filter]").on("click", function(e) {
         let _this = this;
         let renderer = parms.oGET("RENDERER");
         DFclicked(e, _this, renderer);
@@ -817,18 +834,28 @@ function DSprep() {
 }
 
 /**
- * Toggle show names_list -> value is hosted in 'data-filter'
+ * Toggle show nodes_list | names_list -> values are hosted in 'data-filter'
  */
  function DFclicked(event, _this, renderer) {
     let valueDO = _this.getAttribute("data-filter");
-    let doFilterSHOW = parms.GET("DO_FILTER_SHOW");
     if (valueDO == "menu_names") {
+        let doFilterSHOW = parms.GET("DO_FILTER_SHOW");
         doFilterSHOW = !doFilterSHOW;
         parms.SET("DO_FILTER_SHOW", doFilterSHOW);
         if ( doFilterSHOW ) {
             showNameList(event, renderer);
         } else {
             close_namelist();
+        }
+    }
+    if (valueDO == "menu_nodeslist") {
+        let doNodesSHOW = parms.GET("DO_NODELIST_SHOW");
+        doNodesSHOW = !doNodesSHOW;
+        parms.SET("DO_NODELIST_SHOW", doNodesSHOW);
+        if ( doNodesSHOW ) {
+            showNodesList(event, renderer);
+        } else {
+            close_nodeslist();
         }
     }
 
@@ -1003,7 +1030,6 @@ function close_toggle(elemID) {
     let _mt = document.getElementById(elemID);
     _mt.checked = false;
 }
-
 function set_tamMENUBAR_actions()
 {
     let renderer = parms.oGET("RENDERER");
@@ -1296,7 +1322,7 @@ function check_CONTROLS(renderer, valueInfo) {
         rendObj.s_transform.y = 0;
         rendObj.s_transform.k = 1;
         shiftRuler(0);
-        // let the_CANVASu = linObj.CANVAS._groups[0][0];
+        // let the_CANVASu = rendObj.CANVAS._groups[0][0];
         // let _transformu = the_CANVASu.getAttribute('transform');
         // console.log("center pre:", _transform,"post:", _transformu);
     } else if(valueInfo == "zoom-in") {

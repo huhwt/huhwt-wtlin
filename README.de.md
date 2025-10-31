@@ -5,7 +5,7 @@
 
 Dieses [webtrees](https://www.webtrees.net/) Modul enthält Lineage, ein Knoten-Link-Diagramm, das genealogische Beziehungen visualisiert. Lineage wurde ursprünglich von [Ben Garvey](https://github.com/bengarvey/lineage) entwickelt, ich habe es seinerzeit in einer angepassten Version auf der Homepage von [Jens-Peter Stern](https://knoten.familie-stern.de/) entdeckt.
 
-* Copyright (C) 2022-2024 huhwt - EW.H
+* Copyright (C) 2022-2025 huhwt - EW.H
 
 Dies ist ein webtrees 2.2 Modul - kann nicht mit webtrees 2.1 benutzt werden.
 
@@ -17,6 +17,12 @@ Die hier vorgestellte Version kombiniert die Konzepte der Originale mit Elemente
 Dieses Readme enthält die folgenden Hauptabschnitte
 
 * [Beschreibung](#description)
+  * [Einführung](#einführung)
+  * [Steuerung](#steuerung)
+    * [Einstellungen.Menü](#einstellungen-menü)
+    * [Zeitsteuerung](#zeitsteuerung)
+    * [Allgemeine.Steuerflächen](#allgemeine-steuerflächen)
+* [Ansichten](#ansichten)
   * [Baum Ansicht](#linTREE)
   * [Gruppen Ansicht](#linCLUSTER)
   * [Zeitleiste Ansicht](#linTLINE)
@@ -42,9 +48,11 @@ Mit dieser technischen Plattform ist die Darstellung hochdynamisch und kann unmi
 
 Die Daten werden aus Webtrees extrahiert, als Schnittstelle dient [huhwt-cce](https://github.com/huhwt/huhwt-cce). Die dort in einer Session-Variablen abgelegten Daten werden vom PHP-Anteil dieses Moduls auf IndexedDB umgeschrieben. Die eigentlichen LIN-Komponenten greifen auf die Informationen in IndexedDB zu und sind als solche unabhängig von der Server-Seite.
 
-Eine grundsätzliche inhaltliche Kopplung an Webtrees gibt es in Bezug auf das Farbschema der Personen-Knoten. Webtrees bietet neben dem Nachnamen im Klartext auch die Umsetzung gemäß [Soundex](https://en.wikipedia.org/wiki/Soundex) sowohl im Standard als auch in der Daitch–Mokotoff-Variante an. Alle 3 Ausprägungen werden in LIN übernommen. Die SoundDM-Ausprägung dient dabei als Index-Merkmal für den D3js-Farbraum [interpolateSinebow](https://github.com/d3/d3-scale-chromatic/blob/main/README.md#interpolateSinebow). Familiennamen, welche sich z.B. in Groß- und Klein-Schreibung oder alternativen Umlaut-Schreibweisen unterscheiden, werden so gleichfarbig dargestellt, anders als wenn man den Namen im Klartext verwendet. 
+Eine grundsätzliche inhaltliche Kopplung an Webtrees gibt es in Bezug auf das Farbschema der Personen-Knoten. Webtrees bietet neben dem Nachnamen im Klartext auch die Umsetzung gemäß [Soundex](https://en.wikipedia.org/wiki/Soundex) sowohl im Standard als auch in der Daitch–Mokotoff-Variante (SoundDM) an. Alle 3 Ausprägungen werden in LIN übernommen. Die SoundDM-Ausprägung dient dabei als Index-Merkmal für den D3js-Farbraum [interpolateSinebow](https://github.com/d3/d3-scale-chromatic/blob/main/README.md#interpolateSinebow). Familiennamen, welche sich z.B. in Groß- und Klein-Schreibung oder alternativen Umlaut-Schreibweisen unterscheiden, werden so gleichfarbig dargestellt, anders als wenn man den Namen im Klartext verwendet. 
 
 * Die Bezugszeit ist eine zentrale Stellgröße und kann verschieden eingestellt und verändert werden. Außerhalb des Bezugszeitraums liegende Knoten werden automatisch aus- und, wird der Bezugszeitraum erweitert, auch wieder eingeblendet. Details dazu siehe unten - [Zeitsteuerung](#zeitsteuerung).
+
+* Man kann sich eine Liste der in der Ansicht geführten Personen anzeigen lassen. Details dazu siehe unten - [Personen-Liste](#personen-liste).
 
 * Daneben hat man auch die Option, die Darstellung nach Familiennamen zu filtern, dergestalt, dass nur Knoten und Verbindungen von Personen mit ausgewählten Namen angezeigt werden. Die Auswahl kann man über eine ziemlich flexible Liste vornehmen, die Filterdefinitionen werden gespeichert und können beliebig aktiviert werden. Details dazu siehe unten - [Namen-Steuerung](#namen-steuerung).
 
@@ -66,8 +74,7 @@ Die relevanten Informationen zu einer Person werden aber nicht nur grafisch umge
 
 Die Darstellung unterstützt Zoom und Pan. Mit Klicken in die Darstellung und anschließendem Ziehen kann die ganze Darstellung verschoben werden - PAN. Mit dem Mausrad kann man die Größe der Ansicht verändern - ZOOM. Beim ZOOM wird auch die Position des Mauszeigers berücksichtigt, ein ZOOM-Punkt ausserhalb des Zentrums der Darstellung führt zu einer Verschiebung des ganzen Bildes. Zur leichteren Orientierung ist der Darstellung insgesamt ein Zielkreuz unterlegt. Weitere Optionen sind weiter unten ausgeführt.
 
-Es handelt sich um ein SVG-Konstrukt, mithin kann man die Darstellung beliebig vergrößern oder verkleinern, ohne dass die Schärfe darunter leidet
-oder aufwendige Umrechnungen unternommen werden müssten.
+Es handelt sich um ein SVG-Konstrukt, mithin kann man die Darstellung beliebig vergrößern oder verkleinern, ohne dass die Schärfe darunter leidet oder aufwendige Umrechnungen unternommen werden müssten.
 
 Überstreicht der Mauszeiger einen Node, werden die unterliegenden Informationen als Tooltip angezeigt. Ein Teil davon wird als Begleittext direkt in der Darstellung mit geführt, so der Name in der Baumansicht oder die Ordnungskriterien und Anzahlen in den anderen Sichten.
 
@@ -93,6 +100,7 @@ Das Menü fasst seine Optionen in verschiedene Kategorien-Boxen zusammen, einige
 
 * [Öffnen/Speichern](#lesenschreiben---öffnenspeichern)
 * [Knotenansichten](#knotenansichten)
+* [Personenliste](#personen-liste)
 * [Nachnamenfilter](#namen-steuerung)
 * [Navigation/Animation]
   Ein Element der Zeitsteuerung, welches Sprungmarken zu Zeitpunkten anbietet - näheres siehe dort.
@@ -102,6 +110,8 @@ Das Menü fasst seine Optionen in verschiedene Kategorien-Boxen zusammen, einige
   Steuert Aspekte der D3js-Force-Simulation. Änderungen hier beeinflussen die Dichte und Agilität der grafischen Aufbereitung, Details dazu bei D3js selbst - es gilt: 'Man kann, sollte aber nicht' ...
 * [Graph-Darstellung]
   Steuert Aspekte der Knoten-Verbindungen-Darstellung
+* [Karte-Darstellung]
+  Steuert Aspekte der TAM-Aufbereitung
 * [Sprache]
   Schaltet die Beschriftungstexte um
 
@@ -122,6 +132,22 @@ Beim Wegschreiben wird der jeweilige Zustand komplett dokumentiert und beim Lese
 ##### Knotenansichten
 
 Die ZOOM-Grenzwerte sind sehr weit gesetzt, so dass man die Darstellung allein darüber steuern kann. Zusätzlich lässt sich aber auch die Größe der Viewbox (das technische Bildschirm-Element in welchem die Darstellung verankert ist) in mehreren Stufen beeinflussen. Im Ausgangzustand ist die Viewbox-Größe auf 6x6 (6000x6000 Pixel) gesetzt, damit lassen sich Bäume mit bis zu 250 Knoten recht übersichtlich abbilden. Ist die Knoten-Zahl höher, ist es wahrscheinlich, dass man die Gesamtsicht erst durch intensives ZOOM erhält. Als Erleichterung kann man die Viewbox um jeweils 2 Stufen vergrößern und verkleinern - ist die Viewbox auf 9x9 bzw. 12x12 gesetzt, werden die Knoten zwar entsprechend kleiner dargestellt, aber die Gesamtsicht ergibt sich auch ohne ZOOM, alternativ lassen sich auch 4x4 und 2x2 einstellen, dann sind die Knoten deutlich größer und auch der begleitende Text in der Darstellung ist gut erkennbar.
+
+##### Personen-Liste
+
+Es kann schwierig sein, bei größeren Darstellungen gezielt Personen zu finden. Das ist durch das Verfahren bedingt: Die Positionen ergeben sich aus Verrechnung der anziehenden Kräfte der Verbindungen mit gegenseitiger Abstoßung zwischen den Knoten, wo eine Person nach Ausbalancierung der Kräfte dann positioniert ist, ist kaum vorhersehbar. Es hat darüberhinaus auch mit der Reihenfolge zu tun, also wie die Personen im Datenbestand angeordnet sind. Dieser ist grundsätzlich ungeordnet, die Aufeinanderfolge ergibt sich aus der Sequenz der Sammelaktionen, wobei die Position einer Person vom ersten Erscheinen bei einer Aktion festgelegt wird. Die Reihenfolge der Personen beim Sammeln bestimmt, wie sie in das Verfahren eingespielt werden.
+
+###### Optionen
+
+Die Übersicht der Personen im Diagramm wird nach Namen (Nachname, Vornamen) sortiert angezeigt. Die Sortierung kann sowohl auf- wie auch absteigend erfolgen. 
+
+Es gibt die rein alphabetische Ansicht. In dieser können Teilgruppen nach dem Anfangsbuchstaben des Nachnamens herausgegriffen werden (nur wenn 'A'-'Z', nicht definierte Nachnamen werden dabei übergangen). Alternativ kann man die Personenliste auch nach Jahren gruppiert anzeigen lassen, unterteilt jeweils nach Jahrzehnten (dann wirkt die zusätzliche Auswahl nach Anfangsbuchstaben nicht).
+
+Beim Schwenk über die Listeneinträge werden sowohl diese wie auch die jeweiligen Knoten im Diagramm kurzfristig hervorgehoben, mit Klick auf einen Listeneintrag wird sowohl der Listeneintrag wie auch der Knoten dauerhaft markiert.
+
+Erneuter Klick auf einen markierten Eintrag hebt die Hervorhebung des Eintrags wie auch des Knotens auf. Über eine Schaltfläche können auch alle vorhandenen Hervorhebungen auf einmal zurückgenommen werden.
+
+Mit einem Doppelklick auf einen Eintrag kann man eine Person zwingend ins Zentrum setzen (intern wird sie auf den 1. Platz der Reihenfolge gebracht), die Darstellung wird mit dieser geänderten Randbedingung neu aufgebaut. Die Person wird als "Person im Fokus" sowohl im Formularkopf wie auch in der Liste besonders herausgestellt, der Knoten im Diagramm besonders prominent dargestellt. Aufgehoben wird die Fokussierung auf die Person durch erneuten Doppelklick auf den betreffenden Eintrag, die Betätigung einer Schaltfläche neben dem Textfeld im Formularkopf, oder indirekt, indem eine andere Person in den Fokus genommen wird.
 
 ##### Namen-Steuerung
 
@@ -168,11 +194,13 @@ Aus **TAM** wurde das Feature übernommen, dass bei Energie-Level "0" der Darste
 
 Jede Simulation beginnt mit einer relativ kompakten Zusammenballung aller Nodes. Jeder Node wirkt auf seine Umgebung. Enthält ein Datenbestand viele Nodes, ist es recht wahrscheinlich, dass bei Ende des Iterations-Zyklus die Verteilung der Nodes durch gegenseitige quasi Blockaden noch nicht wirklich ausgeglichen ist. Ein Iterations-Zyklus beinhaltet ca. 300 Durchläufe, eventuell auch weniger, wenn ein End-Energiewert > "0" vorgegeben ist. Die dritte Schaltfläche - ein Thermometer-Symbol - setzt den aktuellen Energie-Level pro Betätigung um jeweils 0.1 hoch (der Maximalwert ist 1), so dass eine weitere Abfolge von Iterationen angestossen wird. Bei grosser Node-Anzahl wird sich das in weiteren Verschiebungen bemerkbar machen, liegt die Node-Anzahl in eher niedrigem Bereich von maximal einigen 100ern, wird sich die Darstellung eher nicht mehr verändern, da ein stabiler Gleichgewichtszustand der wirkenden Kräften eingetreten sein dürfte.
 
-Unter den Aktions-Schaltflächen wird zur Information der aktuelle "alpha"-Wert angezeigt, er entspricht dem jeweiligen Energie-Level, zur besseren Erkennbarkeit vom Bereich 0-1 auf 0-100 hochskaliert. Ändert sich der Wert nicht mehr, ist der Iterations-Zyklus beendet. Bei der Baum-Darstellung ist aktuell der Endwert 0.05, bei der Zeitleiste 0.01 und bei den Gruppen 0.001 hinterlegt. Das D3js-Verfahren ist nachvollziehbar rechenaufwendig, es stellen sich zwangsläufig Rundungsfehler ein, deshalb werden die angezeigten "alpha"-Werte nicht entsprechend glatt, sondern mit diversen Nachkommastellen angezeigt.
+Unter den Aktions-Schaltflächen wird zur Information der aktuelle "alpha"-Wert angezeigt, er entspricht dem jeweiligen Energie-Level, zur besseren Erkennbarkeit vom Bereich 0-1 auf 0-100 hochskaliert. Ändert sich der Wert nicht mehr, ist der Iterations-Zyklus beendet. Bei der Baum-Darstellung ist aktuell der Endwert 5, bei der Zeitleiste 1 und bei den Gruppen 0.1 hinterlegt. Das D3js-Verfahren ist nachvollziehbar rechenaufwendig, es stellen sich zwangsläufig Rundungsfehler ein, deshalb werden die angezeigten "alpha"-Werte nicht entsprechend glatt, sondern mit diversen Nachkommastellen angezeigt.
 
-Wie bereits erwähnt, unterstützt die Darstellung Zoom und Pan. PAN verschiebt das Bild insgesamt; bei ZOOM wird wegen Berücksichtigung der Position des Mauszeigers und einem ZOOM-Punkt ausserhalb des Zentrums der Darstellung gleichermaßen das Bild verschoben. Eine "Zentrieren"-Schaltfläche stellt nund die Ausgangssituation wieder her. Skalierung und zeitweiliger Referenzpunkt der Darstellung werden unter der "Zentrieren"-Schaltfläche als Infobox angezeigt.
+Wie bereits erwähnt, unterstützt die Darstellung Zoom und Pan. PAN verschiebt das Bild insgesamt; bei ZOOM wird wegen Berücksichtigung der Position des Mauszeigers und einem ZOOM-Punkt ausserhalb des Zentrums der Darstellung gleichermaßen das Bild verschoben. Eine "Zentrieren"-Schaltfläche stellt nun die Ausgangssituation wieder her. Skalierung und zeitweiliger Referenzpunkt der Darstellung werden unter der "Zentrieren"-Schaltfläche als Infobox angezeigt.
 
 > Die Viewbox-Einstellung wirkt unabhängig von der konkreten Ansicht, die ZOOM- und PAN-Einstellung werden jedoch für jede Ansicht unabhängig vorgehalten - bei Wechsel der Ansicht können also die angezeigten (Infobox) von den wirkenden Werten abweichen.
+
+## Ansichten
 
 <a name="linTREE"></a>
 ### Baum-Ansicht
@@ -224,7 +252,7 @@ Auch die Gruppen-Balken verfügen über eine zusätzliche Eigenschaft:
 <a name="requirements"></a>
 ## Voraussetzungen
 
-Dieses Modul benötigt **webtrees** Version 2.1.x.
+Dieses Modul benötigt mindestens **webtrees** Version 2.2.x. 
 Dieses Modul hat die gleichen allgemeinen Anforderungen wie für **Webtrees** insgesamt genannt [webtrees#system-requirements](https://github.com/fisharebest/webtrees#system-requirements).
 
 <a name="installation"></a>
@@ -239,7 +267,7 @@ In diesem Abschnitt wird beschrieben, wie Sie dieses Modul installieren.
 <a name="upgrade"></a>
 ## Upgrade
 
-Um die neueste Version zu erhalten, ersetzen Sie einfach die vorhandenen huhwt-wttam-Dateien mit denen der neuesten Version.
+Um die neueste Version zu erhalten, ersetzen Sie einfach die vorhandenen huhwt-wtlin-Dateien mit denen der neuesten Version.
 
 <a name="translation"></a>
 ## Übersetzungen

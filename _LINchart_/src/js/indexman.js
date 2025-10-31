@@ -38,6 +38,7 @@ export function initIDX(NODES)
     m_fChar = fChar();
 
     NODES.forEach(buildColorDim);
+    
     // set the colors for single first letters
     let alpha = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
     alpha.forEach(function(_ch) {
@@ -131,7 +132,7 @@ function buildNames(n) {
         } else {
             idxDmName.set(n.sn_scDM, n.surname);
         }
-}
+    }
     if (n.sn_scR != 0) {
         if ( !idxNameStd.has(n.surname) ) {
             idxNameStd.set(n.surname, n.sn_scR);
@@ -150,7 +151,7 @@ function buildNames(n) {
         } else {
             idxStdName.set(n.sn_scR, n.surname);
         }
-}
+    }
     if (idxNames.has(n.surname)) {
         let _ncnt = idxNames.get(n.surname) + 1;
         idxNames.set(n.surname, _ncnt);
@@ -217,7 +218,7 @@ export function getNames0(sn0) {
     }
 }
 
-function fChar() {
+export function fChar() {
     let _chars = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
     let _cM = new Map();
     _chars.forEach(function(_ch) {

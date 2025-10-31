@@ -21,6 +21,7 @@ class Person
         this.sex = parms.Sex.FEMALE;
         this.givenname = givenname;
         this.surname = surname;
+        this.nickname = null;
         this.showname = null;
         this.bdate = bdate;
         this.bplace = null;
@@ -29,6 +30,7 @@ class Person
         this.sn_scR = 0;     // surname -> soundex code - Russell
         this.sn_scDM = 0;    // surname -> soundex code - daitchMokotoff
         this.sortname = 0;   // surname -> for sorting -> spread names in alphabetical order in colorspace
+        this.is_focus = null;
         
         this.families = [];     // list of families this person belongs to
 
@@ -37,8 +39,11 @@ class Person
 
     getFullName()
     {
-        if (this.givenname || this.surname)
-            return this.givenname + " " + this.surname;
+        if (this.givenname || this.surname) {
+            if (!this.nickname)
+                return this.givenname + " " + this.surname;
+            return this.givenname + ' ' + this.nickname + ' ' + this.surname;
+        }
         return null;
     }
 
@@ -161,24 +166,24 @@ export function processGedcomN(text, names, info_data, callback)
     // - Nxrefs     -> key: sNOTE-id, value: TAGtext
     // - txtNotes   -> key: NOTEtext, value: sNOTE-id
 
+    let Snotes = new Map();
     if (info_data) {
         if( info_data.Nxrefs ) {
-            let _notes = new Map();
             let Nxrefs = info_data.Nxrefs;
             for(const [nxref, ntext] of Object.entries(Nxrefs))
             {
                 let _xref = '@' + nxref + '@';
-                _notes.set(_xref, ntext);
+                Snotes.set(_xref, ntext);
             }
-            // gedcom.snotes = _notes;
+            // gedcom.snotes = Snotes;
             gedcom.persons.forEach(p =>
             {
                 if ( p.snotes.length > 0 ) {
                     let _snotes = [];
                     for(let i=0; i < p.snotes.length; i++) {
                         let nk = p.snotes[i];
-                        if ( _notes.has(nk)) {
-                            _snotes.push(_notes.get(nk));
+                        if ( Snotes.has(nk)) {
+                            _snotes.push(Snotes.get(nk));
                         }
                     }
                     p.snotes = _snotes;
@@ -189,7 +194,7 @@ export function processGedcomN(text, names, info_data, callback)
                     if ( f.snotes.length > 0 ) {
                         for(let i=0; i < f.snotes.length; i++) {
                             let nk = f.snotes[i];
-                            f.snotes[i] = _notes.get(nk);
+                            f.snotes[i] = Snotes.get(nk);
                         }
                     }
             });
@@ -202,6 +207,7 @@ export function processGedcomN(text, names, info_data, callback)
 
     parms.oSET("Otext", text);
     parms.oSET("OnamesJ", namesJ);
+    parms.oSET("OSnotes", Snotes);
 
     callback(gedcom);
 }
@@ -448,6 +454,12 @@ function build_gedcom(lines)
                         adop  : null
                     };
                 }
+            }
+            else if (tokens[1] == "NICK" && current_pers)
+            {
+                let nickstr = tokens.slice(2).join(" ");
+                current_pers.nickname = '"' + nickstr + '"';
+                current_pers.showname += ' "' + nickstr + '"';
             }
         }
         //-------------------------------------------------------------

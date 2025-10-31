@@ -13,6 +13,7 @@ import { createDownloadFromBlob, removeInternalValuesFromJSON, getParameters, ge
 import * as parms from "./parms.js";
 import * as uti from "./utils.js";
 import { DATAman } from "./DATAman.js";
+import { NODESman } from "./NODESman.js";
 import { RENDERhelper, reset } from "./RENDERhelpers.js";
 import { TREEexec } from "./lin-TREE.js";
 // import { TLINEexec } from "./lin-TL-OLD.js";
@@ -34,8 +35,16 @@ export class LINEAGErenderer
     constructor()
     {
         this.instance = this;
+
         let dataman = new DATAman(this.instance);
         this.DATAman = dataman;
+
+        let nodesman = new NODESman(this.instance);
+        this.NODESman = nodesman;
+        parms.oSET('NODESman', nodesman);
+
+        this.NODESman.set_Onlist(this.DATAman.ONODES);
+        this.Focus_Node = this.NODESman.Focus_Node;
 
         // Graphic Layers
         this.SVG = null;
@@ -79,7 +88,11 @@ export class LINEAGErenderer
         let _sb_active = document.getElementsByClassName("sbutton__" + String(this.loopspeed+1))[0];
         _sb_active.classList.toggle('sb_active');
 
-        this.viewboxdim = parms.lGET("viewboxdim");
+        let _vbd_act = parms.lGET("viewboxdim");                                    // aktive viewbox Kennung
+        this.viewboxdim = _vbd_act;
+        let _vbval = parms.VIEW_PORT_DIMS[_vbd_act];                                // ... dazu Werte
+        this.nodeMagnifier = _vbval[5];
+        parms.lSET("nodeMagnifier", this.nodeMagnifier);
 
         this.verbose = false;
         this.RENDERhelper.TooltipMaker = helperRenderer.getNodeAttributesAsString;
@@ -90,6 +103,8 @@ export class LINEAGErenderer
         this.yLINKS = [];
 
         this.FilteredData = this.DATAman.makeFilteredData();
+        this.NODESman.set_Fnlist(this.FilteredData.nodes);
+
         this.YearedData = null;
 
         this.aNODES = [];
@@ -469,6 +484,7 @@ export class LINEAGErenderer
 
         let linObj = _objRef;
         let dmanObj = this.DATAman;
+        let nmanObj = this.NODESman;
         let DOrestart = true;
         if (linObj == null) {
             linObj = this;
@@ -484,6 +500,7 @@ export class LINEAGErenderer
 
         linObj.yNODES = linObj.YearedData.nodes;
         linObj.yLINKS = linObj.YearedData.links;
+        nmanObj.set_Ynlist(linObj.yNODES);
     
         // ("Read Graph with " + this.NODES.length + " nodes and " + this.LINKS.length + " links.");
         console.log(i18n("R_Gw_Xn_Xl", { pNl: linObj.yNODES.length, pLl: linObj.yLINKS.length } ));
@@ -576,8 +593,10 @@ export class LINEAGErenderer
         _vb_act_cl = _vb_active.classList;                                          //             Classlist ...
         if ( !_vb_act_cl.contains('vb_active') )                                    //             auf aktiv prüfen
             _vb_act_cl.toggle('vb_active');                                         //             fallweise anschalten
+        this.nodeMagnifier = _vbval[5];                                             // Vergrößerungsfaktor Knoten Drag-n-Drop merken ...
+        parms.lSET("nodeMagnifier", this.nodeMagnifier);                            // ... und in parms übernehmen
 
-        this.setvbDim_Do(_vbdim, _vbval);
+        this.setvbDim_Do(_vbdim, _vbval);                                           // Viewport anpassen
     }
 
     setvbDim_Do(_vbdim, _vbval) {
@@ -602,6 +621,7 @@ function LINloop()
     let renderer = parms.oGET("RENDERER");
     let linObj = renderer.instance;
     let dmanObj = linObj.DATAman;
+    let nmanObj = linObj.NODESman;
     let _TL = dmanObj.sliderTL;
     let oldYear = _TL.Year;
     let year = _TL.advanceYear(oldYear);
@@ -621,6 +641,7 @@ function LINloop()
                 linObj.yNODES = linObj.YearedData.nodes;
                 linObj.yLINKS = linObj.YearedData.links;
                 linObj.forceRefresh = true;                        // ev. weitere nodes relevant -> neu aufbauen
+                nmanObj.set_Ynlist(linObj.yNODES);
                 console.log('loop-forceRefresh true');
                 // if (linObj.SIMmode == 'TREE') doLink = true;
                 parms.dataMod(true);

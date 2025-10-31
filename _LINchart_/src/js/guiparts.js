@@ -41,7 +41,7 @@ function html_title() {
 <!-------------------------------------------------------------------------------------->
 <div class="options title">
 	LINEAGE -ℍ&ℍwt-
-    <span id="version" class="version">&nbsp;v2.2.1.0</span>
+    <span id="version" class="version">&nbsp;v2.4.1.0</span>
 </div>
 <!-------------------------------------------------------------------------------------->`;
 }
@@ -183,6 +183,11 @@ function html_linm() {
             </div>
 		</div>
 		<hr>
+        <div class="nodesList">
+            <h3>${i18n("Individuals list:")}</h3>
+            <a data-filter="menu_nodeslist" class="btn btn-circle"><span class="fa fa-list fa-big" title="${i18n('Show list')}"></span></a>
+        </div>
+        <hr>
 		<div class="namesFilter">
 			<h3>${i18n("Surname filter:")}</h3>
 			<div class="checkboxO">
@@ -199,7 +204,7 @@ function html_linm() {
 		<div class="filterS">
 			<div class="filterS-parts">
 				<div class="text-info">${i18n("Separate several names by ';'!")}</div>
-				<a data-filter="menu_names" class="btn btn-circle"><span class="fa fa-list-ul fa-big" title="${i18n('Edit filters')}"></span></a>
+				<a data-filter="menu_names" class="btn btn-circle"><span class="fa fa-filter fa-big" title="${i18n('Edit filters')}"></span></a>
 			</div>
 			<div>
 				<input id="menu_names" class="form-control input-lg" value="">

@@ -40,6 +40,8 @@ export class DATAman
     {
         // Data and Variables
         this.GRAPH_DATA = null;
+        this.instance = this;
+        this.linObj = linObj;
 
         this.ONODES = parms.oGET("Onodes");
         this.OLINKS = parms.oGET("Olinks");
@@ -47,6 +49,7 @@ export class DATAman
             nodes: this.ONODES,
             links: this.OLINKS
         };
+
         this.mapONid = d3.group(this.originalData.nodes, n => n.id);
         this.tickCounter = 0;
         this.tickCounterTotal = 0;
@@ -62,8 +65,6 @@ export class DATAman
 
         this.CurrentYear = new Date().getFullYear();
 
-        this.instance = this;
-        this.linObj = linObj;
         this.tstamp = new Date();
         this.RENDERtype = 0;
         this.zoomO = null;
@@ -257,7 +258,7 @@ export class DATAman
     /**
      * Gegen Namen gefilterte Daten gegen Jahres-Vorgaben prüfen
      */
-     makeYearedData(linObj) {
+    makeYearedData(linObj) {
         let YearedData = {
             nodes: [],
             links: []
@@ -274,13 +275,19 @@ export class DATAman
         return YearedData;
     }
     yearNodes(Inodes, year, YearS) {
+        let Focus_Node = this.linObj.Focus_Node;
+        let FN_included = false;
         let Ynodes = [];
         Inodes.forEach(function(node) {
             let _value = node.Yvalue;
             if (_value !== null) {
-                if (Ynodes.indexOf(node) == -1) {
-                    if (_value >= YearS && _value <= year ) {
-                        Ynodes.push(node);
+                if (_value >= YearS && _value <= year ) {
+                    if (!node.is_focus) {
+                        if (Ynodes.indexOf(node) == -1) {
+                            Ynodes.push(node);
+                        }
+                    } else {
+                        FN_included = true;
                     }
                 }
             }
@@ -288,6 +295,9 @@ export class DATAman
         Ynodes.sort((a, b) => {
             return a.Yvalue - b.Yvalue;
         });
+        if (Focus_Node && FN_included) {
+            Ynodes.push(Focus_Node);
+        }
         return Ynodes;
     }
     yearLinks(Ilinks, Ynodes) {

@@ -27,6 +27,8 @@ const RENDERtype = {
     "TAM": 1,
 };
 
+var nodeMagnifier = 2;
+
 export function setRange(nodes, CurrentYear)
 {
     let _rangeMin = 1e8;
@@ -101,6 +103,7 @@ function readSingleFile(e)
     let reader = new FileReader();
     let renderer = parms.oGET("RENDERER");
     let _rendertype = renderer.RENDERtype;
+    nodeMagnifier = renderer.nodeMagnifier;
     let isTREErenderer = (_rendertype == RENDERtype.LINEAGE);
     let renderer_new = false;
     let linObj = renderer.instance;
@@ -537,7 +540,7 @@ function prepareODATA(gedcom, nodePositions = null)
             if (nodePositions[p.id].fixed) { // restore fixed state
                 p.fx = p.x;
                 p.fy = p.y;
-                p.sr = 2;
+                p.sr = nodeMagnifier;
             }
         } else {
             // p.vis = {'x': 0, 'y': 0};
@@ -550,6 +553,7 @@ function prepareODATA(gedcom, nodePositions = null)
 
     setRange(NODES, CurrentYear);
     initIDX(NODES);
+
     LINKS = [];
 
     // list dependencies
@@ -601,6 +605,16 @@ function prepareODATA(gedcom, nodePositions = null)
 
     // ("Created Graph with " + this.NODES.length + " nodes and " + this.LINKS.length + " links.");
     console.log(i18n("C_Gw_Xn_Xl", { pNl: NODES.length, pLl: LINKS.length } ));
+
+    parms.oSET("Dnodes", NODES);
+
+    // let _focus_node_val = parms.GET("CENTER_NODE_val");
+    // let focus_node = NODES[0];
+    // focus_node.is_focus = true;
+    // focus_node.sr = _focus_node_val;
+    // focus_node.fx = -_noderadius * _focus_node_val * 0.5;
+    // focus_node.fy = -_noderadius * _focus_node_val * 0.5;
+    // NODES[0] = focus_node;
 
     parms.oSET("OnodeMap", nodeMap);
     parms.oSET("Onodes", NODES);
