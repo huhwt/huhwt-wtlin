@@ -114,7 +114,7 @@ class LINaction extends AbstractModule
      * @return string
      */
     public function customModuleVersion(): string {
-        return '2.4.1.0';
+        return '2.4.1.1';
     }
 
     /**
@@ -276,8 +276,12 @@ class LINaction extends AbstractModule
         $LINpath = str_replace("/public/snip/", "", $LINpath) . "/modules_v4/huhwt-wtlin/_LINchart_/index_DL.html";
 
         $LINdname = Session::get('VIZ_DSname');
-        $LINdname = str_replace("VIZ", "LIN", $LINdname);
-        $LINdname = str_replace("DATA", $tree->name(), $LINdname);
+        if (!empty($LINdname)) {
+            $LINdname = str_replace("VIZ", "LIN", $LINdname);
+            $LINdname = str_replace("DATA", $tree->name(), $LINdname);
+        } else {
+            $LINdname = 'wtLIN-' . $tree->name() . '-ANY';
+        }
         Session::put('LIN_DSname', $LINdname);
 
         // we don't want to transfer gedcom directly - prepare url for AJAX call
